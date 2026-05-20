@@ -31,18 +31,9 @@ export function Button({
         size === "default" && "text-[14px] leading-[1.4] px-5 h-12",
         size === "lg"      && "text-[15px] leading-[1.4] px-7 h-[52px]",
         // Variants
-        variant === "primary" && [
-          "bg-brand text-white border-brand",
-          "hover:bg-brand-deep hover:border-brand-deep",
-        ],
-        variant === "ink" && [
-          "bg-ink text-white border-ink",
-          "hover:bg-ink-2 hover:border-ink-2",
-        ],
-        variant === "ghost" && [
-          "bg-transparent text-ink border-ink",
-          "hover:bg-ink hover:text-white",
-        ],
+        variant === "primary" && "bg-brand text-white border-brand hover:bg-brand-deep hover:border-brand-deep",
+        variant === "ink"     && "bg-ink text-white border-ink hover:bg-ink-2 hover:border-ink-2",
+        variant === "ghost"   && "bg-transparent text-ink border-ink hover:bg-ink hover:text-white",
         className
       )}
       {...props}
