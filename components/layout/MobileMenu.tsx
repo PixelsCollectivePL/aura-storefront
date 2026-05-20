@@ -4,10 +4,17 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart/cart-context";
 import { Icon } from "@/components/ui/Icon";
-import { CONTENT } from "@/lib/content/pl";
+import { AuraMark } from "@/components/brand/AuraMark";
 import { cn } from "@/lib/utils";
 
-const { mobileMenu: c } = CONTENT;
+const NAV_ITEMS = [
+  { label: "Produkty", sub: "Kawy single origin i blendy",   href: "/produkty" },
+  { label: "Blendy",   sub: "Nasze stałe zestawy",           href: "/blendy" },
+  { label: "O marce",  sub: "Historia i wartości Aury",      href: "/o-marce" },
+  { label: "Palarnia", sub: "Jak palimy · środy w Warszawie", href: "/palarnia" },
+  { label: "FAQ",      sub: "Dostawa, zwroty, świeżość",     href: "/faq" },
+  { label: "Kontakt",  sub: "hello@aura.coffee",             href: "/kontakt" },
+];
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -67,38 +74,43 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     <div className="fixed inset-0 z-50 lg:hidden">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-ink-hi/40 cart-overlay-in"
+        className="absolute inset-0 bg-black/50 cart-overlay-in"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Panel — slides in from left */}
+      {/* Panel — slides in from left, dark bg */}
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Menu nawigacji"
         className={cn(
-          "absolute left-0 top-0 h-full w-full",
-          "bg-bg flex flex-col",
+          "absolute left-0 top-0 h-full w-full max-w-[340px]",
+          "bg-ink flex flex-col",
           "menu-panel-in"
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between h-14 px-4 shrink-0">
-          <span className="text-[18px] font-medium tracking-[0.32em] pl-[0.32em] text-ink-hi">
-            AURA
-          </span>
+        <div className="flex items-center justify-between h-14 px-5 shrink-0 border-b border-white/10">
+          <Link
+            href="/"
+            onClick={onClose}
+            className="focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
+            aria-label="Strona główna"
+          >
+            <AuraMark size={20} color="white" />
+          </Link>
           <button
             type="button"
             data-close
-            aria-label={c.closeLabel}
+            aria-label="Zamknij menu"
             onClick={onClose}
             className={cn(
               "flex items-center justify-center w-9 h-9",
-              "bg-transparent border-0 cursor-pointer text-ink-hi",
-              "hover:text-black transition-colors duration-[120ms]",
-              "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+              "bg-transparent border-0 cursor-pointer text-white/60",
+              "hover:text-white transition-colors duration-[120ms]",
+              "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-sm"
             )}
           >
             <Icon.close size={20} />
@@ -106,75 +118,98 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         </div>
 
         {/* Main nav */}
-        <nav aria-label="Menu główne" className="flex-1 overflow-y-auto px-5 pt-2">
+        <nav aria-label="Menu główne" className="flex-1 overflow-y-auto px-5 pt-1">
           <ol>
-            {c.navItems.map((item, i) => (
+            {NAV_ITEMS.map((item, i) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   onClick={onClose}
                   className={cn(
-                    "flex items-center justify-between py-[26px]",
-                    "border-b border-line text-ink-hi no-underline",
-                    "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-[-2px]"
+                    "flex items-center justify-between py-5",
+                    "border-b border-white/10 text-white no-underline",
+                    "hover:text-white/80 transition-colors duration-[120ms]",
+                    "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-[-2px]"
                   )}
                 >
                   <div className="flex items-baseline gap-3.5">
-                    <span className="text-[11px] text-mute-2 tabular-nums w-[22px]">
+                    <span
+                      className="text-[10px] text-white/30 tabular-nums w-5"
+                      style={{ fontFamily: "var(--font-mono)" }}
+                    >
                       0{i + 1}
                     </span>
                     <div>
-                      <p className="text-h2" style={{ fontSize: 30 }}>{item.label}</p>
-                      <p className="text-[12.5px] text-mute mt-0.5">{item.sub}</p>
+                      <p
+                        className="text-[26px] leading-[1.1] tracking-[-0.02em] font-extrabold"
+                        style={{ fontFamily: "var(--font-display)" }}
+                      >
+                        {item.label}
+                      </p>
+                      <p className="text-[12px] text-white/40 mt-0.5">{item.sub}</p>
                     </div>
                   </div>
-                  <Icon.chevRight size={18} className="shrink-0 text-mute-2" />
+                  <Icon.chevRight size={16} className="shrink-0 text-white/30" />
                 </Link>
               </li>
             ))}
           </ol>
 
           {/* Utility links */}
-          <div className="pt-7 flex flex-col gap-3.5">
+          <div className="pt-6 pb-2 flex flex-col gap-1">
             <button
               type="button"
               className={cn(
-                "flex items-center justify-between py-2.5",
-                "text-[14px] text-ink-hi cursor-pointer",
-                "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+                "flex items-center justify-between py-3",
+                "text-[13.5px] text-white/50 cursor-pointer hover:text-white",
+                "transition-colors duration-[120ms]",
+                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
               )}
             >
               <span className="flex items-center gap-2.5">
-                <Icon.account size={18} />
-                {c.account}
+                <Icon.account size={17} />
+                Konto
               </span>
-              <Icon.chevRight size={14} className="text-mute-2" />
+              <Icon.chevRight size={14} className="text-white/30" />
             </button>
 
             <button
               type="button"
               onClick={() => { onClose(); openCart(); }}
               className={cn(
-                "flex items-center justify-between py-2.5",
-                "text-[14px] text-ink-hi cursor-pointer",
-                "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+                "flex items-center justify-between py-3",
+                "text-[13.5px] text-white/50 cursor-pointer hover:text-white",
+                "transition-colors duration-[120ms]",
+                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
               )}
             >
               <span className="flex items-center gap-2.5">
-                <Icon.bag size={18} />
-                {c.basket}
+                <Icon.bag size={17} />
+                Koszyk
               </span>
               {count > 0 && (
-                <span className="text-meta text-mute-2">{c.basketCount(count)}</span>
+                <span className="text-[11px] text-white/40 tabular-nums">
+                  {count === 1 ? "1 produkt" : count >= 2 && count <= 4 ? `${count} produkty` : `${count} produktów`}
+                </span>
               )}
             </button>
           </div>
         </nav>
 
         {/* Footer */}
-        <div className="px-5 pb-6 pt-4 border-t border-line shrink-0 flex items-center justify-between">
-          <span className="text-meta text-mute-2">{c.locale}</span>
-          <span className="text-meta text-mute-2">{c.city}</span>
+        <div className="px-5 pb-6 pt-4 border-t border-white/10 shrink-0 flex items-center justify-between">
+          <span
+            className="text-[10px] tracking-[0.1em] text-white/30"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            PL · PLN
+          </span>
+          <span
+            className="text-[10px] tracking-[0.1em] text-white/30"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            Warszawa
+          </span>
         </div>
       </div>
     </div>

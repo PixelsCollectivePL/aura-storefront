@@ -1,0 +1,160 @@
+/* Aura Storefront v2 — design tokens */
+:root {
+  /* Brand neutrals — warm-leaning whites/blacks */
+  --aura-ink: #0E0E0C;
+  --aura-ink-2: #1B1A17;
+  --aura-paper: #FAF8F4;
+  --aura-paper-2: #F3F0E9;
+  --aura-line: #E6E2D8;
+  --aura-line-strong: #1B1A17;
+  --aura-muted: #6E6A60;
+  --aura-muted-2: #99948A;
+
+  /* Brand accents (orange primary, green/purple secondary product colours) */
+  --aura-orange: #FF4D17;
+  --aura-orange-deep: #E03A04;
+  --aura-orange-soft: #FFE3D2;
+  --aura-green: #2EA12E;
+  --aura-purple: #6F4FD4;
+
+  /* Type */
+  --aura-display: "Archivo", "Archivo Black", ui-sans-serif, system-ui, sans-serif;
+  --aura-text: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --aura-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Radii */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+}
+
+/* Reusable building blocks scoped to .aura */
+.aura {
+  font-family: var(--aura-text);
+  color: var(--aura-ink);
+  background: var(--aura-paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11";
+}
+.aura, .aura * { box-sizing: border-box; }
+.aura h1, .aura h2, .aura h3, .aura h4 {
+  font-family: var(--aura-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+.aura p { margin: 0; }
+.aura .mono {
+  font-family: var(--aura-mono);
+  font-feature-settings: "ss01";
+  letter-spacing: 0;
+}
+.aura .eyebrow {
+  font-family: var(--aura-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--aura-ink);
+}
+
+/* Buttons */
+.aura .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 48px; padding: 0 20px;
+  background: var(--aura-orange); color: #fff;
+  border: 1.5px solid var(--aura-orange);
+  border-radius: var(--r-pill);
+  font-family: var(--aura-text);
+  font-weight: 600; font-size: 14px; letter-spacing: -0.005em;
+  cursor: pointer; user-select: none;
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.aura .btn:hover { background: var(--aura-orange-deep); border-color: var(--aura-orange-deep); }
+.aura .btn:active { transform: translateY(1px); }
+.aura .btn-ink { background: var(--aura-ink); border-color: var(--aura-ink); color: #fff; }
+.aura .btn-ink:hover { background: var(--aura-ink-2); border-color: var(--aura-ink-2); }
+.aura .btn-ghost { background: transparent; color: var(--aura-ink); border-color: var(--aura-ink); }
+.aura .btn-ghost:hover { background: var(--aura-ink); color: #fff; }
+.aura .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
+.aura .btn-block { width: 100%; }
+
+/* Chips / tags */
+.aura .chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: var(--r-pill);
+  border: 1px solid var(--aura-line);
+  background: #fff;
+  font-size: 12px; font-weight: 500; color: var(--aura-ink);
+}
+.aura .chip.active { background: var(--aura-ink); color: #fff; border-color: var(--aura-ink); }
+.aura .chip.orange { background: var(--aura-orange-soft); border-color: var(--aura-orange-soft); color: var(--aura-orange-deep); }
+
+/* Star/burst placeholder for character illustrations — original geometric shape, not branded artwork */
+.aura .burst { position: relative; display: inline-grid; place-items: center; }
+.aura .burst .label {
+  position: relative; z-index: 2;
+  font-family: var(--aura-mono); font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(0,0,0,.55); text-align: center;
+}
+
+/* Photo placeholders — striped, with monospace label */
+.aura .ph {
+  position: relative; overflow: hidden;
+  background:
+    repeating-linear-gradient(135deg,
+      rgba(14,14,12,0.045) 0 6px,
+      rgba(14,14,12,0) 6px 14px),
+    var(--aura-paper-2);
+  border-radius: var(--r-md);
+  display: grid; place-items: center;
+  color: var(--aura-muted);
+  font-family: var(--aura-mono);
+  font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.aura .ph.dark {
+  background:
+    repeating-linear-gradient(135deg,
+      rgba(255,255,255,0.05) 0 6px,
+      rgba(255,255,255,0) 6px 14px),
+    #16140F;
+  color: rgba(255,255,255,.55);
+}
+.aura .ph.ink { background:
+    repeating-linear-gradient(135deg,
+      rgba(255,255,255,0.04) 0 6px,
+      rgba(255,255,255,0) 6px 14px),
+    var(--aura-ink); color: rgba(255,255,255,.55); }
+
+/* Card */
+.aura .card {
+  background: #fff;
+  border-radius: var(--r-md);
+  border: 1px solid var(--aura-line);
+}
+
+/* Divider */
+.aura .divider { height: 1px; background: var(--aura-line); }
+.aura .divider.ink { background: var(--aura-line-strong); }
+
+/* Scrollbars hidden inside artboards (handled by canvas), but make any internal scroll containers clean */
+.aura .no-scrollbar::-webkit-scrollbar { display: none; }
+.aura .no-scrollbar { scrollbar-width: none; }
+
+/* Focus styles */
+.aura :focus-visible { outline: 2px solid var(--aura-orange); outline-offset: 2px; border-radius: 6px; }
+
+/* Tabular nums for prices */
+.aura .num { font-variant-numeric: tabular-nums; }
+
+/* Sticky bottom on mobile */
+.aura .mobile-sticky {
+  position: sticky; bottom: 0; z-index: 5;
+  background: #fff;
+  border-top: 1px solid var(--aura-line);
+}

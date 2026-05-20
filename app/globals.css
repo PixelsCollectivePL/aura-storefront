@@ -1,18 +1,36 @@
 @import "tailwindcss";
 
-/* ─── Aura CSS custom properties — runtime values ─── */
+/* ─── Aura v2.1 CSS custom properties ─── */
 :root {
-  --m-bg:        #FFFFFF;
-  --m-bg-soft:   #FAFAFA;
-  --m-bg-soft-2: #F4F4F4;
-  --m-line:      #E8E8E8;
-  --m-line-2:    #D6D6D6;
-  --m-mute:      #9A9A9A;
-  --m-mute-2:    #6E6E6E;
-  --m-ink:       #1A1A1A;
-  --m-ink-hi:    #0A0A0A;
+  /* Brand neutrals — warm-leaning */
+  --aura-ink:         #0E0E0C;
+  --aura-ink-2:       #1B1A17;
+  --aura-paper:       #FAF8F4;
+  --aura-paper-2:     #F3F0E9;
+  --aura-line:        #E6E2D8;
+  --aura-line-strong: #1B1A17;
+  --aura-muted:       #6E6A60;
+  --aura-muted-2:     #99948A;
+
+  /* Brand accents */
+  --aura-orange:      #FF4D17;
+  --aura-orange-deep: #E03A04;
+  --aura-orange-soft: #FFE3D2;
+  --aura-green:       #2EA12E;
+  --aura-purple:      #6F4FD4;
+
+  /* Legacy aliases — kept for backward compat with untouched components */
+  --m-bg:        var(--aura-paper);
+  --m-bg-soft:   var(--aura-paper-2);
+  --m-bg-soft-2: var(--aura-line);
+  --m-line:      var(--aura-line);
+  --m-line-2:    #CCC8BF;
+  --m-mute:      var(--aura-muted-2);
+  --m-mute-2:    var(--aura-muted);
+  --m-ink:       var(--aura-ink-2);
+  --m-ink-hi:    var(--aura-ink);
   --m-ink-inv:   #FFFFFF;
-  --m-ok:        #2F7A4A;
+  --m-ok:        var(--aura-green);
   --m-warn:      #7A5A2F;
   --m-ease:      cubic-bezier(.2,.7,.3,1);
   --m-fast:      120ms;
@@ -21,70 +39,87 @@
 
 /* ─── Tailwind v4 theme tokens ─── */
 @theme inline {
-  /* Font — resolved at runtime from next/font/google */
-  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+  /* Fonts — resolved at runtime from next/font/google */
+  --font-display: var(--font-archivo), "Archivo", "Archivo Black", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    var(--font-jetbrains), "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 }
 
 @theme {
-  /* Colors — mono only, no accents */
-  --color-bg:        #FFFFFF;
-  --color-bg-soft:   #FAFAFA;
-  --color-bg-soft-2: #F4F4F4;
-  --color-line:      #E8E8E8;
-  --color-line-2:    #D6D6D6;
-  --color-mute:      #9A9A9A;
-  --color-mute-2:    #6E6E6E;
-  --color-ink:       #1A1A1A;
-  --color-ink-hi:    #0A0A0A;
-  --color-ink-inv:   #FFFFFF;
-  --color-ok:        #2F7A4A;
-  --color-warn:      #7A5A2F;
+  /* ── Colors — warm-toned v2.1 palette ── */
 
-  /* Border radius — squared brand, pill only for chips */
+  /* New semantic names */
+  --color-ink:        #0E0E0C;
+  --color-ink-2:      #1B1A17;
+  --color-paper:      #FAF8F4;
+  --color-paper-2:    #F3F0E9;
+  --color-line:       #E6E2D8;
+  --color-line-2:     #CCC8BF;
+  --color-muted:      #6E6A60;
+  --color-muted-2:    #99948A;
+  --color-brand:      #FF4D17;
+  --color-brand-deep: #E03A04;
+  --color-brand-soft: #FFE3D2;
+  --color-ok:         #2EA12E;
+  --color-warn:       #7A5A2F;
+  --color-purple:     #6F4FD4;
+
+  /* Legacy color names — mapped to warm equivalents for backward compat */
+  --color-bg:        #FAF8F4;
+  --color-bg-soft:   #F3F0E9;
+  --color-bg-soft-2: #E6E2D8;
+  --color-ink-hi:    #0E0E0C;
+  --color-ink-inv:   #FFFFFF;
+  --color-mute:      #99948A;
+  --color-mute-2:    #6E6A60;
+
+  /* ── Border radius — rounded brand (v2.1) ── */
   --radius:      0px;
   --radius-none: 0px;
-  --radius-xs:   2px;
-  --radius-sm:   4px;
-  --radius-md:   0px;
-  --radius-lg:   0px;
-  --radius-xl:   0px;
+  --radius-xs:   4px;
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   22px;
+  --radius-xl:   22px;
   --radius-pill: 9999px;
   --radius-full: 9999px;
 
-  /* Shadows — only for temporary surfaces (drawers, popovers, toasts) */
+  /* ── Shadows ── */
   --shadow-none:    none;
-  --shadow-drawer:  0 -16px 50px rgba(0,0,0,0.20);
-  --shadow-panel:  -16px 0 50px rgba(0,0,0,0.15);
-  --shadow-popover: 0 12px 32px rgba(0,0,0,0.10);
-  --shadow-toast:   0 8px 24px rgba(0,0,0,0.16);
+  --shadow-card:    0 2px 12px rgba(14,14,12,0.06);
+  --shadow-drawer:  0 -16px 50px rgba(14,14,12,0.20);
+  --shadow-panel:  -16px 0 50px rgba(14,14,12,0.15);
+  --shadow-popover: 0 12px 32px rgba(14,14,12,0.10);
+  --shadow-toast:   0 8px 24px rgba(14,14,12,0.16);
 
-  /* Breakpoints */
+  /* ── Breakpoints ── */
   --breakpoint-sm:  480px;
   --breakpoint-md:  768px;
   --breakpoint-lg:  1024px;
   --breakpoint-xl:  1280px;
   --breakpoint-2xl: 1440px;
 
-  /* Spacing extensions */
+  /* ── Spacing extensions ── */
   --spacing-15: 60px;
   --spacing-18: 72px;
   --spacing-22: 88px;
   --spacing-26: 104px;
   --spacing-30: 120px;
 
-  /* Transition timing */
+  /* ── Transition timing ── */
   --ease-out-soft: cubic-bezier(.2,.7,.3,1);
 }
 
-/* ─── Custom typography utilities (support responsive variants) ─── */
+/* ─── Custom typography utilities ─── */
 
 @utility text-eyebrow {
+  font-family: var(--font-mono);
   font-size: 11px;
   line-height: 1;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   font-weight: 500;
   text-transform: uppercase;
-  color: var(--m-mute-2);
+  color: var(--aura-ink);
 }
 
 @utility text-meta {
@@ -92,7 +127,7 @@
   line-height: 1.4;
   letter-spacing: 0;
   font-weight: 400;
-  color: var(--m-mute-2);
+  color: var(--aura-muted);
 }
 
 @utility text-body-sm {
@@ -111,67 +146,75 @@
 }
 
 @utility text-h3 {
+  font-family: var(--font-display);
   font-size: 17px;
   line-height: 1.2;
   letter-spacing: -0.014em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 @utility text-h3-lg {
+  font-family: var(--font-display);
   font-size: 20px;
   line-height: 1.2;
   letter-spacing: -0.014em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 @utility text-h2 {
+  font-family: var(--font-display);
   font-size: 28px;
-  line-height: 1.1;
+  line-height: 1.05;
   letter-spacing: -0.022em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 @utility text-h2-lg {
+  font-family: var(--font-display);
   font-size: 44px;
-  line-height: 1.05;
+  line-height: 0.98;
   letter-spacing: -0.025em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 @utility text-h1 {
+  font-family: var(--font-display);
   font-size: 48px;
-  line-height: 1.05;
+  line-height: 0.98;
   letter-spacing: -0.028em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 @utility text-h1-lg {
+  font-family: var(--font-display);
   font-size: 72px;
-  line-height: 0.98;
+  line-height: 0.96;
   letter-spacing: -0.03em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 @utility text-display {
+  font-family: var(--font-display);
   font-size: 56px;
   line-height: 0.96;
   letter-spacing: -0.035em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 @utility text-display-lg {
+  font-family: var(--font-display);
   font-size: 96px;
   line-height: 0.94;
   letter-spacing: -0.035em;
-  font-weight: 500;
-  color: var(--m-ink-hi);
+  font-weight: 800;
+  color: var(--aura-ink);
 }
 
 /* ─── Keyframes ─── */
@@ -185,6 +228,17 @@
   to   { transform: translateX(0); }
 }
 
+@keyframes aura-menu-in {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes aura-ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ─── Animation utilities ─── */
 @utility cart-overlay-in {
   animation: aura-overlay-in 160ms var(--m-ease) both;
 }
@@ -193,13 +247,12 @@
   animation: aura-panel-in 280ms var(--m-ease) both;
 }
 
-@keyframes aura-menu-in {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(0); }
-}
-
 @utility menu-panel-in {
   animation: aura-menu-in 280ms var(--m-ease) both;
+}
+
+@utility ticker-scroll {
+  animation: aura-ticker 28s linear infinite;
 }
 
 /* ─── Base layer ─── */
@@ -209,8 +262,9 @@
   }
 
   *:focus-visible {
-    outline: 2px solid var(--m-ink-hi);
+    outline: 2px solid var(--aura-orange);
     outline-offset: 2px;
+    border-radius: 4px;
   }
 
   body {
@@ -218,8 +272,8 @@
     font-size: 14px;
     line-height: 1.55;
     letter-spacing: -0.005em;
-    color: var(--m-ink);
-    background: var(--m-bg);
+    color: var(--aura-ink);
+    background: var(--aura-paper);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     font-feature-settings: "ss01", "cv11";

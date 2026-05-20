@@ -5,6 +5,14 @@ export const CONTENT = {
   },
 
   nav: {
+    // v2.1 nav items
+    produkty: "Produkty",
+    blendy: "Blendy",
+    oMarce: "O marce",
+    palarnia: "Palarnia",
+    faq: "FAQ",
+    kontakt: "Kontakt",
+    // legacy aliases (kept for backward compat with existing pages)
     shop: "Sklep",
     about: "O nas",
     brewing: "Parzenie",
@@ -335,10 +343,12 @@ export const CONTENT = {
   mobileMenu: {
     closeLabel: "Zamknij menu",
     navItems: [
-      { label: "Sklep",    sub: "6 kaw w tym sezonie",    href: "/shop" },
-      { label: "O nas",    sub: "Nasza historia · Palarnia", href: "/about" },
-      { label: "Parzenie", sub: "Przewodniki · metody",    href: "/brewing" },
-      { label: "Journal",  sub: "Nowe wpisy co tydzień",   href: "/journal" },
+      { label: "Produkty", sub: "Kawy single origin i blendy",    href: "/produkty" },
+      { label: "Blendy",   sub: "Nasze stałe zestawy",            href: "/blendy" },
+      { label: "O marce",  sub: "Historia i wartości Aury",       href: "/o-marce" },
+      { label: "Palarnia", sub: "Jak palimy · środy w Warszawie", href: "/palarnia" },
+      { label: "FAQ",      sub: "Dostawa, zwroty, świeżość",      href: "/faq" },
+      { label: "Kontakt",  sub: "hello@aura.coffee",              href: "/kontakt" },
     ],
     account: "Konto",
     basket: "Koszyk",

@@ -1,23 +1,47 @@
 "use client";
 
 import Link from "next/link";
+import { AuraMark } from "@/components/brand/AuraMark";
 import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
 
 const { footer: f } = CONTENT;
 
-const SHOP_LINKS = [
-  { label: "ONE", href: "/shop/one" },
-  { label: "TWO", href: "/shop/two" },
-  { label: "THREE", href: "/shop/three" },
-  { label: "FOUR", href: "/shop/four" },
-  { label: "FIVE", href: "/shop/five" },
-  { label: "SIX", href: "/shop/six" },
+const NAV_COLS = [
+  {
+    heading: "Sklep",
+    links: [
+      { label: "Produkty",      href: "/produkty" },
+      { label: "Blendy",        href: "/blendy" },
+      { label: "Subskrypcja",   href: "/subskrypcja" },
+    ],
+  },
+  {
+    heading: "Marka",
+    links: [
+      { label: "O marce",   href: "/o-marce" },
+      { label: "Palarnia",  href: "/palarnia" },
+      { label: "Journal",   href: "/journal" },
+      { label: "Stockiści", href: "/stockists" },
+    ],
+  },
+  {
+    heading: "Pomoc",
+    links: [
+      { label: "FAQ",          href: "/faq" },
+      { label: "Kontakt",      href: "/kontakt" },
+      { label: "Dostawa",      href: "/faq#dostawa" },
+      { label: "Zwroty",       href: "/faq#zwroty" },
+    ],
+  },
 ];
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-mute-2 mb-5">
+    <p
+      className="text-[11px] tracking-[0.14em] uppercase mb-5 text-white/40"
+      style={{ fontFamily: "var(--font-mono)" }}
+    >
       {children}
     </p>
   );
@@ -29,7 +53,7 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
   return (
     <Tag
       href={href}
-      className="block text-[13px] text-mute-2 hover:text-ink-hi transition-colors duration-[120ms] py-1 focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+      className="block text-[13px] text-white/50 hover:text-white transition-colors duration-[120ms] py-1 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
     >
       {children}
     </Tag>
@@ -38,46 +62,39 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 export function Footer() {
   return (
-    <footer className="border-t border-line mt-auto">
-      {/* ── Desktop: 4-col grid ── */}
-      <div className="hidden lg:grid grid-cols-[2fr_1fr_1fr_2fr] gap-16 px-14 py-16">
+    <footer className="bg-ink text-white">
+      {/* ── Desktop: brand + 3 nav cols + newsletter ── */}
+      <div className="hidden lg:grid grid-cols-[1.8fr_1fr_1fr_1fr_1.6fr] gap-14 px-14 py-16 border-b border-white/10">
         {/* Brand */}
         <div>
           <Link
             href="/"
-            className="block text-[20px] font-medium tracking-[0.4em] pl-[0.4em] text-ink-hi mb-5 focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+            className="block mb-6 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs w-fit"
+            aria-label="Aura Coffee — strona główna"
           >
-            AURA
+            <AuraMark size={26} color="white" tagline />
           </Link>
-          <p className="text-[13px] leading-[1.6] text-mute-2 max-w-[240px]">
+          <p className="text-[13px] leading-[1.65] text-white/50 max-w-[220px]">
             {f.tagline}
           </p>
         </div>
 
-        {/* Shop */}
-        <div>
-          <FooterHeading>{f.shopHeading}</FooterHeading>
-          <nav>
-            {SHOP_LINKS.map((l) => (
-              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
-            ))}
-          </nav>
-        </div>
-
-        {/* Company */}
-        <div>
-          <FooterHeading>{f.companyHeading}</FooterHeading>
-          <nav>
-            {f.companyLinks.map((l) => (
-              <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
-            ))}
-          </nav>
-        </div>
+        {/* Nav columns */}
+        {NAV_COLS.map((col) => (
+          <div key={col.heading}>
+            <FooterHeading>{col.heading}</FooterHeading>
+            <nav>
+              {col.links.map((l) => (
+                <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+              ))}
+            </nav>
+          </div>
+        ))}
 
         {/* Newsletter */}
         <div>
           <FooterHeading>{f.newsletterHeading}</FooterHeading>
-          <p className="text-[13px] text-mute-2 mb-4 leading-[1.6]">
+          <p className="text-[13px] text-white/50 mb-4 leading-[1.65]">
             {f.newsletterDesc}
           </p>
           <form onSubmit={(e) => e.preventDefault()} className="flex gap-0">
@@ -87,20 +104,21 @@ export function Footer() {
               aria-label="Adres e-mail"
               className={cn(
                 "flex-1 min-w-0 px-4 py-3 text-[13px]",
-                "border border-line border-r-0",
-                "bg-bg text-ink-hi placeholder:text-mute",
-                "outline-none focus:border-ink-hi",
+                "border border-white/20 border-r-0 rounded-l-sm",
+                "bg-white/8 text-white placeholder:text-white/30",
+                "outline-none focus:border-brand",
                 "transition-colors duration-[120ms]"
               )}
             />
             <button
               type="submit"
               className={cn(
-                "px-5 py-3 text-[12.5px] font-medium",
-                "bg-ink-hi text-ink-inv border border-ink-hi",
-                "hover:bg-black transition-colors duration-[120ms]",
-                "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2",
-                "whitespace-nowrap cursor-pointer"
+                "px-5 py-3 text-[12.5px] font-semibold shrink-0",
+                "bg-brand text-white border border-brand rounded-r-sm",
+                "hover:bg-brand-deep hover:border-brand-deep",
+                "transition-colors duration-[120ms]",
+                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+                "cursor-pointer whitespace-nowrap"
               )}
             >
               {f.subscribeCta}
@@ -110,43 +128,41 @@ export function Footer() {
       </div>
 
       {/* ── Mobile: stacked ── */}
-      <div className="lg:hidden px-5 py-12">
-        <Link href="/" className="block text-[20px] font-medium tracking-[0.4em] pl-[0.4em] text-ink-hi mb-8">
-          AURA
+      <div className="lg:hidden px-5 pt-12 pb-8 border-b border-white/10">
+        <Link
+          href="/"
+          className="block mb-8 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs w-fit"
+          aria-label="Aura Coffee — strona główna"
+        >
+          <AuraMark size={24} color="white" />
         </Link>
 
         <div className="grid grid-cols-2 gap-8 mb-10">
-          <div>
-            <FooterHeading>{f.shopHeading}</FooterHeading>
-            <nav>
-              {SHOP_LINKS.map((l) => (
-                <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
-              ))}
-            </nav>
-          </div>
-          <div>
-            <FooterHeading>{f.companyHeading}</FooterHeading>
-            <nav>
-              {f.companyLinks.slice(0, 4).map((l) => (
-                <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
-              ))}
-            </nav>
-          </div>
+          {NAV_COLS.slice(0, 2).map((col) => (
+            <div key={col.heading}>
+              <FooterHeading>{col.heading}</FooterHeading>
+              <nav>
+                {col.links.map((l) => (
+                  <FooterLink key={l.href} href={l.href}>{l.label}</FooterLink>
+                ))}
+              </nav>
+            </div>
+          ))}
         </div>
 
         {/* Newsletter mobile */}
-        <div className="border-t border-line pt-8">
+        <div className="border-t border-white/10 pt-8">
           <FooterHeading>{f.newsletterHeading}</FooterHeading>
           <form onSubmit={(e) => e.preventDefault()} className="flex gap-0">
             <input
               type="email"
               placeholder={f.emailPlaceholder}
               aria-label="Adres e-mail"
-              className="flex-1 min-w-0 px-4 py-3 text-[13px] border border-line border-r-0 bg-bg text-ink-hi placeholder:text-mute outline-none focus:border-ink-hi transition-colors duration-[120ms]"
+              className="flex-1 min-w-0 px-4 py-3 text-[13px] border border-white/20 border-r-0 rounded-l-sm bg-white/8 text-white placeholder:text-white/30 outline-none focus:border-brand transition-colors duration-[120ms]"
             />
             <button
               type="submit"
-              className="px-4 py-3 text-[12.5px] font-medium bg-ink-hi text-ink-inv border border-ink-hi hover:bg-black transition-colors duration-[120ms] cursor-pointer"
+              className="px-4 py-3 text-[12.5px] font-semibold bg-brand text-white border border-brand rounded-r-sm hover:bg-brand-deep transition-colors duration-[120ms] cursor-pointer"
             >
               {f.subscribeMobileCta}
             </button>
@@ -155,16 +171,20 @@ export function Footer() {
       </div>
 
       {/* ── Legal bar ── */}
-      <div className="border-t border-line px-5 lg:px-14 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-        <p className="text-[11.5px] text-mute">
-          © {new Date().getFullYear()} Aura Coffee Roasters
+      <div className="px-5 lg:px-14 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+        <p
+          className="text-[11px] tracking-[0.06em] text-white/30"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          © {new Date().getFullYear()} Aura Coffee Roasters · Warszawa
         </p>
         <div className="flex gap-5">
           {f.legalLinks.map((label) => (
             <Link
               key={label}
               href="#"
-              className="text-[11.5px] text-mute hover:text-ink-hi transition-colors duration-[120ms]"
+              className="text-[11px] text-white/30 hover:text-white/60 transition-colors duration-[120ms]"
+              style={{ fontFamily: "var(--font-mono)" }}
             >
               {label}
             </Link>
