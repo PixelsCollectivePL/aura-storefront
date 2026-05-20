@@ -1,0 +1,197 @@
+/* AURA · design tokens — first direction, not yet a full system */
+
+:root {
+  /* Colour — warm, sensory, calm. All accents share chroma 0.14 */
+  --au-cream-50:    oklch(0.975 0.011 78);     /* paper */
+  --au-cream-100:   oklch(0.955 0.014 78);     /* default bg */
+  --au-cream-200:   oklch(0.918 0.018 76);     /* card / soft */
+  --au-cream-300:   oklch(0.860 0.020 74);     /* divider warm */
+  --au-stone-400:   oklch(0.700 0.014 70);     /* muted ui */
+  --au-stone-500:   oklch(0.560 0.012 65);     /* secondary text */
+  --au-ink-700:     oklch(0.330 0.013 55);     /* body */
+  --au-ink-900:     oklch(0.190 0.011 50);     /* headline, deep coffee */
+  --au-ink-1000:    oklch(0.130 0.010 50);     /* near-black accents */
+
+  --au-ember:       oklch(0.585 0.140 45);     /* primary accent · roasted orange */
+  --au-ember-deep:  oklch(0.485 0.140 40);     /* hover */
+  --au-cherry:      oklch(0.500 0.150 25);     /* tasting · fruit */
+  --au-moss:        oklch(0.520 0.080 130);    /* tasting · herbal */
+
+  /* Spacing — 4-base */
+  --au-1: 4px; --au-2: 8px; --au-3: 12px; --au-4: 16px;
+  --au-5: 20px; --au-6: 24px; --au-8: 32px; --au-10: 40px;
+  --au-12: 48px; --au-16: 64px; --au-20: 80px; --au-24: 96px;
+
+  /* Radii — small, intentional, not nadmuchane */
+  --au-r-xs: 2px;
+  --au-r-sm: 4px;
+  --au-r-md: 6px;
+  --au-r-lg: 10px;
+  --au-r-pill: 999px;
+
+  /* Type stacks */
+  --au-serif: "Instrument Serif", "Cormorant Garamond", "Times New Roman", serif;
+  --au-sans:  "Geist", "Söhne", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --au-mono:  "JetBrains Mono", "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  /* Shadows — barely there */
+  --au-shadow-sm: 0 1px 2px oklch(0.20 0.01 50 / .06);
+  --au-shadow-md: 0 6px 24px -8px oklch(0.20 0.01 50 / .12);
+  --au-shadow-lg: 0 18px 48px -12px oklch(0.20 0.01 50 / .18);
+
+  /* Motion — subtle, never showy */
+  --au-ease: cubic-bezier(.2,.7,.3,1);
+  --au-fast: 140ms;
+  --au-base: 220ms;
+}
+
+/* Reset within frames so design canvas styles don't bleed in */
+.au-frame, .au-frame * { box-sizing: border-box; }
+.au-frame {
+  font-family: var(--au-sans);
+  color: var(--au-ink-900);
+  background: var(--au-cream-100);
+  font-size: 14px;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Display & utility classes used across screens */
+.au-serif { font-family: var(--au-serif); font-weight: 400; letter-spacing: -0.02em; }
+.au-serif-it { font-family: var(--au-serif); font-style: italic; font-weight: 400; letter-spacing: -0.015em; }
+.au-mono  { font-family: var(--au-mono); font-weight: 400; letter-spacing: 0.04em; }
+.au-mono-up { font-family: var(--au-mono); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
+
+/* Buttons */
+.au-btn {
+  font-family: var(--au-sans);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  border: 0;
+  cursor: pointer;
+  border-radius: var(--au-r-sm);
+  padding: 16px 20px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background var(--au-fast) var(--au-ease), color var(--au-fast) var(--au-ease), transform var(--au-fast) var(--au-ease);
+  min-height: 48px;
+}
+.au-btn-primary { background: var(--au-ink-900); color: var(--au-cream-50); }
+.au-btn-primary:hover { background: var(--au-ink-1000); }
+.au-btn-ember { background: var(--au-ember); color: var(--au-cream-50); }
+.au-btn-ember:hover { background: var(--au-ember-deep); }
+.au-btn-ghost { background: transparent; color: var(--au-ink-900); border: 1px solid var(--au-cream-300); }
+.au-btn-ghost:hover { background: var(--au-cream-200); }
+.au-btn-sm { padding: 10px 14px; min-height: 36px; font-size: 12px; }
+
+/* Chips */
+.au-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 11px;
+  border-radius: var(--au-r-pill);
+  border: 1px solid var(--au-cream-300);
+  background: transparent;
+  font-family: var(--au-sans);
+  font-size: 12px;
+  color: var(--au-ink-700);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--au-fast) var(--au-ease);
+}
+.au-chip:hover { border-color: var(--au-ink-900); color: var(--au-ink-900); }
+.au-chip[data-active="true"] { background: var(--au-ink-900); color: var(--au-cream-50); border-color: var(--au-ink-900); }
+
+/* Tasting notes pill */
+.au-note {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px 5px 8px;
+  border-radius: var(--au-r-pill);
+  background: var(--au-cream-200);
+  font-family: var(--au-sans);
+  font-size: 11.5px;
+  color: var(--au-ink-700);
+  line-height: 1;
+}
+.au-note .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--au-ember); }
+.au-note.cherry .dot { background: var(--au-cherry); }
+.au-note.moss .dot   { background: var(--au-moss); }
+.au-note.ember .dot  { background: var(--au-ember); }
+
+/* Image slot fill the parent */
+.au-img-fill { width: 100%; height: 100%; display: block; }
+
+/* Hairline divider */
+.au-rule { height: 1px; background: var(--au-cream-300); border: 0; margin: 0; }
+
+/* Status-bar helper (mobile frames) */
+.au-status {
+  height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px 0 24px;
+  font-family: var(--au-sans);
+  font-size: 14px; font-weight: 600;
+  color: var(--au-ink-900);
+}
+.au-status .glyphs { display: inline-flex; gap: 6px; align-items: center; }
+.au-status .glyphs i {
+  display:inline-block; width: 18px; height: 11px; background: var(--au-ink-900);
+  mask: linear-gradient(#000,#000); -webkit-mask: linear-gradient(#000,#000);
+  border-radius: 2px;
+}
+.au-status .glyphs i.bars { width: 16px; height: 10px;
+  background:
+    linear-gradient(var(--au-ink-900),var(--au-ink-900)) 0 100%/3px 30% no-repeat,
+    linear-gradient(var(--au-ink-900),var(--au-ink-900)) 5px 100%/3px 55% no-repeat,
+    linear-gradient(var(--au-ink-900),var(--au-ink-900)) 10px 100%/3px 80% no-repeat,
+    linear-gradient(var(--au-ink-900),var(--au-ink-900)) 15px 100%/3px 100% no-repeat;
+}
+.au-status .glyphs i.wifi { width: 15px; height: 11px;
+  background:
+    radial-gradient(circle at 50% 100%, var(--au-ink-900) 1.5px, transparent 2px),
+    radial-gradient(circle at 50% 100%, transparent 4px, var(--au-ink-900) 4.5px, var(--au-ink-900) 5.5px, transparent 6px),
+    radial-gradient(circle at 50% 100%, transparent 7px, var(--au-ink-900) 7.5px, var(--au-ink-900) 8.5px, transparent 9px);
+}
+.au-status .glyphs i.bat { width: 24px; height: 11px;
+  background: linear-gradient(var(--au-ink-900), var(--au-ink-900));
+  border-radius: 3px;
+  position: relative;
+}
+
+/* Notepad / postit notes shown next to artboards */
+.au-notepad {
+  font-family: var(--au-sans);
+  background: oklch(0.97 0.04 95);
+  color: oklch(0.30 0.05 60);
+  padding: 18px 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.55;
+  width: 320px;
+  box-shadow: 0 4px 14px oklch(0.20 0.01 50 / .10);
+  border-left: 2px solid var(--au-ember);
+}
+.au-notepad h4 {
+  font-family: var(--au-mono);
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: oklch(0.40 0.06 55);
+  margin: 0 0 10px;
+}
+.au-notepad ul { margin: 0 0 10px; padding: 0 0 0 14px; }
+.au-notepad ul:last-child { margin-bottom: 0; }
+.au-notepad li { margin: 0 0 4px; }
+.au-notepad strong { color: var(--au-ink-900); font-weight: 600; }
+.au-notepad em { color: var(--au-ember-deep); font-style: normal; font-family: var(--au-mono); font-size: 11px; }
+.au-notepad .sub {
+  font-family: var(--au-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: oklch(0.55 0.04 60);
+  margin: 12px 0 6px;
+}

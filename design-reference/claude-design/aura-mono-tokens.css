@@ -1,0 +1,183 @@
+/* AURA v2 — mono direction. Pure B&W. No warm tones. Premium through proportion. */
+
+:root {
+  /* Greyscale — 5 stops */
+  --m-bg:        #FFFFFF;
+  --m-bg-soft:   #FAFAFA;   /* section bg, image placeholder */
+  --m-bg-soft-2: #F4F4F4;   /* card hover, panel */
+  --m-line:      #E8E8E8;   /* hairline border */
+  --m-line-2:    #D6D6D6;   /* stronger border (chip outline focus) */
+  --m-mute:      #9A9A9A;   /* meta text */
+  --m-mute-2:    #6E6E6E;   /* secondary text */
+  --m-ink:       #1A1A1A;   /* body */
+  --m-ink-hi:    #0A0A0A;   /* headlines, buttons */
+  --m-ink-inv:   #FFFFFF;
+
+  /* Status — only color in the system. Used as 4–6px dots / 1px underline only. */
+  --m-ok:    #2F7A4A;
+  --m-warn:  #7A5A2F;
+
+  /* Spacing — 4-base */
+  --m-1: 4px; --m-2: 8px; --m-3: 12px; --m-4: 16px;
+  --m-5: 20px; --m-6: 24px; --m-8: 32px; --m-10: 40px;
+  --m-12: 48px; --m-16: 64px; --m-20: 80px; --m-24: 96px;
+  --m-32: 128px;
+
+  /* Radii — zero by default. 2 for inputs, 0 for cards/buttons. */
+  --m-r-0: 0;
+  --m-r-xs: 2px;
+  --m-r-sm: 4px;
+  --m-r-pill: 999px;
+
+  /* Type */
+  --m-font: "Geist", "Söhne", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+  --m-font-num: "Geist", "Söhne", -apple-system, sans-serif;
+
+  --m-ease: cubic-bezier(.2,.7,.3,1);
+  --m-fast: 120ms;
+  --m-base: 200ms;
+}
+
+.m-frame, .m-frame * { box-sizing: border-box; }
+.m-frame {
+  font-family: var(--m-font);
+  color: var(--m-ink);
+  background: var(--m-bg);
+  font-size: 14px;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* Type utility classes */
+.m-display { font-weight: 500; letter-spacing: -0.035em; line-height: 0.96; color: var(--m-ink-hi); }
+.m-h1      { font-weight: 500; letter-spacing: -0.028em; line-height: 1.05; color: var(--m-ink-hi); }
+.m-h2      { font-weight: 500; letter-spacing: -0.022em; line-height: 1.1;  color: var(--m-ink-hi); }
+.m-h3      { font-weight: 500; letter-spacing: -0.014em; line-height: 1.18; color: var(--m-ink-hi); }
+.m-num     { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.m-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--m-mute-2); }
+.m-meta    { font-size: 11.5px; color: var(--m-mute-2); letter-spacing: 0; }
+.m-mute    { color: var(--m-mute-2); }
+
+/* Buttons */
+.m-btn {
+  font-family: var(--m-font);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.005em;
+  border: 0;
+  cursor: pointer;
+  border-radius: var(--m-r-0);
+  padding: 16px 22px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background var(--m-fast) var(--m-ease), color var(--m-fast) var(--m-ease), border-color var(--m-fast) var(--m-ease);
+  min-height: 48px;
+  white-space: nowrap;
+}
+.m-btn-primary { background: var(--m-ink-hi); color: var(--m-ink-inv); }
+.m-btn-primary:hover { background: #000; }
+.m-btn-primary:disabled { background: var(--m-line-2); color: var(--m-bg); cursor: not-allowed; }
+.m-btn-secondary { background: var(--m-bg); color: var(--m-ink-hi); border: 1px solid var(--m-ink-hi); }
+.m-btn-secondary:hover { background: var(--m-ink-hi); color: var(--m-ink-inv); }
+.m-btn-ghost { background: transparent; color: var(--m-ink-hi); border: 1px solid var(--m-line); }
+.m-btn-ghost:hover { border-color: var(--m-ink-hi); }
+.m-btn-sm { padding: 10px 14px; min-height: 36px; font-size: 12.5px; }
+.m-btn-lg { padding: 20px 28px; min-height: 60px; font-size: 15px; }
+
+/* Chip / pill */
+.m-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--m-r-pill);
+  border: 1px solid var(--m-line-2);
+  background: transparent;
+  font-family: var(--m-font);
+  font-size: 12.5px;
+  color: var(--m-ink);
+  cursor: pointer;
+  transition: all var(--m-fast) var(--m-ease);
+  white-space: nowrap;
+  min-height: 36px;
+}
+.m-chip:hover { border-color: var(--m-ink-hi); }
+.m-chip[data-active="true"] { background: var(--m-ink-hi); color: var(--m-ink-inv); border-color: var(--m-ink-hi); }
+
+/* Inputs */
+.m-input {
+  font-family: var(--m-font);
+  font-size: 14px;
+  padding: 16px 16px;
+  border: 1px solid var(--m-line);
+  border-radius: var(--m-r-0);
+  background: var(--m-bg);
+  color: var(--m-ink-hi);
+  width: 100%;
+  outline: none;
+  transition: border-color var(--m-fast);
+  min-height: 52px;
+}
+.m-input:focus { border-color: var(--m-ink-hi); }
+.m-input::placeholder { color: var(--m-mute); }
+
+/* Variant tile (size, grind cards) */
+.m-tile {
+  text-align: center;
+  padding: 14px 8px;
+  border: 1px solid var(--m-line);
+  background: var(--m-bg);
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 4px; align-items: center; justify-content: center;
+  transition: border-color var(--m-fast), background var(--m-fast);
+  min-height: 64px;
+}
+.m-tile:hover { border-color: var(--m-mute); }
+.m-tile[data-active="true"] { border-color: var(--m-ink-hi); background: var(--m-bg); border-width: 1px; box-shadow: inset 0 0 0 1px var(--m-ink-hi); }
+.m-tile[data-disabled="true"] { color: var(--m-mute); background: var(--m-bg-soft); cursor: not-allowed; position: relative; }
+.m-tile[data-disabled="true"]::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top right, transparent 49.6%, var(--m-line) 49.6%, var(--m-line) 50.4%, transparent 50.4%);
+}
+
+/* Hairline */
+.m-rule { height: 1px; background: var(--m-line); border: 0; }
+
+/* Image placeholder fill */
+.m-img-fill { width: 100%; height: 100%; display: block; }
+
+/* Notepad */
+.m-notepad {
+  font-family: var(--m-font);
+  background: #FFFCEC;
+  color: #4A3F1A;
+  padding: 18px 20px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.55;
+  width: 340px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+  border-left: 2px solid var(--m-ink-hi);
+}
+.m-notepad h4 {
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--m-ink-hi);
+  margin: 0 0 12px;
+}
+.m-notepad .sub {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A7838;
+  margin: 14px 0 6px;
+  font-weight: 500;
+}
+.m-notepad ul { margin: 0; padding: 0 0 0 14px; }
+.m-notepad li { margin: 0 0 4px; }
+.m-notepad strong { color: var(--m-ink-hi); font-weight: 600; }
+.m-notepad em { color: var(--m-ink-hi); font-style: normal; font-weight: 500; font-family: var(--m-font); }
+.m-notepad code { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 10.5px; background: rgba(0,0,0,0.04); padding: 1px 4px; border-radius: 2px; }

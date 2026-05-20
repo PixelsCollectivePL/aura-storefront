@@ -1,26 +1,207 @@
 @import "tailwindcss";
 
+/* ─── Aura CSS custom properties — runtime values ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --m-bg:        #FFFFFF;
+  --m-bg-soft:   #FAFAFA;
+  --m-bg-soft-2: #F4F4F4;
+  --m-line:      #E8E8E8;
+  --m-line-2:    #D6D6D6;
+  --m-mute:      #9A9A9A;
+  --m-mute-2:    #6E6E6E;
+  --m-ink:       #1A1A1A;
+  --m-ink-hi:    #0A0A0A;
+  --m-ink-inv:   #FFFFFF;
+  --m-ok:        #2F7A4A;
+  --m-warn:      #7A5A2F;
+  --m-ease:      cubic-bezier(.2,.7,.3,1);
+  --m-fast:      120ms;
+  --m-base:      200ms;
 }
 
+/* ─── Tailwind v4 theme tokens ─── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Font — resolved at runtime from next/font/google */
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  /* Colors — mono only, no accents */
+  --color-bg:        #FFFFFF;
+  --color-bg-soft:   #FAFAFA;
+  --color-bg-soft-2: #F4F4F4;
+  --color-line:      #E8E8E8;
+  --color-line-2:    #D6D6D6;
+  --color-mute:      #9A9A9A;
+  --color-mute-2:    #6E6E6E;
+  --color-ink:       #1A1A1A;
+  --color-ink-hi:    #0A0A0A;
+  --color-ink-inv:   #FFFFFF;
+  --color-ok:        #2F7A4A;
+  --color-warn:      #7A5A2F;
+
+  /* Border radius — squared brand, pill only for chips */
+  --radius:      0px;
+  --radius-none: 0px;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   0px;
+  --radius-lg:   0px;
+  --radius-xl:   0px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+
+  /* Shadows — only for temporary surfaces (drawers, popovers, toasts) */
+  --shadow-none:    none;
+  --shadow-drawer:  0 -16px 50px rgba(0,0,0,0.20);
+  --shadow-panel:  -16px 0 50px rgba(0,0,0,0.15);
+  --shadow-popover: 0 12px 32px rgba(0,0,0,0.10);
+  --shadow-toast:   0 8px 24px rgba(0,0,0,0.16);
+
+  /* Breakpoints */
+  --breakpoint-sm:  480px;
+  --breakpoint-md:  768px;
+  --breakpoint-lg:  1024px;
+  --breakpoint-xl:  1280px;
+  --breakpoint-2xl: 1440px;
+
+  /* Spacing extensions */
+  --spacing-15: 60px;
+  --spacing-18: 72px;
+  --spacing-22: 88px;
+  --spacing-26: 104px;
+  --spacing-30: 120px;
+
+  /* Transition timing */
+  --ease-out-soft: cubic-bezier(.2,.7,.3,1);
+}
+
+/* ─── Custom typography utilities (support responsive variants) ─── */
+
+@utility text-eyebrow {
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--m-mute-2);
+}
+
+@utility text-meta {
+  font-size: 11.5px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--m-mute-2);
+}
+
+@utility text-body-sm {
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+@utility text-body {
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+@utility text-body-lg {
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+@utility text-h3 {
+  font-size: 17px;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+@utility text-h3-lg {
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+@utility text-h2 {
+  font-size: 28px;
+  line-height: 1.1;
+  letter-spacing: -0.022em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+@utility text-h2-lg {
+  font-size: 44px;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+@utility text-h1 {
+  font-size: 48px;
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+@utility text-h1-lg {
+  font-size: 72px;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+@utility text-display {
+  font-size: 56px;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+@utility text-display-lg {
+  font-size: 96px;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  color: var(--m-ink-hi);
+}
+
+/* ─── Base layer ─── */
+@layer base {
+  *:focus {
+    outline: none;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  *:focus-visible {
+    outline: 2px solid var(--m-ink-hi);
+    outline-offset: 2px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    color: var(--m-ink);
+    background: var(--m-bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
