@@ -16,7 +16,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
-  const { addItem, openCart } = useCart();
+  const { addToCart, openCart } = useCart();
 
   return (
     <article className={cn("group", className)}>
@@ -75,7 +75,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                addItem(product);
+                addToCart(product);
                 openCart();
               }}
             >

@@ -22,7 +22,7 @@ interface ProductBuyBoxProps {
  * [shopify-ready]: swap mock addItem for Shopify cart mutation.
  */
 export function ProductBuyBox({ product }: ProductBuyBoxProps) {
-  const { addItem, openCart } = useCart();
+  const { addToCart, openCart } = useCart();
 
   const [selectedSize, setSelectedSize] = useState<SizeOption>(
     product.sizeOptions[0]
@@ -34,9 +34,8 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
   const [added, setAdded] = useState(false);
 
   function handleAddToCart() {
-    for (let i = 0; i < quantity; i++) {
-      addItem(product);
-    }
+    const variantTitle = `${selectedSize.label} · ${selectedGrind}`;
+    addToCart(product, variantTitle, quantity);
     setAdded(true);
     openCart();
     setTimeout(() => setAdded(false), 2000);

@@ -2,18 +2,18 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { useCart } from "@/lib/cart/cart-context";
+import { useCart, FREE_SHIPPING_THRESHOLD } from "@/lib/cart/cart-context";
 import { Icon } from "@/components/ui/Icon";
-import { IconButton, Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/Button";
 import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { CONTENT } from "@/lib/content/pl";
 import { cn, formatPrice } from "@/lib/utils";
 
 const { cart: c } = CONTENT;
-const FREE_SHIPPING_THRESHOLD = 150;
 
 export function CartDrawer() {
-  const { items, isOpen, count, subtotal, removeItem, updateQuantity, closeCart } = useCart();
+  const { lines, isOpen, count, subtotal, removeCartLine, updateCartLine, closeCart } =
+    useCart();
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export function CartDrawer() {
     <div className="fixed inset-0 z-50">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-ink-hi/40 cart-overlay-in"
+        className="absolute inset-0 bg-ink/50 cart-overlay-in"
         onClick={closeCart}
         aria-hidden="true"
       />
@@ -79,16 +79,19 @@ export function CartDrawer() {
         tabIndex={-1}
         className={cn(
           "absolute right-0 top-0 h-full w-full sm:w-[420px]",
-          "bg-bg shadow-panel flex flex-col",
+          "bg-paper shadow-panel flex flex-col",
           "cart-panel-in focus:outline-none"
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 lg:px-6 h-14 border-b border-line shrink-0">
-          <h2 className="text-h3 flex items-baseline gap-1.5">
+          <h2
+            className="font-extrabold text-[17px] leading-[1.1] tracking-[-0.02em] text-ink flex items-baseline gap-1.5"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
             {c.title}
             {count > 0 && (
-              <span className="text-[11.5px] font-normal text-mute-2 tabular-nums">
+              <span className="text-[11.5px] font-normal text-muted tabular-nums">
                 · {count}
               </span>
             )}
@@ -104,66 +107,82 @@ export function CartDrawer() {
         </div>
 
         {/* Body */}
-        {items.length === 0 ? (
+        {lines.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-            <span className="text-mute mb-4" aria-hidden="true">
+            <span className="text-muted mb-4" aria-hidden="true">
               <Icon.bag size={40} />
             </span>
-            <p className="text-h3 mb-1.5">{c.empty.heading}</p>
-            <p className="text-body-sm text-mute-2 mb-6">{c.empty.body}</p>
+            <p
+              className="font-extrabold text-[17px] leading-[1.1] tracking-[-0.02em] text-ink mb-1.5"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {c.empty.heading}
+            </p>
+            <p className="text-[13px] leading-[1.55] text-muted mb-6">{c.empty.body}</p>
             <Link
-              href="/shop"
+              href="/produkty"
               onClick={closeCart}
               className={cn(
-                "inline-flex items-center justify-center gap-2.5",
-                "font-medium text-[12.5px] leading-[1.55] px-3.5 py-2.5 min-h-9",
-                "bg-bg text-ink-hi border border-ink-hi",
-                "hover:bg-ink-hi hover:text-ink-inv transition-colors duration-[120ms]",
-                "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+                "inline-flex items-center justify-center",
+                "font-semibold text-[13px] px-5 h-10",
+                "rounded-pill bg-brand text-white border border-brand",
+                "hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms]",
+                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               )}
             >
               {c.empty.browseCta}
             </Link>
           </div>
         ) : (
-          <ul className="flex-1 overflow-y-auto px-5 lg:px-6">
-            {items.map((line) => (
-              <li
-                key={line.product.handle}
-                className="flex gap-3.5 py-5 border-b border-line"
-              >
-                <div className="w-16 h-20 bg-bg-soft shrink-0" aria-hidden="true" />
+          <ul className="flex-1 overflow-y-auto px-5 lg:px-6 divide-y divide-line">
+            {lines.map((line) => (
+              <li key={line.id} className="flex gap-3.5 py-5">
+                {/* Product image placeholder */}
+                <div
+                  className="w-16 h-20 rounded-md bg-paper-2 shrink-0"
+                  aria-hidden="true"
+                  style={{
+                    background: `repeating-linear-gradient(
+                      135deg,
+                      rgba(14,14,12,0.035) 0 5px,
+                      rgba(14,14,12,0) 5px 13px
+                    ), var(--aura-paper-2)`,
+                  }}
+                />
+
                 <div className="flex-1 min-w-0 flex flex-col">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[11.5px] leading-[1.4] text-mute-2">
-                        {c.lotPrefix} {line.product.lotCode}
-                      </p>
-                      <h3 className="text-h3 truncate">{line.product.shortName}</h3>
-                      <p className="text-[11.5px] leading-[1.4] text-mute-2 truncate">
-                        {line.product.origin}
+                      <h3
+                        className="font-extrabold text-[14px] leading-[1.2] tracking-[-0.01em] text-ink truncate"
+                        style={{ fontFamily: "var(--font-display)" }}
+                      >
+                        {line.title}
+                      </h3>
+                      <p className="text-[11.5px] leading-[1.4] text-muted mt-0.5">
+                        {line.variantTitle}
                       </p>
                     </div>
-                    <p className="text-[14px] font-medium text-ink-hi tabular-nums shrink-0">
-                      {formatPrice(
-                        line.product.price.amount * line.quantity,
-                        line.product.price.currencyCode
-                      )}
+                    <p className="text-[14px] font-semibold text-ink tabular-nums shrink-0">
+                      {formatPrice(line.price * line.quantity, line.currencyCode)}
                     </p>
                   </div>
+
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <QuantitySelector
                       value={line.quantity}
-                      onChange={(q) => updateQuantity(line.product.handle, q)}
+                      min={1}
+                      max={10}
+                      onChange={(q) => updateCartLine(line.id, q)}
                     />
                     <button
                       type="button"
-                      onClick={() => removeItem(line.product.handle)}
-                      aria-label={c.removeLabel(line.product.shortName)}
+                      onClick={() => removeCartLine(line.id)}
+                      aria-label={c.removeLabel(line.title)}
                       className={cn(
-                        "text-[11.5px] text-mute-2 underline underline-offset-4 cursor-pointer",
-                        "hover:text-ink-hi transition-colors duration-[120ms]",
-                        "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+                        "text-[11.5px] text-muted underline underline-offset-4 cursor-pointer",
+                        "hover:text-ink transition-colors duration-[120ms]",
+                        "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
                       )}
                     >
                       {c.remove}
@@ -176,14 +195,15 @@ export function CartDrawer() {
         )}
 
         {/* Footer */}
-        {items.length > 0 && (
+        {lines.length > 0 && (
           <div className="border-t border-line px-5 lg:px-6 py-5 shrink-0 space-y-4">
+            {/* Free shipping progress */}
             <div>
-              <p className="text-[11.5px] leading-[1.5] text-mute-2 mb-2">
+              <p className="text-[11.5px] leading-[1.5] text-muted mb-2">
                 {remaining > 0 ? (
                   <>
                     {c.freeShipping.remainingPrefix}{" "}
-                    <span className="text-ink-hi font-medium">
+                    <span className="text-ink font-medium">
                       {formatPrice(remaining)}
                     </span>{" "}
                     {c.freeShipping.remainingSuffix}
@@ -192,25 +212,36 @@ export function CartDrawer() {
                   c.freeShipping.unlocked
                 )}
               </p>
-              <div className="h-1 bg-bg-soft-2" aria-hidden="true">
+              <div className="h-1 bg-paper-2 rounded-full overflow-hidden" aria-hidden="true">
                 <div
-                  className="h-full bg-ink-hi transition-[width] duration-[200ms]"
+                  className="h-full bg-brand rounded-full transition-[width] duration-[300ms] ease-out"
                   style={{ width: `${progress}%` }}
                 />
               </div>
             </div>
 
+            {/* Subtotal */}
             <div className="flex items-center justify-between">
-              <span className="text-body text-mute-2">{c.subtotalLabel}</span>
-              <span className="text-[15px] font-medium text-ink-hi tabular-nums">
+              <span className="text-[13px] text-muted">{c.subtotalLabel}</span>
+              <span className="text-[15px] font-semibold text-ink tabular-nums">
                 {formatPrice(subtotal)}
               </span>
             </div>
 
-            <Button variant="primary" size="lg" className="w-full" disabled>
+            {/* Checkout CTA */}
+            <button
+              type="button"
+              disabled
+              className={cn(
+                "w-full h-14 inline-flex items-center justify-center",
+                "rounded-pill text-[15px] font-semibold tracking-[-0.005em]",
+                "bg-brand text-white border border-brand",
+                "opacity-60 cursor-not-allowed"
+              )}
+            >
               {c.checkoutCta}
-            </Button>
-            <p className="text-[11px] leading-[1.5] text-mute text-center">
+            </button>
+            <p className="text-[11px] leading-[1.5] text-muted text-center">
               {c.checkoutNote}
             </p>
           </div>
