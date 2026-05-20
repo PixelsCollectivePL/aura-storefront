@@ -48,19 +48,10 @@ export function Header() {
       >
         {/* ── Desktop ── */}
         <div className="hidden lg:flex items-center h-[72px] px-14 relative">
-          {/* Logo — left */}
-          <Link
-            href="/"
-            className="shrink-0 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
-            aria-label="Aura Coffee — strona główna"
-          >
-            <AuraMark size={26} color="var(--aura-ink)" />
-          </Link>
-
-          {/* Nav — centered */}
+          {/* Nav — left */}
           <nav
             aria-label="Nawigacja główna"
-            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-7"
+            className="flex items-center gap-7"
           >
             {NAV_ITEMS.map((item) => {
               const isActive =
@@ -85,6 +76,15 @@ export function Header() {
               );
             })}
           </nav>
+
+          {/* Logo — centred (absolute so it stays true-centre regardless of nav/actions widths) */}
+          <Link
+            href="/"
+            className="absolute left-1/2 -translate-x-1/2 shrink-0 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
+            aria-label="Aura Coffee — strona główna"
+          >
+            <AuraMark size={26} color="var(--aura-ink)" />
+          </Link>
 
           {/* Actions — right */}
           <div className="ml-auto flex items-center gap-0.5">
