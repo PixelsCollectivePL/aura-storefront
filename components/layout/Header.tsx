@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/Button";
 import { useCart } from "@/lib/cart/cart-context";
+import { MobileMenu } from "@/components/layout/MobileMenu";
 import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
 
@@ -19,8 +21,10 @@ const NAV_ITEMS = [
 
 export function Header() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
+    <>
     <header className="border-b border-line bg-bg sticky top-0 z-40">
       {/* ── Desktop ── */}
       <div className="hidden lg:flex items-center h-[72px] px-14 relative">
@@ -66,7 +70,12 @@ export function Header() {
 
       {/* ── Mobile ── */}
       <div className="flex lg:hidden items-center h-14 px-4 relative">
-        <IconButton aria-label="Otwórz menu" size={36}>
+        <IconButton
+          aria-label="Otwórz menu"
+          aria-expanded={menuOpen}
+          size={36}
+          onClick={() => setMenuOpen(true)}
+        >
           <Icon.menu size={22} />
         </IconButton>
 
@@ -85,6 +94,9 @@ export function Header() {
         </div>
       </div>
     </header>
+
+    <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+    </>
   );
 }
 

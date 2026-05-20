@@ -193,6 +193,15 @@
   animation: aura-panel-in 280ms var(--m-ease) both;
 }
 
+@keyframes aura-menu-in {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@utility menu-panel-in {
+  animation: aura-menu-in 280ms var(--m-ease) both;
+}
+
 /* ─── Base layer ─── */
 @layer base {
   *:focus {

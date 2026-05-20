@@ -200,6 +200,22 @@ export const CONTENT = {
       "Płatności dostępne w kolejnym etapie. Wysyłka naliczana przy kasie.",
   },
 
+  mobileMenu: {
+    closeLabel: "Zamknij menu",
+    navItems: [
+      { label: "Sklep",    sub: "6 kaw w tym sezonie",    href: "/shop" },
+      { label: "O nas",    sub: "Nasza historia · Palarnia", href: "/about" },
+      { label: "Parzenie", sub: "Przewodniki · metody",    href: "/brewing" },
+      { label: "Journal",  sub: "Nowe wpisy co tydzień",   href: "/journal" },
+    ],
+    account: "Konto",
+    basket: "Koszyk",
+    basketCount: (n: number): string =>
+      n === 1 ? "1 produkt" : n >= 2 && n <= 4 ? `${n} produkty` : `${n} produktów`,
+    locale: "PL · PLN",
+    city: "Warszawa",
+  },
+
   pdp: {
     breadcrumb: {
       home: "Strona główna",
