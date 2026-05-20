@@ -291,14 +291,15 @@ export const CONTENT = {
     decreaseQty: "Zmniejsz ilość",
     increaseQty: "Zwiększ ilość",
     qty: "Ilość",
-    categoryLabels: {
-      espresso: "Espresso",
-      filter: "Filtrowe",
-      blend: "Blend",
-      decaf: "Decaf",
-      "single-origin": "Single origin",
-      default: "Kawa",
-    } as Record<string, string>,
+    getCategoryLabel: (tags?: string[]): string => {
+      if (!tags) return "Kawa";
+      if (tags.includes("espresso")) return "Espresso";
+      if (tags.includes("filter")) return "Filtrowe";
+      if (tags.includes("blend")) return "Blend";
+      if (tags.includes("decaf")) return "Decaf";
+      if (tags.includes("single-origin")) return "Single origin";
+      return "Kawa";
+    },
   },
 
   product: {

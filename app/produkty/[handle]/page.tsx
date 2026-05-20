@@ -25,15 +25,8 @@ function getRoastLevel(roastLevel: string): number {
   return 3;
 }
 
-/** Derive readable category label from product tags. */
-function getCategoryLabel(tags?: string[]): string {
-  if (!tags) return t.categoryLabels.default;
-  const order = ["espresso", "filter", "blend", "decaf", "single-origin"] as const;
-  for (const key of order) {
-    if (tags.includes(key)) return t.categoryLabels[key] ?? t.categoryLabels.default;
-  }
-  return t.categoryLabels.default;
-}
+/** Derive readable category label from product tags — delegates to content helper. */
+const getCategoryLabel = t.getCategoryLabel;
 
 /** Accent colour per product (warm palette, no Shopify metafield yet). */
 const ACCENT_PALETTE = [
