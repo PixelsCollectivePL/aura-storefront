@@ -200,6 +200,45 @@ export const CONTENT = {
       "Płatności dostępne w kolejnym etapie. Wysyłka naliczana przy kasie.",
   },
 
+  pdp: {
+    breadcrumb: {
+      home: "Strona główna",
+      shop: "Sklep",
+    },
+    eyebrow: (lotCode: string): string => `${lotCode} · Single origin`,
+    tastingLabel: "Nuty smakowe",
+    grindLabel: "01 — Mielenie",
+    grindHint: "Mielone rano w dniu wysyłki — nigdy wcześniej.",
+    sizeLabel: "02 — Gramatura",
+    addToCartSimple: "Dodaj do koszyka",
+    specs: {
+      roast: "Palenie",
+      process: "Proces",
+      altitude: "Wysokość",
+    },
+    trust: [
+      "Darmowa dostawa od 150 zł",
+      "Wysyłka w ciągu 72 h od palenia",
+      "30-dniowa obietnica świeżości",
+    ],
+    profileHeading: "Profil",
+    brewingHeading: "— Parzenie",
+    brewingSubheading: "Jak to parzę.",
+    freshnessLabel: "Obietnica świeżości",
+    freshnessBody:
+      "Palone w środy, wysyłane w ciągu 72 godzin. Jeśli kawa dotrze nie w formie, wymieniamy ją — bez pytań, bez formularzy.",
+    similarHeading: "Podobne kawy",
+    similarEyebrow: (name: string): string => `Jeśli lubisz ${name}`,
+    specTable: {
+      country: "Kraj / Blend",
+      producer: "Producent",
+      varietal: "Odmiana",
+      process: "Proces",
+      altitude: "Wysokość",
+      roast: "Palenie",
+    },
+  },
+
   meta: {
     siteTitle: "Aura Coffee Roasters",
     siteDescription:
