@@ -2,6 +2,9 @@
 
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/utils";
+import { CONTENT } from "@/lib/content/pl";
+
+const { decreaseQty, increaseQty, qty: qtyLabel } = CONTENT.pdp;
 
 interface QuantitySelectorProps {
   value: number;
@@ -23,60 +26,50 @@ export function QuantitySelector({
 
   return (
     <div
-      className={cn("inline-flex items-center border border-line", className)}
+      className={cn(
+        "inline-flex items-center rounded-pill border border-line overflow-hidden",
+        className
+      )}
       role="group"
-      aria-label="Quantity"
+      aria-label={qtyLabel}
     >
       <button
         type="button"
         onClick={decrease}
         disabled={value <= min}
-        aria-label="Decrease quantity"
+        aria-label={decreaseQty}
         className={cn(
           "flex items-center justify-center w-11 h-11",
-          "text-ink-hi bg-transparent border-0 cursor-pointer",
+          "text-ink bg-transparent cursor-pointer",
           "transition-colors duration-[120ms]",
-          "hover:bg-bg-soft",
-          "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-[-2px]",
-          "disabled:text-mute disabled:cursor-not-allowed"
+          "hover:bg-paper-2",
+          "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-[-2px]",
+          "disabled:text-muted disabled:cursor-not-allowed"
         )}
       >
         <Icon.minus size={16} />
       </button>
 
-      <input
-        type="number"
-        inputMode="numeric"
-        value={value}
-        min={min}
-        max={max}
-        onChange={(e) => {
-          const v = parseInt(e.target.value, 10);
-          if (!isNaN(v)) onChange(Math.min(max, Math.max(min, v)));
-        }}
-        aria-label="Quantity value"
-        className={cn(
-          "w-10 h-11 text-center",
-          "text-[14px] font-medium text-ink-hi tabular-nums",
-          "bg-transparent border-0 border-x border-line",
-          "outline-none appearance-none",
-          "[&::-webkit-inner-spin-button]:appearance-none",
-          "[&::-webkit-outer-spin-button]:appearance-none"
-        )}
-      />
+      <span
+        className="w-10 text-center text-[14px] font-semibold text-ink tabular-nums select-none"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {value}
+      </span>
 
       <button
         type="button"
         onClick={increase}
         disabled={value >= max}
-        aria-label="Increase quantity"
+        aria-label={increaseQty}
         className={cn(
           "flex items-center justify-center w-11 h-11",
-          "text-ink-hi bg-transparent border-0 cursor-pointer",
+          "text-ink bg-transparent cursor-pointer",
           "transition-colors duration-[120ms]",
-          "hover:bg-bg-soft",
-          "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-[-2px]",
-          "disabled:text-mute disabled:cursor-not-allowed"
+          "hover:bg-paper-2",
+          "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-[-2px]",
+          "disabled:text-muted disabled:cursor-not-allowed"
         )}
       >
         <Icon.plus size={16} />

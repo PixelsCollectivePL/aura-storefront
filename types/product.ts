@@ -24,6 +24,7 @@ export interface Product {
   handle: string;
   title: string;
   shortName: string;
+  description?: string;
   origin: string;
   notes: string[];
   lotCode: string;
@@ -33,6 +34,7 @@ export interface Product {
   altitude?: string;
   varietal?: string;
   producer?: string;
+  harvestYear?: string;
   recommendedBrew?: string;
   brewing?: BrewingRecipe[];
   availableForSale: boolean;

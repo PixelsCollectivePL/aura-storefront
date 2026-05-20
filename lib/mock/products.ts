@@ -5,6 +5,8 @@ export const MOCK_PRODUCTS: Product[] = [
     handle: "one",
     title: "Aura ONE — Ethiopia Yirgacheffe",
     shortName: "ONE",
+    description:
+      "Jasne, kwiatowe, zaskakująco owocowe. Yirgacheffe to kwintesencja etiopskiej kawy filtrowej — myty proces wydobywa z ziaren bergamotkę i wiśnię, zostawiając długie, herbacianie czyste zakończenie. Idealna do V60 rano.",
     origin: "Ethiopia · Yirgacheffe",
     notes: ["cherry", "jasmine", "bergamot"],
     lotCode: "001",
@@ -30,11 +32,14 @@ export const MOCK_PRODUCTS: Product[] = [
     ],
     images: [{ src: "", alt: "Aura ONE — Ethiopia Yirgacheffe" }],
     tags: ["filter", "single-origin", "light"],
+    harvestYear: "2024",
   },
   {
     handle: "two",
     title: "Aura TWO — Colombia Huila",
     shortName: "TWO",
+    description:
+      "Balans w czystej postaci. Huila to region znany z łagodnych, owocowych kaw o naturalnej słodkości. Obróbka naturalna dodaje głębi — kakao i śliwka budują ciało, migdał wydłuża zakończenie. Działa zarówno jako espresso, jak i na filtrze.",
     origin: "Colombia · Huila",
     notes: ["cocoa", "plum", "almond"],
     lotCode: "002",
@@ -59,11 +64,14 @@ export const MOCK_PRODUCTS: Product[] = [
     ],
     images: [{ src: "", alt: "Aura TWO — Colombia Huila" }],
     tags: ["filter", "espresso", "single-origin", "medium"],
+    harvestYear: "2024",
   },
   {
     handle: "three",
     title: "Aura THREE — House Blend",
     shortName: "THREE",
+    description:
+      "Nasz authorski blend do codziennego espresso. Łączymy Brazylię z Etiopią tak, żeby kawa działała w każdej metodzie i o każdej porze — orzechowa słodycz, brązowy cukier, figowe tło. Sprawdzona przez tysiące kubków.",
     origin: "House blend",
     notes: ["hazelnut", "brown sugar", "fig"],
     lotCode: "003",
@@ -86,11 +94,14 @@ export const MOCK_PRODUCTS: Product[] = [
     ],
     images: [{ src: "", alt: "Aura THREE — House Blend" }],
     tags: ["espresso", "blend", "medium-dark"],
+    harvestYear: "2024",
   },
   {
     handle: "four",
     title: "Aura FOUR — Kenya Nyeri",
     shortName: "FOUR",
+    description:
+      "Kenia Nyeri to jedna z najbardziej złożonych kaw na świecie. Myta obróbka i bogate gleby wulkaniczne dają intensywne czarne porzeczki, cytrynową kwasowość i słodowy finisz. Polecamy jako filtr — najlepiej Chemex lub kalita.",
     origin: "Kenya · Nyeri",
     notes: ["blackcurrant", "citrus", "malt"],
     lotCode: "004",
@@ -114,11 +125,14 @@ export const MOCK_PRODUCTS: Product[] = [
     ],
     images: [{ src: "", alt: "Aura FOUR — Kenya Nyeri" }],
     tags: ["filter", "single-origin", "light"],
+    harvestYear: "2024",
   },
   {
     handle: "five",
     title: "Aura FIVE — Espresso Blend",
     shortName: "FIVE",
+    description:
+      "Klasyczne ciemne espresso bez kompromisów. Mieszanka Brazylii z Gwatemalą daje ciemną czekoladę, karmel i orzechy włoskie w jednym sycącym sorbecie. Doskonałe pod moka, espresso lub jako baza do flat white.",
     origin: "Espresso blend",
     notes: ["dark chocolate", "caramel", "walnut"],
     lotCode: "005",
@@ -140,11 +154,14 @@ export const MOCK_PRODUCTS: Product[] = [
     ],
     images: [{ src: "", alt: "Aura FIVE — Espresso Blend" }],
     tags: ["espresso", "blend", "dark"],
+    harvestYear: "2024",
   },
   {
     handle: "six",
     title: "Aura SIX — Guatemala Decaf",
     shortName: "SIX",
+    description:
+      "Decaf, który nie wygląda jak decaf. Metoda Swiss Water zachowuje pełne ciało i naturalne nuty kawy — toffi, suszone owoce i cedrowe ciepło. Na każdą metodę, o każdej porze dnia. Dla tych, którzy kochają kawę, nie kofeinę.",
     origin: "Guatemala · Huehuetenango",
     notes: ["toffee", "dried fruit", "cedar"],
     lotCode: "006",
@@ -169,6 +186,7 @@ export const MOCK_PRODUCTS: Product[] = [
     ],
     images: [{ src: "", alt: "Aura SIX — Guatemala Decaf" }],
     tags: ["filter", "espresso", "decaf", "single-origin"],
+    harvestYear: "2024",
   },
 ];
 

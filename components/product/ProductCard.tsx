@@ -21,7 +21,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   return (
     <article className={cn("group", className)}>
       <Link
-        href={`/shop/${product.handle}`}
+        href={`/produkty/${product.handle}`}
         className="block focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-md"
       >
         {/* Image area */}
