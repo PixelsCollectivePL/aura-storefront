@@ -291,15 +291,6 @@ export const CONTENT = {
     decreaseQty: "Zmniejsz ilość",
     increaseQty: "Zwiększ ilość",
     qty: "Ilość",
-    getCategoryLabel: (tags?: string[]): string => {
-      if (!tags) return "Kawa";
-      if (tags.includes("espresso")) return "Espresso";
-      if (tags.includes("filter")) return "Filtrowe";
-      if (tags.includes("blend")) return "Blend";
-      if (tags.includes("decaf")) return "Decaf";
-      if (tags.includes("single-origin")) return "Single origin";
-      return "Kawa";
-    },
   },
 
   product: {
@@ -530,3 +521,19 @@ export const CONTENT = {
       "Kawa speciality palona w małych partiach co środę w Warszawie. Wysyłamy w ciągu 72 godzin od palenia.",
   },
 };
+
+// ── Standalone helpers ─────────────────────────────────────────────────
+// Exported as named functions (not inside CONTENT) to guarantee correct
+// TypeScript inference — nested function literals in object literals can
+// confuse TS strict-mode type narrowing.
+
+/** Returns a readable Polish category label for a product's tag list. */
+export function getCategoryLabel(tags?: string[]): string {
+  if (!tags) return "Kawa";
+  if (tags.includes("espresso")) return "Espresso";
+  if (tags.includes("filter")) return "Filtrowe";
+  if (tags.includes("blend")) return "Blend";
+  if (tags.includes("decaf")) return "Decaf";
+  if (tags.includes("single-origin")) return "Single origin";
+  return "Kawa";
+}

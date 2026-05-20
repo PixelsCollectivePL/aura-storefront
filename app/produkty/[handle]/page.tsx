@@ -7,7 +7,7 @@ import { Starburst } from "@/components/brand/Starburst";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductBuyBox } from "@/components/product/ProductBuyBox";
 import { Icon } from "@/components/ui/Icon";
-import { CONTENT } from "@/lib/content/pl";
+import { CONTENT, getCategoryLabel } from "@/lib/content/pl";
 import { formatPrice, cn } from "@/lib/utils";
 
 const { pdp: t } = CONTENT;
@@ -25,8 +25,7 @@ function getRoastLevel(roastLevel: string): number {
   return 3;
 }
 
-/** Derive readable category label from product tags — delegates to content helper. */
-const getCategoryLabel = t.getCategoryLabel;
+// getCategoryLabel imported directly from @/lib/content/pl (named export)
 
 /** Accent colour per product (warm palette, no Shopify metafield yet). */
 const ACCENT_PALETTE = [
