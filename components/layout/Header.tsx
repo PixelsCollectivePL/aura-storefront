@@ -9,6 +9,8 @@ import { AuraMark } from "@/components/brand/AuraMark";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { useCart } from "@/lib/cart/cart-context";
+// [shopify-ready]: swap MOCK_PRODUCTS for a Shopify products array or useSearch hook
+import { MOCK_PRODUCTS } from "@/lib/mock/products";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -132,7 +134,7 @@ export function Header() {
       </header>
 
       <MobileMenu    isOpen={menuOpen}   onClose={() => setMenuOpen(false)} />
-      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} products={MOCK_PRODUCTS} />
     </>
   );
 }

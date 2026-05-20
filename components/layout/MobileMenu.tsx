@@ -5,16 +5,10 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart/cart-context";
 import { Icon } from "@/components/ui/Icon";
 import { AuraMark } from "@/components/brand/AuraMark";
+import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
 
-const NAV_ITEMS = [
-  { label: "Produkty", sub: "Kawy single origin i blendy",   href: "/produkty" },
-  { label: "Blendy",   sub: "Nasze stałe zestawy",           href: "/blendy" },
-  { label: "O marce",  sub: "Historia i wartości Aury",      href: "/o-marce" },
-  { label: "Palarnia", sub: "Jak palimy · środy w Warszawie", href: "/palarnia" },
-  { label: "FAQ",      sub: "Dostawa, zwroty, świeżość",     href: "/faq" },
-  { label: "Kontakt",  sub: "hello@aura.coffee",             href: "/kontakt" },
-];
+const m = CONTENT.mobileMenu;
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -70,6 +64,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   if (!isOpen) return null;
 
+  const cartCountLabel =
+    count === 1
+      ? "1 produkt"
+      : count >= 2 && count <= 4
+      ? `${count} produkty`
+      : `${count} produktów`;
+
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
       {/* Overlay */}
@@ -104,7 +105,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <button
             type="button"
             data-close
-            aria-label="Zamknij menu"
+            aria-label={m.closeLabel}
             onClick={onClose}
             className={cn(
               "flex items-center justify-center w-9 h-9",
@@ -120,7 +121,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         {/* Main nav */}
         <nav aria-label="Menu główne" className="flex-1 overflow-y-auto px-5 pt-1">
           <ol>
-            {NAV_ITEMS.map((item, i) => (
+            {m.navItems.map((item, i) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -168,14 +169,17 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             >
               <span className="flex items-center gap-2.5">
                 <Icon.account size={17} />
-                Konto
+                {m.account}
               </span>
               <Icon.chevRight size={14} className="text-white/30" />
             </button>
 
             <button
               type="button"
-              onClick={() => { onClose(); openCart(); }}
+              onClick={() => {
+                onClose();
+                openCart();
+              }}
               className={cn(
                 "flex items-center justify-between py-3",
                 "text-[13.5px] text-white/50 cursor-pointer hover:text-white",
@@ -185,11 +189,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             >
               <span className="flex items-center gap-2.5">
                 <Icon.bag size={17} />
-                Koszyk
+                {m.basket}
               </span>
               {count > 0 && (
                 <span className="text-[11px] text-white/40 tabular-nums">
-                  {count === 1 ? "1 produkt" : count >= 2 && count <= 4 ? `${count} produkty` : `${count} produktów`}
+                  {cartCountLabel}
                 </span>
               )}
             </button>
@@ -218,13 +222,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               className="text-[10px] tracking-[0.1em] text-white/30"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              PL · PLN
+              {m.locale}
             </span>
             <span
               className="text-[10px] tracking-[0.1em] text-white/30"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              Warszawa
+              {m.city}
             </span>
           </div>
         </div>

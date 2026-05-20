@@ -476,6 +476,18 @@ export const CONTENT = {
     city: "Warszawa",
   },
 
+  search: {
+    label: "Wyszukaj",
+    placeholder: "Szukaj kaw, nut smakowych, origin…",
+    closeLabel: "Zamknij wyszukiwanie",
+    popularHeading: "Popularne",
+    popularTerms: ["Espresso", "Filtr", "Etiopia", "Brazylia", "Kolumbia", "Decaf"],
+    resultsHeading: "Wyniki",
+    emptyHeading: "Brak wyników",
+    emptyBody: "Spróbuj innej frazy — np. „espresso", „Etiopia" albo „wiśnia".",
+    lotPrefix: "Lot",
+  },
+
   meta: {
     siteTitle: "Aura Coffee Roasters",
     siteDescription:
