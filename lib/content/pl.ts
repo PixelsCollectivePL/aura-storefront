@@ -200,6 +200,138 @@ export const CONTENT = {
       "Płatności dostępne w kolejnym etapie. Wysyłka naliczana przy kasie.",
   },
 
+  about: {
+    meta: {
+      title: "O nas",
+      description: "Dwuosobowa mikropalarnia w Warszawie. Palimy speciality coffee na 5 kg bębnie każdą środę.",
+    },
+    eyebrow: "— O nas",
+    heroHeading: ["Sześć lotów.", "Jedna mała", "palarnia."],
+    heroSubtext:
+      "Aura to dwuosobowe studio w Warszawie. Palimy speciality coffee na 5 kg bębnie każdą środę i wysyłamy przed piątkiem. Nic, co od nas wychodzi, nie jest starsze niż tydzień.",
+    storyEyebrow: "— Historia",
+    storyLead:
+      "Zaczęliśmy Aurę w 2024, bo chcieliśmy, żeby kawa, którą pijemy w domu, smakowała jak to, co robiliśmy przez lata za barem.",
+    storyParagraphs: [
+      "Większość kawy na polskich półkach ma dwa miesiące od palenia, gdy trafia do ekspresu. Stwierdziliśmy, że możemy robić to lepiej — w małej skali, gdzie każda paczka jest przypisana do konkretnej środy i nazwiska.",
+      "Sześć lotów to właściwa liczba dla nas. Wystarczająca różnorodność, żeby poczuć świat. Na tyle mała, że znamy każdego plantatora osobiście i palimy każdy profil, dopóki nie brzmi jak powinien.",
+      "Aura to nie firma kawowa. To palarnia — jeden bęben, dwie osoby i lista farmerów, które odwiedzamy każde żniwa.",
+    ],
+    statsEyebrow: "Liczby",
+    stats: [
+      { n: "06", l: "Aktywnych lotów" },
+      { n: "72h", l: "Od palenia do wysyłki" },
+      { n: "5 kg", l: "Pojemność bębna" },
+      { n: "2024", l: "Palimy od" },
+    ],
+    peopleEyebrow: "Nas dwoje",
+    peopleHeading: "Palarnia to jej ludzie.",
+    people: [
+      {
+        name: "Marta",
+        role: "Head roaster · założycielka",
+        bio: "Za bębnem każdą środę od pierwszego dnia. Wcześniej head barista w Coffeedesk, Q-grader od 2019 roku.",
+      },
+      {
+        name: "Tomasz",
+        role: "Sourcing · założyciel",
+        bio: "Odwiedza każdą farmę, od której kupujemy. Pisze nasze raporty o originach i redaguje journal. Uważa, że dobra kawa jest opłacona u plantatora, nie przy kasie.",
+      },
+    ],
+    originsEyebrow: "Skąd pochodzi",
+    originsHeading: "Sześć farm, trzy kontynenty.",
+    origins: [
+      ["Etiopia", "Konga · Yirgacheffe"],
+      ["Kolumbia", "La Esperanza · Huila"],
+      ["Kenia", "Tegu · Nyeri"],
+      ["Brazylia", "Fazenda Rainha · decaf"],
+    ] as [string, string][],
+    visitEyebrow: "— Odwiedź nas",
+    visitHeading: "Przyjedź do palarni.",
+    visitBody:
+      "Otwarte środa–sobota, 10:00–17:00. Wejdź, spróbuj co stoi na stole do cuppingu, wyjdź z paczką, którą widziałeś wychodzącą z bębna.",
+    visitAddress: "ul. Targowa 22 · 03-734 Warszawa",
+    visitCta: "Jak dojechać",
+  },
+
+  help: {
+    meta: {
+      title: "Pomoc",
+      description: "Dostawa, zwroty i odpowiedzi na najczęstsze pytania.",
+    },
+    eyebrow: "— Pomoc",
+    headingL1: "Dostawa, zwroty",
+    headingL2: "i mała czcionka.",
+    subtext:
+      "Wszystko, czego możesz potrzebować. Jeśli nie znajdziesz odpowiedzi — odpisujemy na maile w ciągu dnia roboczego.",
+    emailCta: "Napisz do nas",
+    trustItems: [
+      { t: "Darmowa od 150 zł", s: "Polska · InPost · 2–3 dni" },
+      { t: "Wysyłka w 72 h", s: "Od daty palenia" },
+      { t: "30-dniowy zwrot", s: "Nieotwarte paczki · pełny zwrot" },
+      { t: "Klarna · 3 raty", s: "0% prowizji, w koszyku" },
+    ],
+    topics: [
+      { label: "Wysyłka", count: "03", href: "#shipping" },
+      { label: "Zwroty", count: "02", href: "#returns" },
+      { label: "Świeżość", count: "02", href: "#freshness" },
+    ],
+    sections: [
+      {
+        id: "shipping",
+        label: "01 — Wysyłka",
+        items: [
+          {
+            q: "Kiedy wyślecie moje zamówienie?",
+            a: "Palimy w środy i wysyłamy w ciągu 72 godzin od palenia. Zamów przed południem w środę na wysyłkę w tym samym tygodniu — późniejsze zamówienia wysyłamy w kolejną środę.",
+            defaultOpen: true,
+          },
+          {
+            q: "Ile kosztuje dostawa?",
+            a: "Polska: darmowa powyżej 150 zł, inaczej 14 zł (InPost paczkomat) lub 18 zł (kurier). UE: 28 zł, 4–6 dni roboczych. Inne kraje: napisz do nas po wycenę.",
+          },
+          {
+            q: "Czy mogę śledzić przesyłkę?",
+            a: "Tak — numer śledzenia wysyłamy mailem w momencie odbioru paczki przez kuriera.",
+          },
+        ],
+      },
+      {
+        id: "returns",
+        label: "02 — Zwroty",
+        items: [
+          {
+            q: "Czy mogę zwrócić kawę?",
+            a: "Tak. Nieotwarte paczki w ciągu 30 dni — pełny zwrot. W przypadku otwartych paczek: napisz na hello@aura.coffee, rozwiążemy problem.",
+          },
+          {
+            q: "Co, jeśli kawa dotrze nieświeża?",
+            a: "To nie powinno się zdarzyć — ale jeśli tak będzie, wymieniamy paczkę bez pytań i bez formularzy. Wyślij nam zdjęcie worka z widoczną datą palenia.",
+          },
+        ],
+      },
+      {
+        id: "freshness",
+        label: "03 — Świeżość",
+        items: [
+          {
+            q: "Kiedy kawa jest 'świeża'?",
+            a: "Speciality coffee jest w najlepszej formie między 7. a 30. dniem od palenia. Wysyłamy w ciągu 72 godzin od bębna, więc masz cały przedział, żeby się nią cieszyć.",
+          },
+          {
+            q: "Jak przechowywać kawę?",
+            a: "W oryginalnym worecku z zaworem, zapiętym, w temperaturze pokojowej. Unikaj lodówki. Przelej do hermetycznego pojemnika tylko po otwarciu — i tylko jeśli skończysz w ciągu tygodnia.",
+          },
+        ],
+      },
+    ],
+    stillNeedHelp: {
+      heading: "Nie znalazłeś odpowiedzi?",
+      body: "Odpisujemy na maile w ciągu dnia roboczego.",
+      cta: "Napisz do nas",
+    },
+  },
+
   mobileMenu: {
     closeLabel: "Zamknij menu",
     navItems: [
