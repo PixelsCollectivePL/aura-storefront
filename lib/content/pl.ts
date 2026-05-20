@@ -194,6 +194,65 @@ export const CONTENT = {
     },
   },
 
+  listing: {
+    eyebrow: "Sklep",
+    heading: "Wszystkie kawy",
+    description:
+      "Single origin i autorskie blendy. Wszystko świeżo palone w Warszawie, wysyłane w 72 godziny.",
+    count: (n: number): string => {
+      if (n === 1) return "1 kawa";
+      if (n >= 2 && n <= 4) return `${n} kawy`;
+      return `${n} kaw`;
+    },
+    categories: [
+      { value: "all",           label: "Wszystko"      },
+      { value: "espresso",      label: "Espresso"      },
+      { value: "filter",        label: "Filtrowe"      },
+      { value: "blend",         label: "Blendy"        },
+      { value: "decaf",         label: "Decaf"         },
+      { value: "single-origin", label: "Single origin" },
+    ],
+    filtersLabel: "Filtry",
+    filtersActiveLabel: (n: number): string => `Filtry · ${n}`,
+    activeFiltersLabel: "Aktywne:",
+    clearAll: "Wyczyść",
+    sortLabel: "Sortuj",
+    sortOptions: [
+      { value: "featured",   label: "Polecane"            },
+      { value: "fresh",      label: "Najświeższe"         },
+      { value: "price-asc",  label: "Cena: od najniższej" },
+      { value: "price-desc", label: "Cena: od najwyższej" },
+    ],
+    drawerTitle: "Filtry",
+    drawerApply: "Pokaż wyniki",
+    drawerReset: "Resetuj",
+    filterGroups: {
+      roast: {
+        label: "Stopień palenia",
+        options: [
+          { value: "light",       label: "Jasny"          },
+          { value: "medium",      label: "Średni"         },
+          { value: "medium-dark", label: "Średnio ciemny" },
+          { value: "dark",        label: "Ciemny"         },
+        ],
+      },
+      origin: {
+        label: "Kraj pochodzenia",
+        options: [
+          { value: "Ethiopia",  label: "Etiopia"   },
+          { value: "Colombia",  label: "Kolumbia"  },
+          { value: "Kenya",     label: "Kenia"     },
+          { value: "Guatemala", label: "Gwatemala" },
+        ],
+      },
+    },
+    emptyState: {
+      heading: "Żadna kawa nie pasuje.",
+      body: "Spróbuj zmienić filtry lub wybrać inną kategorię.",
+      clearCta: "Wyczyść filtry",
+    },
+  },
+
   product: {
     lotPrefix: "Lot",
     quickAdd: "Dodaj",
