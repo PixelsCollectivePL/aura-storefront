@@ -79,4 +79,31 @@ export const Icon = {
       <path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" />
     </svg>
   ),
+  truck: ({ size = 18, className }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="13" height="10" rx="1" />
+      <path d="M15 10h4l3 3v4h-7" />
+      <circle cx="6" cy="18" r="1.5" />
+      <circle cx="18" cy="18" r="1.5" />
+    </svg>
+  ),
+  bean: ({ size = 18, className }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round">
+      <ellipse cx="12" cy="12" rx="5.5" ry="8.5" transform="rotate(25 12 12)" />
+      <path d="M10 6c1.5 3 1.5 9 0 12" transform="rotate(25 10 12)" />
+    </svg>
+  ),
+  package: ({ size = 18, className }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 7l9-4 9 4-9 4z" />
+      <path d="M3 7v10l9 4 9-4V7" />
+      <path d="M12 11v10" />
+    </svg>
+  ),
+  shield: ({ size = 18, className }: IconProps) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3L4 7v6c0 4 3.5 7.5 8 9 4.5-1.5 8-5 8-9V7l-8-4z" />
+      <path d="M9 12l2 2 4-4" />
+    </svg>
+  ),
 } as const;

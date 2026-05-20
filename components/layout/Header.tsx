@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/Button";
 import { AuraMark } from "@/components/brand/AuraMark";
-import { useCart } from "@/lib/cart/cart-context";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { SearchOverlay } from "@/components/search/SearchOverlay";
+import { useCart } from "@/lib/cart/cart-context";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -21,16 +22,31 @@ const NAV_ITEMS = [
 
 export function Header() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen]     = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [scrolled, setScrolled]     = useState(false);
+
+  // Detect scroll to trigger sticky visual state
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll(); // sync on mount
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
       <header
-        className="sticky top-0 z-40 bg-paper border-b border-line"
-        style={{ borderBottomColor: "var(--aura-line)" }}
+        className={cn(
+          "sticky top-0 z-40 transition-[background-color,box-shadow,border-color] duration-200",
+          scrolled
+            ? "bg-paper/95 backdrop-blur-sm border-b border-line/80 shadow-[0_1px_12px_rgba(14,14,12,0.06)]"
+            : "bg-paper border-b border-line"
+        )}
       >
         {/* ── Desktop ── */}
         <div className="hidden lg:flex items-center h-[72px] px-14 relative">
+          {/* Logo — left */}
           <Link
             href="/"
             className="shrink-0 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
@@ -39,9 +55,10 @@ export function Header() {
             <AuraMark size={26} color="var(--aura-ink)" />
           </Link>
 
+          {/* Nav — centered */}
           <nav
             aria-label="Nawigacja główna"
-            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-8"
+            className="absolute left-1/2 -translate-x-1/2 flex items-center gap-7"
           >
             {NAV_ITEMS.map((item) => {
               const isActive =
@@ -53,7 +70,8 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "text-[14px] leading-[1.55] tracking-[-0.005em] transition-colors duration-[120ms]",
+                    "text-[13.5px] leading-[1.55] tracking-[-0.005em]",
+                    "transition-colors duration-[120ms]",
                     "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs",
                     isActive
                       ? "text-ink font-semibold"
@@ -66,8 +84,14 @@ export function Header() {
             })}
           </nav>
 
+          {/* Actions — right */}
           <div className="ml-auto flex items-center gap-0.5">
-            <IconButton aria-label="Szukaj" size={40}>
+            <IconButton
+              aria-label="Otwórz wyszukiwanie"
+              aria-expanded={searchOpen}
+              size={40}
+              onClick={() => setSearchOpen(true)}
+            >
               <Icon.search size={19} />
             </IconButton>
             <CartButton size={40} />
@@ -79,7 +103,7 @@ export function Header() {
           <IconButton
             aria-label="Otwórz menu"
             aria-expanded={menuOpen}
-            size={36}
+            size={40}
             onClick={() => setMenuOpen(true)}
           >
             <Icon.menu size={22} />
@@ -94,15 +118,21 @@ export function Header() {
           </Link>
 
           <div className="ml-auto flex items-center">
-            <IconButton aria-label="Szukaj" size={36}>
+            <IconButton
+              aria-label="Otwórz wyszukiwanie"
+              aria-expanded={searchOpen}
+              size={40}
+              onClick={() => setSearchOpen(true)}
+            >
               <Icon.search size={19} />
             </IconButton>
-            <CartButton size={36} />
+            <CartButton size={40} />
           </div>
         </div>
       </header>
 
-      <MobileMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+      <MobileMenu    isOpen={menuOpen}   onClose={() => setMenuOpen(false)} />
+      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }
@@ -112,7 +142,7 @@ function CartButton({ size }: { size: number }) {
 
   return (
     <IconButton
-      aria-label={count > 0 ? `Otwórz koszyk (${count})` : "Otwórz koszyk"}
+      aria-label={count > 0 ? `Otwórz koszyk (${count} produktów)` : "Otwórz koszyk"}
       size={size}
       className="relative"
       onClick={openCart}
@@ -121,8 +151,8 @@ function CartButton({ size }: { size: number }) {
       {count > 0 && (
         <span
           className={cn(
-            "absolute top-[5px] right-[5px]",
-            "min-w-[16px] h-[16px] px-1",
+            "absolute top-[6px] right-[6px]",
+            "min-w-[15px] h-[15px] px-[3px]",
             "flex items-center justify-center",
             "bg-brand text-white rounded-full",
             "text-[9px] font-bold leading-none tabular-nums"

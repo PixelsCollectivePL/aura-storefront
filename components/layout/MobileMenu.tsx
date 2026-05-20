@@ -196,20 +196,37 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </div>
         </nav>
 
-        {/* Footer */}
-        <div className="px-5 pb-6 pt-4 border-t border-white/10 shrink-0 flex items-center justify-between">
-          <span
-            className="text-[10px] tracking-[0.1em] text-white/30"
-            style={{ fontFamily: "var(--font-mono)" }}
+        {/* CTA + footer */}
+        <div className="px-5 pb-8 pt-4 border-t border-white/10 shrink-0 space-y-4">
+          {/* Primary CTA */}
+          <Link
+            href="/produkty"
+            onClick={onClose}
+            className={cn(
+              "flex items-center justify-center w-full h-12",
+              "bg-brand text-white rounded-pill",
+              "text-[14px] font-semibold tracking-[-0.005em]",
+              "hover:bg-brand-deep transition-colors duration-[120ms]",
+              "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+            )}
           >
-            PL · PLN
-          </span>
-          <span
-            className="text-[10px] tracking-[0.1em] text-white/30"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            Warszawa
-          </span>
+            Sprawdź kawy
+          </Link>
+
+          <div className="flex items-center justify-between">
+            <span
+              className="text-[10px] tracking-[0.1em] text-white/30"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              PL · PLN
+            </span>
+            <span
+              className="text-[10px] tracking-[0.1em] text-white/30"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              Warszawa
+            </span>
+          </div>
         </div>
       </div>
     </div>
