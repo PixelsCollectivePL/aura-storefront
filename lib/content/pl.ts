@@ -484,7 +484,7 @@ export const CONTENT = {
     popularTerms: ["Espresso", "Filtr", "Etiopia", "Brazylia", "Kolumbia", "Decaf"],
     resultsHeading: "Wyniki",
     emptyHeading: "Brak wyników",
-    emptyBody: "Spróbuj innej frazy — np. „espresso", „Etiopia" albo „wiśnia".",
+    emptyBody: 'Spróbuj innej frazy — np. "espresso", "Etiopia" albo "wisnia".',
     lotPrefix: "Lot",
   },
 
