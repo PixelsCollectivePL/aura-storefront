@@ -40,45 +40,86 @@ export const CONTENT = {
 
   homepage: {
     hero: {
-      eyebrow: "Nowość · Lot 04 / 2026",
-      headingL1: "Kawa,",
-      headingL2: "robiona mała,",
-      headingL3: "z założenia.",
+      eyebrow: "Coffee club · drop 01 · 2026",
+      headingLine1: "Kawa",
+      headingLine2: "z charakterem.",
+      headingAccent: "Palona",
+      headingLine3: "na świeżo.",
       subheading:
-        "Sześć lotów. Palone co środę w Warszawie. Wysyłane w ciągu 72 godzin od palenia — nigdy starsze.",
+        "Specialty z polskiej palarni. Trzy blendy na każdy rytuał — espresso, filtr, wieczór.",
       ctaPrimary: "Sprawdź kawy",
-      ctaSecondary: "Znajdź swój blend",
-      imageCaption: "Zdjęcie główne — Lot 04 / Warszawa",
+      ctaSecondary: "Porównaj blendy",
+      stats: [
+        { value: "12 kg",  label: "Wsad" },
+        { value: "< 14 d", label: "Od palenia" },
+        { value: "4.9 ★",  label: "2 140 ocen" },
+      ],
     },
 
     shelf: {
-      eyebrow: "Półka · 06",
-      heading: "W tym sezonie",
-      viewAll: "Wszystkie kawy →",
+      eyebrow: "Wybrane blendy",
+      heading: "Pod twój rytuał.",
+      viewAll: "Wszystkie kawy",
       viewAllMobile: "Wszystkie →",
       description:
         "Dwa single origin, trzy blendy, jeden decaf — dobrane tak, jak dobiera się muzykę.",
     },
 
+    quality: {
+      eyebrow: "Jakość",
+      headingL1: "Świeżo palona.",
+      headingL2: "Gotowa do wysyłki.",
+      body: "Palimy w małych wsadach co tydzień. Wysyłamy w 24 h. Trafia do ciebie, zanim pierwsze ziarno zdąży zwietrzeć.",
+      points: [
+        { n: "01", title: "Małe wsady",   desc: "Partia 12 kg. Żadnych stocków." },
+        { n: "02", title: "Direct trade", desc: "Znamy farmy z imienia." },
+        { n: "03", title: "< 14 dni",     desc: "Od bębna do twoich drzwi." },
+      ],
+    },
+
+    reviews: {
+      eyebrow: "Co mówią",
+      heading: "4.9 ★ z 2 140 ocen.",
+      items: [
+        {
+          text: "Najlepsza kawa do mleka, jaką piłem. THREE robi robotę przy każdym espresso.",
+          name: "Kuba",
+          location: "Warszawa",
+          product: "THREE",
+        },
+        {
+          text: "Zamówiłem w czwartek, dotarło w sobotę — jeszcze ciepłe z palarni. 10/10.",
+          name: "Piotr W.",
+          location: "Kraków",
+          product: "ONE",
+        },
+        {
+          text: "ONE to coś innego. Te nuty jaśminu są naprawdę wyczuwalne. Kupuję od roku.",
+          name: "Marta K.",
+          location: "Gdańsk",
+          product: "TWO",
+        },
+      ],
+    },
+
+    newsletter: {
+      eyebrow: "Bądź pierwszy",
+      headingL1: "Nowy drop.",
+      headingL2: "Dowiesz się pierwszy.",
+      body: "Świeże info o nowych blendach, terminach palenia i limitowanych lotach — prosto na skrzynkę.",
+      placeholder: "twój@email.com",
+      cta: "Zapisz się",
+      disclaimer: "Bez spamu. Wypisujesz się jednym kliknięciem.",
+    },
+
+    // legacy keys kept for old sections still referencing them
     howItWorks: {
       eyebrow: "Jak to działa",
       heading: "Od palarni do Twojej kuchni. W trzech krokach.",
       steps: [
-        {
-          n: "01",
-          title: "Wybierz lot",
-          desc: "Sześć kaw. Różne originy, metody parzenia, intensywności. Wszystkie palone w Warszawie.",
-        },
-        {
-          n: "02",
-          title: "Palimy w środy",
-          desc: "Paczki wychodzą w ciągu 72 godzin od palenia. Całe ziarna lub mielone pod Twoją metodę.",
-        },
-        {
-          n: "03",
-          title: "Do Ciebie w 3 dni",
-          desc: "Standardowa dostawa 2–3 dni. Express następnego dnia na poranny rytuał.",
-        },
+        { n: "01", title: "Wybierz lot",      desc: "Sześć kaw. Różne originy, metody parzenia, intensywności. Wszystkie palone w Warszawie." },
+        { n: "02", title: "Palimy w środy",   desc: "Paczki wychodzą w ciągu 72 godzin od palenia. Całe ziarna lub mielone pod Twoją metodę." },
+        { n: "03", title: "Do Ciebie w 3 dni", desc: "Standardowa dostawa 2–3 dni. Express następnego dnia na poranny rytuał." },
       ],
     },
 
@@ -95,28 +136,6 @@ export const CONTENT = {
       { label: "72 godziny świeżości", sub: "nigdy starsze, nigdy magazynowane" },
       { label: "14 dni na zwrot", sub: "jeśli coś nie gra — naprawiamy" },
     ],
-
-    reviews: {
-      eyebrow: "Opinie",
-      heading: "Co mówią klienci",
-      items: [
-        {
-          text: "ONE to szczerze najlepsza kawa filtrowa, jaką parzyłam w domu. Lekka, czysta i te nuty jaśminu są naprawdę wyczuwalne.",
-          name: "Marta K.",
-          location: "Warszawa",
-        },
-        {
-          text: "Zamówiłem w czwartek, dotarło w sobotę. Jeszcze ciepła z palarni — to rzeczywiście robi różnicę w smaku.",
-          name: "Piotr W.",
-          location: "Kraków",
-        },
-        {
-          text: "Kupuję od Aury od roku. THREE to moje codzienne espresso i przez ten czas trzymają konsekwentnie jakość.",
-          name: "Aleks M.",
-          location: "Gdańsk",
-        },
-      ],
-    },
 
     ctaBanner: {
       eyebrow: "Zacznij tutaj",

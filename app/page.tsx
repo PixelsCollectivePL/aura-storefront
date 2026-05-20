@@ -1,211 +1,466 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
 import { ProductCard } from "@/components/product/ProductCard";
+import { TrustStrip } from "@/components/layout/TrustStrip";
+import { Starburst } from "@/components/brand/Starburst";
+import { FigureRunner } from "@/components/brand/FigureRunner";
+import { Icon } from "@/components/ui/Icon";
 import { CONTENT } from "@/lib/content/pl";
-import { cn } from "@/lib/utils";
 import { MOCK_PRODUCTS } from "@/lib/mock/products";
+import { cn } from "@/lib/utils";
 
 const { homepage: hp } = CONTENT;
-const { hero: h, shelf, howItWorks: hiw, promise: pr, reviews: rv, ctaBanner: cta } = hp;
+const { hero: h, shelf, quality: q, reviews: rv, newsletter: nl } = hp;
 
-const FEATURED = MOCK_PRODUCTS.slice(0, 3);
+// [shopify-ready] replace with Shopify featured products query
+const FEATURED = MOCK_PRODUCTS.slice(0, 4);
 
 export default function HomePage() {
   return (
     <>
-      {/* ── Hero ── */}
-      <section className="border-b border-line">
-        <div className="grid lg:grid-cols-2 min-h-[560px] lg:min-h-[720px]">
-          {/* Text — second on mobile (below image), first on desktop */}
-          <div className={cn(
-            "px-5 py-12 lg:px-20 lg:py-[120px]",
-            "flex flex-col justify-center",
-            "order-2 lg:order-1"
-          )}>
-            <p className="text-eyebrow mb-5 lg:mb-7">{h.eyebrow}</p>
-            <h1 className={cn("text-display lg:text-display-lg", "mb-5 lg:mb-7")}>
-              {h.headingL1}<br />{h.headingL2}<br />{h.headingL3}
+      {/* ══════════════════════════════════════════
+          HERO — dark, full-bleed, controlled layout
+      ══════════════════════════════════════════ */}
+      <section className="bg-ink text-white overflow-hidden">
+        <div className="px-5 lg:px-20 py-12 lg:py-[88px] lg:grid lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-center">
+
+          {/* ── Left: copy ── */}
+          <div className="order-2 lg:order-1">
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-6 lg:mb-7"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {h.eyebrow}
+            </p>
+
+            <h1
+              className="text-white leading-[0.92] tracking-[-0.035em] font-extrabold mb-5 lg:mb-7"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(52px, 8.5vw, 116px)",
+              }}
+            >
+              {h.headingLine1}
+              <br />
+              {h.headingLine2}
+              <br />
+              <span className="text-brand">{h.headingAccent}</span>{" "}
+              {h.headingLine3}
             </h1>
-            <p className="text-[14.5px] lg:text-body-lg text-mute-2 leading-[1.6] max-w-[320px] lg:max-w-[440px] mb-7 lg:mb-11">
+
+            <p className="text-[14px] lg:text-[17px] text-white/70 leading-[1.55] max-w-[340px] lg:max-w-[480px] mb-8 lg:mb-10">
               {h.subheading}
             </p>
-            <div className="flex gap-2.5 lg:gap-3">
-              <Button
-                variant="primary"
-                size="lg"
-                className="flex-1 lg:flex-none"
-                aria-label={h.ctaPrimary}
+
+            {/* CTAs */}
+            <div className="flex gap-3 mb-10 lg:mb-14">
+              <Link
+                href="/produkty"
+                className={cn(
+                  "inline-flex items-center justify-center gap-2 h-12 lg:h-14 px-6 lg:px-7",
+                  "bg-brand text-white rounded-pill border border-brand",
+                  "text-[14px] lg:text-[15px] font-semibold",
+                  "hover:bg-brand-deep hover:border-brand-deep",
+                  "transition-colors duration-[150ms]",
+                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+                  "flex-1 lg:flex-none"
+                )}
               >
                 {h.ctaPrimary}
-                <Icon.arrow size={18} />
-              </Button>
-              <Button variant="ghost" size="lg" className="hidden lg:inline-flex">
+                <Icon.arrow size={17} />
+              </Link>
+              <Link
+                href="/blendy"
+                className={cn(
+                  "hidden lg:inline-flex items-center justify-center gap-2 h-14 px-7",
+                  "bg-transparent text-white rounded-pill border border-white/30",
+                  "text-[15px] font-semibold",
+                  "hover:border-white hover:bg-white/8",
+                  "transition-colors duration-[150ms]",
+                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+                )}
+              >
                 {h.ctaSecondary}
-              </Button>
+              </Link>
+            </div>
+
+            {/* Inline micro-stats */}
+            <div className="flex gap-8 lg:gap-10">
+              {h.stats.map((s) => (
+                <div key={s.label}>
+                  <div
+                    className="text-brand font-extrabold leading-none tracking-[-0.02em] mb-1"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(22px, 3vw, 32px)",
+                    }}
+                  >
+                    {s.value}
+                  </div>
+                  <div
+                    className="text-[10px] tracking-[0.14em] uppercase text-white/50"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {s.label}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Hero image — full bleed, first on mobile */}
-          <div className={cn(
-            "bg-bg-soft relative overflow-hidden",
-            "h-[320px] lg:h-auto",
-            "order-1 lg:order-2"
-          )}>
-            {/* Image placeholder — replaced with next/image in Phase 2 */}
-            <div className="absolute inset-0 bg-bg-soft-2" />
-            <div className="absolute inset-0 flex items-end p-6 lg:p-10">
-              <p className="text-[11px] tracking-[0.12em] uppercase text-mute">
-                {h.imageCaption}
-              </p>
+          {/* ── Right: illustration ── */}
+          <div className="order-1 lg:order-2" aria-hidden="true">
+            {/* Mobile: compact burst, fixed height */}
+            <div className="lg:hidden relative h-[260px] flex items-center justify-center">
+              <Starburst color="var(--aura-orange)" size={240} points={12} depth={0.22}>
+                <FigureRunner size={118} color="#0E0E0C" />
+              </Starburst>
+              <div className="absolute" style={{ right: "14%", top: "8%" }}>
+                <Starburst color="var(--aura-paper-2)" size={52} points={10} depth={0.26}>
+                  <span
+                    className="text-ink text-center font-bold"
+                    style={{ fontFamily: "var(--font-mono)", fontSize: 7, letterSpacing: "0.12em", textTransform: "uppercase", lineHeight: 1.3 }}
+                  >
+                    DROP<br />01
+                  </span>
+                </Starburst>
+              </div>
+            </div>
+
+            {/* Desktop: large burst, aspect-ratio container */}
+            <div className="hidden lg:block relative" style={{ aspectRatio: "5 / 6" }}>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Starburst color="var(--aura-orange)" size={460} points={12} depth={0.22}>
+                  <FigureRunner size={230} color="#0E0E0C" />
+                </Starburst>
+              </div>
+              {/* Accent burst */}
+              <div className="absolute" style={{ right: 0, bottom: "12%" }}>
+                <Starburst color="var(--aura-paper-2)" size={80} points={10} depth={0.26}>
+                  <span
+                    className="text-ink text-center font-bold"
+                    style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", lineHeight: 1.3 }}
+                  >
+                    DROP<br />01
+                  </span>
+                </Starburst>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Featured shelf ── */}
-      <section className="px-5 lg:px-14 pt-[72px] lg:pt-[120px] pb-0">
-        <div className="flex items-baseline justify-between mb-6 lg:mb-3">
+      {/* ══════════════════════════════════════════
+          TRUST STRIP
+      ══════════════════════════════════════════ */}
+      <TrustStrip />
+
+      {/* ══════════════════════════════════════════
+          FEATURED SHELF
+      ══════════════════════════════════════════ */}
+      <section className="bg-paper px-5 lg:px-14 pt-16 lg:pt-[100px] pb-16 lg:pb-[100px]">
+        {/* Section head */}
+        <div className="flex items-end justify-between mb-8 lg:mb-10 gap-4">
           <div>
-            <p className="text-eyebrow mb-2.5 lg:mb-3">{shelf.eyebrow}</p>
-            <h2 className="text-h2 lg:text-h2-lg">{shelf.heading}</h2>
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {shelf.eyebrow}
+            </p>
+            <h2
+              className="font-extrabold tracking-[-0.025em] leading-[0.96] text-ink"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(32px, 5vw, 56px)",
+              }}
+            >
+              {shelf.heading}
+            </h2>
           </div>
           <Link
-            href="/shop"
-            className="text-[11.5px] text-mute-2 underline underline-offset-4 hover:text-ink-hi transition-colors duration-[120ms] focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
+            href="/produkty"
+            className={cn(
+              "hidden lg:inline-flex items-center gap-2 shrink-0",
+              "text-[13px] font-semibold text-ink",
+              "border-b border-ink pb-0.5",
+              "hover:text-brand hover:border-brand",
+              "transition-colors duration-[120ms]",
+              "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
+            )}
           >
-            <span className="hidden sm:inline">{shelf.viewAll}</span>
-            <span className="sm:hidden">{shelf.viewAllMobile}</span>
+            {shelf.viewAll}
+            <Icon.arrow size={14} />
+          </Link>
+          <Link
+            href="/produkty"
+            className={cn(
+              "lg:hidden shrink-0",
+              "text-[12.5px] font-medium text-muted",
+              "hover:text-ink transition-colors duration-[120ms]",
+              "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
+            )}
+          >
+            {shelf.viewAllMobile}
           </Link>
         </div>
-        <p className="hidden lg:block text-mute-2 text-body max-w-xl mb-[56px]">
-          {shelf.description}
-        </p>
-      </section>
 
-      <section className="px-5 lg:px-14 pt-8 lg:pt-0 pb-[80px] lg:pb-[120px]">
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-9 lg:gap-x-8 lg:gap-y-[60px]">
+        {/* Product grid — 4-col desktop, 2-col mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-10 lg:gap-6">
           {FEATURED.map((product) => (
             <ProductCard key={product.handle} product={product} />
           ))}
-          {/* 4th card on mobile only */}
-          <div className="lg:hidden">
-            <ProductCard product={MOCK_PRODUCTS[3]} />
-          </div>
         </div>
       </section>
 
-      {/* ── How it works ── */}
-      <section className="border-t border-line px-5 lg:px-14 py-16 lg:py-[120px] bg-bg-soft">
-        <p className="text-eyebrow mb-3 lg:mb-4">{hiw.eyebrow}</p>
-        <h2 className="text-h2 lg:text-h2-lg mb-10 lg:mb-16 max-w-lg">{hiw.heading}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-10 gap-x-8 lg:gap-x-16">
-          {hiw.steps.map((step) => (
-            <div key={step.n}>
-              <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-mute mb-4 lg:mb-5">
-                {step.n}
-              </p>
-              <h3 className={cn(
-                "font-medium leading-[1.2] tracking-[-0.014em] text-ink-hi mb-3",
-                "text-[17px] lg:text-[20px]"
-              )}>
-                {step.title}
-              </h3>
-              <p className="text-body text-mute-2 leading-[1.6]">{step.desc}</p>
+      {/* ══════════════════════════════════════════
+          QUALITY / PROMISE — 2-col, paper bg
+      ══════════════════════════════════════════ */}
+      <section className="bg-paper-2 border-t border-line px-5 lg:px-14 py-16 lg:py-[100px]">
+        <div className="lg:grid lg:grid-cols-2 lg:gap-20 lg:items-center">
+
+          {/* Left — photo placeholder */}
+          <div
+            className="hidden lg:block rounded-lg overflow-hidden"
+            style={{ aspectRatio: "4 / 5" }}
+          >
+            <div
+              className="w-full h-full flex items-end p-8"
+              style={{
+                background: `
+                  repeating-linear-gradient(
+                    135deg,
+                    rgba(14,14,12,0.04) 0 6px,
+                    rgba(14,14,12,0) 6px 14px
+                  ),
+                  var(--aura-paper-2)
+                `,
+              }}
+            >
+              <span
+                className="text-[10px] tracking-[0.12em] uppercase text-muted"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                Barista · Espresso pour
+              </span>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      {/* ── Promise (dark panel) ── */}
-      <section className="bg-ink-hi text-ink-inv px-5 lg:px-14 py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+          {/* Right — copy */}
           <div>
-            <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-ink-inv/50 mb-4">
-              {pr.eyebrow}
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-5 lg:mb-6"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {q.eyebrow}
             </p>
-            <h2 className={cn(
-              "font-medium leading-[1.05] tracking-[-0.022em] text-ink-inv",
-              "text-[28px] lg:text-[44px]",
-              "mb-5 lg:mb-7 max-w-lg"
-            )}>
-              {pr.headingL1}<br />{pr.headingL2}
+            <h2
+              className="font-extrabold tracking-[-0.03em] leading-[0.95] text-ink mb-5 lg:mb-6"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(36px, 6vw, 80px)",
+              }}
+            >
+              {q.headingL1}
+              <br />
+              {q.headingL2}
             </h2>
-            <p className="text-[14.5px] lg:text-body-lg text-ink-inv/70 leading-[1.6] max-w-md">
-              {pr.body}
+            <p className="text-[14.5px] lg:text-[16px] text-ink/70 leading-[1.6] max-w-[480px] mb-10 lg:mb-12">
+              {q.body}
             </p>
-          </div>
-          <div className="grid grid-cols-2 gap-px bg-ink-inv/10">
-            {hp.trustItems.map((item) => (
-              <div key={item.label} className="bg-ink-hi px-6 py-7 lg:px-8 lg:py-9">
-                <p className={cn(
-                  "font-medium text-ink-inv mb-1.5",
-                  "text-[15px] lg:text-[17px] leading-[1.2] tracking-[-0.014em]"
-                )}>
-                  {item.label}
-                </p>
-                <p className="text-[12.5px] text-ink-inv/60 leading-[1.5]">{item.sub}</p>
-              </div>
-            ))}
+
+            {/* Numbered points */}
+            <div className="grid grid-cols-3 gap-6">
+              {q.points.map((pt) => (
+                <div key={pt.n}>
+                  <div
+                    className="text-brand font-bold mb-2"
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 11,
+                      letterSpacing: "0.12em",
+                    }}
+                  >
+                    {pt.n}
+                  </div>
+                  <div
+                    className="font-bold text-[15px] lg:text-[16px] text-ink mb-1"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {pt.title}
+                  </div>
+                  <div className="text-[12.5px] text-muted leading-[1.5]">
+                    {pt.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile: CTA after points */}
+            <Link
+              href="/o-marce"
+              className={cn(
+                "lg:hidden mt-8 inline-flex items-center gap-2",
+                "text-[13.5px] font-semibold text-ink",
+                "border-b border-ink pb-0.5",
+                "hover:text-brand hover:border-brand",
+                "transition-colors duration-[120ms]"
+              )}
+            >
+              Nasza historia
+              <Icon.arrow size={13} />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ── Reviews ── */}
-      <section className="border-t border-line px-5 lg:px-14 py-16 lg:py-24">
-        <p className="text-eyebrow mb-3">{rv.eyebrow}</p>
-        <h2 className="text-h2 lg:text-h2-lg mb-10 lg:mb-14">{rv.heading}</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-line">
+      {/* ══════════════════════════════════════════
+          REVIEWS — paper-2 bg
+      ══════════════════════════════════════════ */}
+      <section className="bg-paper border-t border-line px-5 lg:px-14 py-16 lg:py-[100px]">
+        {/* Head */}
+        <div className="flex items-end justify-between mb-8 lg:mb-12 gap-4">
+          <div>
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {rv.eyebrow}
+            </p>
+            <h2
+              className="font-extrabold tracking-[-0.025em] leading-[0.96] text-ink"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(28px, 4.5vw, 56px)",
+              }}
+            >
+              {rv.heading}
+            </h2>
+          </div>
+        </div>
+
+        {/* Review cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-line">
           {rv.items.map((review) => (
-            <div key={review.name} className="bg-bg px-6 py-7 lg:px-8 lg:py-9 flex flex-col gap-4">
-              <div className="flex gap-0.5">
+            <div
+              key={review.name}
+              className="bg-paper px-6 py-7 lg:px-8 lg:py-9 flex flex-col gap-5"
+            >
+              {/* Stars */}
+              <div className="flex gap-1" aria-label="5 gwiazdek">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className="text-ink-hi text-[13px]">★</span>
+                  <svg
+                    key={i}
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="var(--aura-orange)"
+                    aria-hidden="true"
+                  >
+                    <path d="M12 2l3 6.5 7 .9-5.2 4.6L18 21l-6-3.4L6 21l1.2-7L2 9.4l7-.9z" />
+                  </svg>
                 ))}
               </div>
-              <p className="text-body text-ink leading-[1.6] flex-1">&ldquo;{review.text}&rdquo;</p>
-              <div>
-                <p className="text-[13px] font-medium text-ink-hi">{review.name}</p>
-                <p className="text-[11.5px] text-mute-2">{review.location}</p>
+
+              {/* Quote */}
+              <p className="text-[15px] lg:text-[16px] font-medium text-ink leading-[1.45] tracking-[-0.01em] flex-1">
+                &ldquo;{review.text}&rdquo;
+              </p>
+
+              {/* Author */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[13px] font-semibold text-ink">{review.name}</p>
+                  <p className="text-[12px] text-muted">{review.location}</p>
+                </div>
+                <span
+                  className="text-[10px] tracking-[0.1em] uppercase text-muted"
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  {review.product}
+                </span>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── CTA banner ── */}
-      <section className="border-t border-line px-5 lg:px-14 py-16 lg:py-24 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-        <div>
-          <p className="text-eyebrow mb-3">{cta.eyebrow}</p>
-          <h2 className="text-h2 lg:text-h2-lg max-w-sm">{cta.heading}</h2>
+      {/* ══════════════════════════════════════════
+          NEWSLETTER CTA — orange bg, single strong accent
+      ══════════════════════════════════════════ */}
+      <section
+        className="relative overflow-hidden border-t border-brand/20"
+        style={{ background: "var(--aura-orange)" }}
+      >
+        <div className="relative z-10 px-5 lg:px-20 py-16 lg:py-[100px]">
+          <div className="max-w-[680px]">
+            <p
+              className="text-[11px] tracking-[0.14em] uppercase text-white/70 mb-5"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {nl.eyebrow}
+            </p>
+            <h2
+              className="text-white font-extrabold leading-[0.92] tracking-[-0.035em] mb-5"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(40px, 7vw, 88px)",
+              }}
+            >
+              {nl.headingL1}
+              <br />
+              {nl.headingL2}
+            </h2>
+            <p className="text-[15px] lg:text-[16px] text-white/85 leading-[1.55] max-w-[440px] mb-8 lg:mb-10">
+              {nl.body}
+            </p>
+
+            {/* Email form — UI shell, no backend [shopify-ready] */}
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="flex flex-col sm:flex-row gap-3 max-w-[480px]"
+            >
+              <input
+                type="email"
+                placeholder={nl.placeholder}
+                aria-label="Adres e-mail"
+                className={cn(
+                  "flex-1 min-w-0 h-12 px-5",
+                  "bg-white/15 text-white placeholder:text-white/50",
+                  "border border-white/30 rounded-pill",
+                  "text-[14px] outline-none",
+                  "focus:border-white focus:bg-white/20",
+                  "transition-colors duration-[120ms]"
+                )}
+              />
+              <button
+                type="submit"
+                className={cn(
+                  "h-12 px-6 shrink-0",
+                  "bg-ink text-white rounded-pill border border-ink",
+                  "text-[14px] font-semibold",
+                  "hover:bg-ink-2 hover:border-ink-2",
+                  "transition-colors duration-[150ms] cursor-pointer",
+                  "focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2",
+                  "whitespace-nowrap"
+                )}
+              >
+                {nl.cta}
+              </button>
+            </form>
+
+            <p className="mt-4 text-[11.5px] text-white/50">{nl.disclaimer}</p>
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link
-            href="/shop"
-            className={cn(
-              "inline-flex items-center justify-center gap-2.5",
-              "font-sans font-medium text-[15px] leading-[1.6] whitespace-nowrap",
-              "px-7 py-5 min-h-[60px]",
-              "bg-ink-hi text-ink-inv",
-              "hover:bg-black transition-colors duration-[120ms]",
-              "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
-            )}
-          >
-            {cta.ctaPrimary}
-          </Link>
-          <Link
-            href="/about"
-            className={cn(
-              "inline-flex items-center justify-center gap-2.5",
-              "font-sans font-medium text-[15px] leading-[1.6] whitespace-nowrap",
-              "px-7 py-5 min-h-[60px]",
-              "bg-transparent text-ink-hi border border-line",
-              "hover:border-ink-hi transition-colors duration-[120ms]",
-              "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
-            )}
-          >
-            {cta.ctaSecondary}
-          </Link>
+
+        {/* Decorative starburst — contained, right side */}
+        <div
+          className="absolute right-[-80px] top-[-40px] lg:right-[-40px] lg:top-[-40px]"
+          aria-hidden="true"
+          style={{ transform: "rotate(15deg)" }}
+        >
+          <Starburst color="rgba(255,255,255,0.12)" size={400} points={12} depth={0.2}>
+            <FigureRunner size={200} color="rgba(255,255,255,0.18)" />
+          </Starburst>
         </div>
       </section>
     </>
