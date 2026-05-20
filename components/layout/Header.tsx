@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/Button";
+import { useCart } from "@/lib/cart/cart-context";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -56,9 +57,7 @@ export function Header() {
           <IconButton aria-label="Search" size={40}>
             <Icon.search size={20} />
           </IconButton>
-          <IconButton aria-label="Open basket" size={40}>
-            <Icon.bag size={20} />
-          </IconButton>
+          <CartButton size={40} />
         </div>
       </div>
 
@@ -79,11 +78,36 @@ export function Header() {
           <IconButton aria-label="Search" size={36}>
             <Icon.search size={20} />
           </IconButton>
-          <IconButton aria-label="Open basket" size={36} className="relative">
-            <Icon.bag size={20} />
-          </IconButton>
+          <CartButton size={36} />
         </div>
       </div>
     </header>
+  );
+}
+
+function CartButton({ size }: { size: number }) {
+  const { openCart, count } = useCart();
+
+  return (
+    <IconButton
+      aria-label={count > 0 ? `Otwórz koszyk (${count})` : "Otwórz koszyk"}
+      size={size}
+      className="relative"
+      onClick={openCart}
+    >
+      <Icon.bag size={20} />
+      {count > 0 && (
+        <span
+          className={cn(
+            "absolute top-1 right-1 min-w-[15px] h-[15px] px-1",
+            "flex items-center justify-center",
+            "bg-ink-hi text-ink-inv text-[10px] font-medium leading-none tabular-nums"
+          )}
+          aria-hidden="true"
+        >
+          {count}
+        </span>
+      )}
+    </IconButton>
   );
 }

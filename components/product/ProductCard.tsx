@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useCart } from "@/lib/cart/cart-context";
 import type { Product } from "@/types/product";
 
 interface ProductCardProps {
@@ -13,6 +14,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
+  const { addItem, openCart } = useCart();
+
   return (
     <article className={cn("group", className)}>
       <Link href={`/shop/${product.handle}`} className="block focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2">
@@ -41,8 +44,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
             <Button
               variant="secondary"
               size="sm"
-              className="w-[calc(100%-0px)]"
-              onClick={(e) => e.preventDefault()}
+              className="w-full"
+              aria-label={`Dodaj ${product.shortName} do koszyka`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addItem(product);
+                openCart();
+              }}
             >
               Quick add
             </Button>
