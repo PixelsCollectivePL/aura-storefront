@@ -5,13 +5,16 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/Button";
 import { useCart } from "@/lib/cart/cart-context";
+import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
 
+const { nav } = CONTENT;
+
 const NAV_ITEMS = [
-  { label: "Shop", href: "/shop" },
-  { label: "About", href: "/about" },
-  { label: "Brewing", href: "/brewing" },
-  { label: "Journal", href: "/journal" },
+  { label: nav.shop, href: "/shop" },
+  { label: nav.about, href: "/about" },
+  { label: nav.brewing, href: "/brewing" },
+  { label: nav.journal, href: "/journal" },
 ];
 
 export function Header() {
@@ -29,7 +32,7 @@ export function Header() {
         </Link>
 
         <nav
-          aria-label="Main navigation"
+          aria-label="Nawigacja główna"
           className="absolute left-1/2 -translate-x-1/2 flex items-center gap-9"
         >
           {NAV_ITEMS.map((item) => {
@@ -54,7 +57,7 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-0.5">
-          <IconButton aria-label="Search" size={40}>
+          <IconButton aria-label="Szukaj" size={40}>
             <Icon.search size={20} />
           </IconButton>
           <CartButton size={40} />
@@ -63,7 +66,7 @@ export function Header() {
 
       {/* ── Mobile ── */}
       <div className="flex lg:hidden items-center h-14 px-4 relative">
-        <IconButton aria-label="Open menu" size={36}>
+        <IconButton aria-label="Otwórz menu" size={36}>
           <Icon.menu size={22} />
         </IconButton>
 
@@ -75,7 +78,7 @@ export function Header() {
         </Link>
 
         <div className="ml-auto flex items-center">
-          <IconButton aria-label="Search" size={36}>
+          <IconButton aria-label="Szukaj" size={36}>
             <Icon.search size={20} />
           </IconButton>
           <CartButton size={36} />

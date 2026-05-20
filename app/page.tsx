@@ -2,53 +2,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { ProductCard } from "@/components/product/ProductCard";
+import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
 import { MOCK_PRODUCTS } from "@/lib/mock/products";
 
+const { homepage: hp } = CONTENT;
+const { hero: h, shelf, howItWorks: hiw, promise: pr, reviews: rv, ctaBanner: cta } = hp;
+
 const FEATURED = MOCK_PRODUCTS.slice(0, 3);
-
-const HOW_IT_WORKS = [
-  {
-    n: "01",
-    title: "Choose a lot",
-    desc: "Six coffees. Different origins, brew methods and intensities. All roasted in Warsaw.",
-  },
-  {
-    n: "02",
-    title: "We roast Wednesday",
-    desc: "All bags leave within 72 hours of roasting. Whole bean or ground to your method.",
-  },
-  {
-    n: "03",
-    title: "Here in 3 days",
-    desc: "Standard delivery 2–3 days. Express next day for your morning ritual.",
-  },
-];
-
-const TRUST_ITEMS = [
-  { label: "Free shipping", sub: "on orders over 150 zł" },
-  { label: "Roasted to order", sub: "every Wednesday, Warsaw" },
-  { label: "72-hour freshness", sub: "never older, never stored" },
-  { label: "14-day returns", sub: "if it's not right, we fix it" },
-];
-
-const REVIEWS = [
-  {
-    text: "The ONE is genuinely the best filter coffee I've had at home. Light, clean, and those jasmine notes are real.",
-    name: "Marta K.",
-    location: "Warsaw",
-  },
-  {
-    text: "Ordered on Thursday, arrived Saturday. Still warm from the roastery — it actually makes a difference to how it tastes.",
-    name: "Piotr W.",
-    location: "Kraków",
-  },
-  {
-    text: "I've been buying from Aura for a year. The THREE is my everyday espresso and they've nailed the consistency.",
-    name: "Aleks M.",
-    location: "Gdańsk",
-  },
-];
 
 export default function HomePage() {
   return (
@@ -62,32 +23,25 @@ export default function HomePage() {
             "flex flex-col justify-center",
             "order-2 lg:order-1"
           )}>
-            <p className="text-eyebrow mb-5 lg:mb-7">— New · Lot 04 / 2026</p>
-            <h1 className={cn(
-              "text-display lg:text-display-lg",
-              "mb-5 lg:mb-7"
-            )}>
-              Coffee,<br />made small<br />on purpose.
+            <p className="text-eyebrow mb-5 lg:mb-7">{h.eyebrow}</p>
+            <h1 className={cn("text-display lg:text-display-lg", "mb-5 lg:mb-7")}>
+              {h.headingL1}<br />{h.headingL2}<br />{h.headingL3}
             </h1>
             <p className="text-[14.5px] lg:text-body-lg text-mute-2 leading-[1.6] max-w-[320px] lg:max-w-[440px] mb-7 lg:mb-11">
-              Six lots. Roasted every Wednesday in Warsaw. Shipped within 72 hours of roasting — never older.
+              {h.subheading}
             </p>
             <div className="flex gap-2.5 lg:gap-3">
               <Button
                 variant="primary"
                 size="lg"
                 className="flex-1 lg:flex-none"
-                aria-label="Shop all coffees"
+                aria-label={h.ctaPrimary}
               >
-                Shop all coffees
+                {h.ctaPrimary}
                 <Icon.arrow size={18} />
               </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                className="hidden lg:inline-flex"
-              >
-                Discover your blend
+              <Button variant="ghost" size="lg" className="hidden lg:inline-flex">
+                {h.ctaSecondary}
               </Button>
             </div>
           </div>
@@ -102,7 +56,7 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-bg-soft-2" />
             <div className="absolute inset-0 flex items-end p-6 lg:p-10">
               <p className="text-[11px] tracking-[0.12em] uppercase text-mute">
-                Hero image — Lot 04 / Warsaw
+                {h.imageCaption}
               </p>
             </div>
           </div>
@@ -113,20 +67,19 @@ export default function HomePage() {
       <section className="px-5 lg:px-14 pt-[72px] lg:pt-[120px] pb-0">
         <div className="flex items-baseline justify-between mb-6 lg:mb-3">
           <div>
-            <p className="text-eyebrow mb-2.5 lg:mb-3">The shelf · 06</p>
-            <h2 className="text-h2 lg:text-h2-lg">This season</h2>
+            <p className="text-eyebrow mb-2.5 lg:mb-3">{shelf.eyebrow}</p>
+            <h2 className="text-h2 lg:text-h2-lg">{shelf.heading}</h2>
           </div>
           <Link
             href="/shop"
             className="text-[11.5px] text-mute-2 underline underline-offset-4 hover:text-ink-hi transition-colors duration-[120ms] focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
           >
-            <span className="hidden sm:inline">View all coffees</span>
-            <span className="sm:hidden">View all</span>
-            {" →"}
+            <span className="hidden sm:inline">{shelf.viewAll}</span>
+            <span className="sm:hidden">{shelf.viewAllMobile}</span>
           </Link>
         </div>
         <p className="hidden lg:block text-mute-2 text-body max-w-xl mb-[56px]">
-          Two single origins, three blends, one decaf — chosen the way you&apos;d choose a record.
+          {shelf.description}
         </p>
       </section>
 
@@ -144,12 +97,10 @@ export default function HomePage() {
 
       {/* ── How it works ── */}
       <section className="border-t border-line px-5 lg:px-14 py-16 lg:py-[120px] bg-bg-soft">
-        <p className="text-eyebrow mb-3 lg:mb-4">How it works</p>
-        <h2 className="text-h2 lg:text-h2-lg mb-10 lg:mb-16 max-w-lg">
-          From roastery to your kitchen, in three steps.
-        </h2>
+        <p className="text-eyebrow mb-3 lg:mb-4">{hiw.eyebrow}</p>
+        <h2 className="text-h2 lg:text-h2-lg mb-10 lg:mb-16 max-w-lg">{hiw.heading}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-10 gap-x-8 lg:gap-x-16">
-          {HOW_IT_WORKS.map((step) => (
+          {hiw.steps.map((step) => (
             <div key={step.n}>
               <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-mute mb-4 lg:mb-5">
                 {step.n}
@@ -171,21 +122,21 @@ export default function HomePage() {
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           <div>
             <p className="text-[11px] font-medium tracking-[0.12em] uppercase text-ink-inv/50 mb-4">
-              Our promise
+              {pr.eyebrow}
             </p>
             <h2 className={cn(
               "font-medium leading-[1.05] tracking-[-0.022em] text-ink-inv",
               "text-[28px] lg:text-[44px]",
               "mb-5 lg:mb-7 max-w-lg"
             )}>
-              Only fresh.<br />Only yours.
+              {pr.headingL1}<br />{pr.headingL2}
             </h2>
             <p className="text-[14.5px] lg:text-body-lg text-ink-inv/70 leading-[1.6] max-w-md">
-              We roast in small batches so nothing sits in a warehouse. Your coffee leaves within 72 hours of the drum — that&apos;s not marketing, that&apos;s the schedule we run to.
+              {pr.body}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-px bg-ink-inv/10">
-            {TRUST_ITEMS.map((item) => (
+            {hp.trustItems.map((item) => (
               <div key={item.label} className="bg-ink-hi px-6 py-7 lg:px-8 lg:py-9">
                 <p className={cn(
                   "font-medium text-ink-inv mb-1.5",
@@ -202,10 +153,10 @@ export default function HomePage() {
 
       {/* ── Reviews ── */}
       <section className="border-t border-line px-5 lg:px-14 py-16 lg:py-24">
-        <p className="text-eyebrow mb-3">Reviews</p>
-        <h2 className="text-h2 lg:text-h2-lg mb-10 lg:mb-14">What people say</h2>
+        <p className="text-eyebrow mb-3">{rv.eyebrow}</p>
+        <h2 className="text-h2 lg:text-h2-lg mb-10 lg:mb-14">{rv.heading}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-line">
-          {REVIEWS.map((review) => (
+          {rv.items.map((review) => (
             <div key={review.name} className="bg-bg px-6 py-7 lg:px-8 lg:py-9 flex flex-col gap-4">
               <div className="flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -225,10 +176,8 @@ export default function HomePage() {
       {/* ── CTA banner ── */}
       <section className="border-t border-line px-5 lg:px-14 py-16 lg:py-24 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div>
-          <p className="text-eyebrow mb-3">Start here</p>
-          <h2 className="text-h2 lg:text-h2-lg max-w-sm">
-            Not sure where to begin?
-          </h2>
+          <p className="text-eyebrow mb-3">{cta.eyebrow}</p>
+          <h2 className="text-h2 lg:text-h2-lg max-w-sm">{cta.heading}</h2>
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
@@ -242,7 +191,7 @@ export default function HomePage() {
               "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
             )}
           >
-            Browse all coffees
+            {cta.ctaPrimary}
           </Link>
           <Link
             href="/about"
@@ -255,7 +204,7 @@ export default function HomePage() {
               "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-2"
             )}
           >
-            Our story
+            {cta.ctaSecondary}
           </Link>
         </div>
       </section>

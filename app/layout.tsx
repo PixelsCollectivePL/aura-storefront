@@ -15,7 +15,8 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: "Aura Coffee Roasters",
-  description: "Small-batch coffee roasted every Wednesday in Warsaw. Shipped within 72 hours.",
+  description:
+    "Kawa speciality palona w małych partiach co środę w Warszawie. Wysyłamy w ciągu 72 godzin od palenia.",
 };
 
 export default function RootLayout({

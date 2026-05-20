@@ -5,7 +5,10 @@ import { cn, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/lib/cart/cart-context";
+import { CONTENT } from "@/lib/content/pl";
 import type { Product } from "@/types/product";
+
+const { product: p } = CONTENT;
 
 interface ProductCardProps {
   product: Product;
@@ -25,10 +28,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <div className="absolute inset-0 bg-bg-soft" />
 
           {product.isNew && (
-            <Badge
-              label="New"
-              className="absolute top-3 left-3 z-10"
-            />
+            <Badge label={p.newBadge} className="absolute top-3 left-3 z-10" />
           )}
 
           {/* Quick add — desktop hover only */}
@@ -45,7 +45,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               variant="secondary"
               size="sm"
               className="w-full"
-              aria-label={`Dodaj ${product.shortName} do koszyka`}
+              aria-label={`${p.quickAdd}: ${product.shortName}`}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -53,14 +53,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 openCart();
               }}
             >
-              Quick add
+              {p.quickAdd}
             </Button>
           </div>
         </div>
 
         {/* Product info */}
         <div className="flex flex-col gap-0.5 lg:gap-[3px]">
-          <p className="text-[11.5px] leading-[1.4] text-mute-2">Lot {product.lotCode}</p>
+          <p className="text-[11.5px] leading-[1.4] text-mute-2">{p.lotPrefix} {product.lotCode}</p>
           <h3 className={cn(
             "font-medium leading-[1.2] text-ink-hi",
             "text-[17px] tracking-[-0.014em]",

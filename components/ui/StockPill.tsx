@@ -1,4 +1,7 @@
+import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
+
+const { stock } = CONTENT.product;
 
 interface StockPillProps {
   available: boolean;
@@ -13,7 +16,7 @@ export function StockPill({ available, quantity, className }: StockPillProps) {
     return (
       <span className={cn("inline-flex items-center gap-1.5 text-[11.5px] text-mute-2", className)}>
         <span className="inline-block w-1.5 h-1.5 rounded-full bg-mute" />
-        Sold out
+        {stock.soldOut}
       </span>
     );
   }
@@ -21,7 +24,7 @@ export function StockPill({ available, quantity, className }: StockPillProps) {
   return (
     <span className={cn("inline-flex items-center gap-1.5 text-[11.5px] text-mute-2", className)}>
       <span className="inline-block w-1.5 h-1.5 rounded-full bg-ok" />
-      {isLow ? `In stock · ${quantity} left` : "In stock"}
+      {isLow && quantity != null ? stock.lowStock(quantity) : stock.inStock}
     </span>
   );
 }

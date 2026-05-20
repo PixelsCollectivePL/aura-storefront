@@ -4,41 +4,23 @@ import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Chip } from "@/components/ui/Chip";
 import { ProductGrid } from "@/components/product/ProductGrid";
+import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
 import { MOCK_PRODUCTS } from "@/lib/mock/products";
 import type { Product } from "@/types/product";
 
-const FILTER_GROUPS = [
-  {
-    id: "roast",
-    label: "All roasts",
-    options: ["Light", "Medium", "Medium-dark", "Dark"],
-  },
-  {
-    id: "method",
-    label: "All methods",
-    options: ["Filter", "Espresso", "Cafetière", "AeroPress"],
-  },
-  {
-    id: "origin",
-    label: "All origins",
-    options: ["Ethiopia", "Colombia", "Kenya", "Guatemala"],
-  },
-  {
-    id: "decaf",
-    label: "Decaf only",
-    options: [],
-  },
-];
+const { shop: s } = CONTENT;
 
-const SORT_OPTIONS = [
-  { value: "featured", label: "Featured" },
-  { value: "fresh", label: "Freshest first" },
-  { value: "price-asc", label: "Price: low to high" },
-  { value: "price-desc", label: "Price: high to low" },
-];
+// Internal filter values — must match product data (roastLevel, tags, origin)
+const ROAST_VALUES = s.filters.roast.map((o) => o.value);
+const METHOD_VALUES = s.filters.method.map((o) => o.value);
+const ORIGIN_VALUES = s.filters.origin.map((o) => o.value);
 
-function filterProducts(products: Product[], activeFilters: Set<string>, showDecaf: boolean): Product[] {
+function filterProducts(
+  products: Product[],
+  activeFilters: Set<string>,
+  showDecaf: boolean
+): Product[] {
   let result = products;
 
   if (showDecaf) {
@@ -48,19 +30,25 @@ function filterProducts(products: Product[], activeFilters: Set<string>, showDec
   if (activeFilters.size === 0) return result;
 
   return result.filter((product) => {
-    const roastMatch = !["Light", "Medium", "Medium-dark", "Dark"].some((r) => activeFilters.has(r)) ||
-      ["Light", "Medium", "Medium-dark", "Dark"].some((r) =>
-        activeFilters.has(r) && product.roastLevel.toLowerCase().includes(r.toLowerCase())
+    const roastMatch =
+      !ROAST_VALUES.some((r) => activeFilters.has(r)) ||
+      ROAST_VALUES.some(
+        (r) =>
+          activeFilters.has(r) &&
+          product.roastLevel.toLowerCase().includes(r.toLowerCase())
       );
 
-    const methodMatch = !["Filter", "Espresso", "Cafetière", "AeroPress"].some((m) => activeFilters.has(m)) ||
-      ["Filter", "Espresso", "Cafetière", "AeroPress"].some((m) =>
-        activeFilters.has(m) && product.tags?.includes(m.toLowerCase())
+    const methodMatch =
+      !METHOD_VALUES.some((m) => activeFilters.has(m)) ||
+      METHOD_VALUES.some(
+        (m) =>
+          activeFilters.has(m) && product.tags?.includes(m.toLowerCase())
       );
 
-    const originMatch = !["Ethiopia", "Colombia", "Kenya", "Guatemala"].some((o) => activeFilters.has(o)) ||
-      ["Ethiopia", "Colombia", "Kenya", "Guatemala"].some((o) =>
-        activeFilters.has(o) && product.origin.includes(o)
+    const originMatch =
+      !ORIGIN_VALUES.some((o) => activeFilters.has(o)) ||
+      ORIGIN_VALUES.some(
+        (o) => activeFilters.has(o) && product.origin.includes(o)
       );
 
     return roastMatch && methodMatch && originMatch;
@@ -88,19 +76,17 @@ export default function ShopPage() {
   };
 
   const filtered = filterProducts(MOCK_PRODUCTS, activeFilters, showDecaf);
-
-  const currentSort = SORT_OPTIONS.find((o) => o.value === sortBy);
+  const currentSort = s.sortOptions.find((o) => o.value === sortBy);
+  const activeCount = activeFilters.size + (showDecaf ? 1 : 0);
 
   return (
     <div>
       {/* ── Page header ── */}
       <div className="px-5 lg:px-14 pt-10 lg:pt-14 pb-8 lg:pb-10 border-b border-line">
-        <p className="text-eyebrow mb-3">The shelf</p>
+        <p className="text-eyebrow mb-3">{s.eyebrow}</p>
         <div className="flex items-baseline justify-between">
-          <h1 className="text-h2 lg:text-h2-lg">All coffees</h1>
-          <p className="text-[11.5px] text-mute-2">
-            {filtered.length} {filtered.length === 1 ? "coffee" : "coffees"}
-          </p>
+          <h1 className="text-h2 lg:text-h2-lg">{s.heading}</h1>
+          <p className="text-[11.5px] text-mute-2">{s.count(filtered.length)}</p>
         </div>
       </div>
 
@@ -116,39 +102,32 @@ export default function ShopPage() {
               "lg:flex-wrap lg:overflow-visible"
             )}
           >
-            {/* Roast chips */}
-            {FILTER_GROUPS[0].options.map((opt) => (
+            {s.filters.roast.map((opt) => (
               <Chip
-                key={opt}
-                label={opt}
-                selected={activeFilters.has(opt)}
-                onClick={() => toggleFilter(opt)}
+                key={opt.value}
+                label={opt.label}
+                selected={activeFilters.has(opt.value)}
+                onClick={() => toggleFilter(opt.value)}
               />
             ))}
-
-            {/* Method chips */}
-            {FILTER_GROUPS[1].options.map((opt) => (
+            {s.filters.method.map((opt) => (
               <Chip
-                key={opt}
-                label={opt}
-                selected={activeFilters.has(opt)}
-                onClick={() => toggleFilter(opt)}
+                key={opt.value}
+                label={opt.label}
+                selected={activeFilters.has(opt.value)}
+                onClick={() => toggleFilter(opt.value)}
               />
             ))}
-
-            {/* Origin chips */}
-            {FILTER_GROUPS[2].options.map((opt) => (
+            {s.filters.origin.map((opt) => (
               <Chip
-                key={opt}
-                label={opt}
-                selected={activeFilters.has(opt)}
-                onClick={() => toggleFilter(opt)}
+                key={opt.value}
+                label={opt.label}
+                selected={activeFilters.has(opt.value)}
+                onClick={() => toggleFilter(opt.value)}
               />
             ))}
-
-            {/* Decaf toggle */}
             <Chip
-              label="Decaf"
+              label={s.filters.decaf}
               selected={showDecaf}
               onClick={() => setShowDecaf((v) => !v)}
             />
@@ -170,11 +149,14 @@ export default function ShopPage() {
             >
               <Icon.filter size={14} />
               <span className="hidden sm:inline">{currentSort?.label}</span>
-              <span className="sm:hidden">Sort</span>
-              <Icon.chev size={12} className={cn(
-                "transition-transform duration-[120ms]",
-                showSort && "rotate-180"
-              )} />
+              <span className="sm:hidden">{s.sortMobileLabel}</span>
+              <Icon.chev
+                size={12}
+                className={cn(
+                  "transition-transform duration-[120ms]",
+                  showSort && "rotate-180"
+                )}
+              />
             </button>
 
             {/* Sort dropdown */}
@@ -186,7 +168,7 @@ export default function ShopPage() {
                   aria-hidden="true"
                 />
                 <div className="absolute right-0 top-[calc(100%+4px)] z-20 bg-bg border border-line shadow-popover min-w-[180px]">
-                  {SORT_OPTIONS.map((opt) => (
+                  {s.sortOptions.map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
@@ -209,17 +191,17 @@ export default function ShopPage() {
         </div>
 
         {/* Active filters summary */}
-        {(activeFilters.size > 0 || showDecaf) && (
+        {activeCount > 0 && (
           <div className="px-5 lg:px-14 pb-3 flex items-center gap-2">
             <p className="text-[11.5px] text-mute-2">
-              {activeFilters.size + (showDecaf ? 1 : 0)} filter{activeFilters.size + (showDecaf ? 1 : 0) !== 1 ? "s" : ""} active
+              {s.activeFiltersLabel(activeCount)}
             </p>
             <button
               type="button"
               onClick={clearFilters}
               className="text-[11.5px] text-mute-2 underline underline-offset-4 hover:text-ink-hi transition-colors duration-[120ms] cursor-pointer"
             >
-              Clear all
+              {s.clearAll}
             </button>
           </div>
         )}
@@ -230,12 +212,9 @@ export default function ShopPage() {
         {filtered.length > 0 ? (
           <ProductGrid products={filtered} />
         ) : (
-          /* Empty state */
           <div className="text-center py-24">
-            <p className="text-h3 lg:text-h3-lg mb-3">No coffees match that.</p>
-            <p className="text-mute-2 text-body mb-6">
-              Try a different roast level or brew method.
-            </p>
+            <p className="text-h3 lg:text-h3-lg mb-3">{s.emptyState.heading}</p>
+            <p className="text-mute-2 text-body mb-6">{s.emptyState.body}</p>
             <button
               type="button"
               onClick={clearFilters}
@@ -248,7 +227,7 @@ export default function ShopPage() {
                 "transition-colors duration-[120ms] cursor-pointer"
               )}
             >
-              Clear filters
+              {s.emptyState.clearCta}
             </button>
           </div>
         )}
