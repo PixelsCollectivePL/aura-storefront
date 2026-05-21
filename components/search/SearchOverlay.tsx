@@ -14,9 +14,8 @@ interface SearchOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   /**
-   * Product catalogue to search against.
-   * Pass MOCK_PRODUCTS here; swap for Shopify query results when integrating.
-   * [shopify-ready]: replace with results from Shopify predictiveSearch API.
+   * Product catalogue to search against — supplied via the getProducts() seam.
+   * [shopify-ready]: replace client-side filter with Shopify predictiveSearch API.
    */
   products: Product[];
 }

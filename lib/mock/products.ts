@@ -190,6 +190,18 @@ export const MOCK_PRODUCTS: Product[] = [
   },
 ];
 
+/**
+ * ─── Data-access seam ───────────────────────────────────────────────────
+ * All product reads in the app go through these three functions — never the
+ * raw MOCK_PRODUCTS array. This is the single integration point: on Shopify
+ * integration, re-implement these to call the Storefront API (and make them
+ * `async`). See docs/SHOPIFY_INTEGRATION_PLAN.md.
+ *
+ * [shopify-ready]: getProducts        → products(first:N) query
+ * [shopify-ready]: getProduct         → productByHandle(handle) query
+ * [shopify-ready]: getFeaturedProducts → collection(handle:"featured") query
+ */
+
 export function getProducts(): Product[] {
   return MOCK_PRODUCTS;
 }
@@ -198,4 +210,8 @@ export function getProduct(handle: string): Product | undefined {
   return MOCK_PRODUCTS.find((p) => p.handle === handle);
 }
 
-export const FEATURED_PRODUCTS = MOCK_PRODUCTS.slice(0, 3);
+export function getFeaturedProducts(count = 4): Product[] {
+  // Prefer an explicit `featured` flag when present; fall back to first N.
+  const flagged = MOCK_PRODUCTS.filter((p) => p.featured);
+  return (flagged.length > 0 ? flagged : MOCK_PRODUCTS).slice(0, count);
+}

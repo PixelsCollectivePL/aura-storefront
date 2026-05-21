@@ -6,14 +6,14 @@ import { FigureRunner } from "@/components/brand/FigureRunner";
 import { NewsletterForm } from "@/components/marketing/NewsletterForm";
 import { Icon } from "@/components/ui/Icon";
 import { CONTENT } from "@/lib/content/pl";
-import { MOCK_PRODUCTS } from "@/lib/mock/products";
+import { getFeaturedProducts } from "@/lib/mock/products";
 import { cn } from "@/lib/utils";
 
 const { homepage: hp } = CONTENT;
 const { hero: h, shelf, quality: q, reviews: rv, newsletter: nl } = hp;
 
-// [shopify-ready] replace with Shopify featured products query
-const FEATURED = MOCK_PRODUCTS.slice(0, 4);
+// [shopify-ready] getFeaturedProducts → Shopify "featured" collection query
+const FEATURED = getFeaturedProducts(4);
 
 export default function HomePage() {
   return (

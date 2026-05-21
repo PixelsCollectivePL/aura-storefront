@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { getProduct, MOCK_PRODUCTS } from "@/lib/mock/products";
+import { getProduct, getProducts } from "@/lib/mock/products";
 import { Starburst } from "@/components/brand/Starburst";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductBuyBox } from "@/components/product/ProductBuyBox";
@@ -44,7 +44,8 @@ function getAccent(handle: string): string {
 // ── Metadata (SSG-ready) ───────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  return MOCK_PRODUCTS.map((p) => ({ handle: p.handle }));
+  // [shopify-ready]: await getProducts() once the seam returns a Promise.
+  return getProducts().map((p) => ({ handle: p.handle }));
 }
 
 export async function generateMetadata({
@@ -75,7 +76,9 @@ export default async function ProductDetailPage({
   const roastLevel = getRoastLevel(product.roastLevel);
   const categoryLabel = getCategoryLabel(product.tags);
   const accent = getAccent(product.handle);
-  const related = MOCK_PRODUCTS.filter((p) => p.handle !== product.handle).slice(0, 4);
+  const related = getProducts()
+    .filter((p) => p.handle !== product.handle)
+    .slice(0, 4);
 
   return (
     // Extra bottom padding on mobile for sticky ATC bar

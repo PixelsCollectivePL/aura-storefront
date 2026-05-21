@@ -5,11 +5,16 @@ import { Icon } from "@/components/ui/Icon";
 import { ProductCard } from "@/components/product/ProductCard";
 import { FilterDrawer } from "@/components/product/FilterDrawer";
 import { CONTENT } from "@/lib/content/pl";
-import { MOCK_PRODUCTS } from "@/lib/mock/products";
+import { getProducts } from "@/lib/mock/products";
 import { cn } from "@/lib/utils";
 import type { Product } from "@/types/product";
 
 const { listing: l } = CONTENT;
+
+// [shopify-ready]: getProducts() is the data-access seam. When integrating,
+// move the fetch to a server component and pass `products` in as a prop —
+// this page is a Client Component and cannot `await` an async data source.
+const ALL_PRODUCTS = getProducts();
 
 // ── Roast matching helpers ─────────────────────────────────────────────
 const ROAST_MATCH: Record<string, string[]> = {
@@ -80,7 +85,7 @@ export default function ProduktylPage() {
   const [sortOpen, setSortOpen] = useState(false);
 
   const filtered = useMemo(
-    () => applyFilters(MOCK_PRODUCTS, category, drawerFilters, sortBy),
+    () => applyFilters(ALL_PRODUCTS, category, drawerFilters, sortBy),
     [category, drawerFilters, sortBy]
   );
 
@@ -145,7 +150,7 @@ export default function ProduktylPage() {
               className="text-[10.5px] tracking-[0.12em] uppercase text-brand mb-3"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              {l.eyebrow} · {l.count(MOCK_PRODUCTS.length)}
+              {l.eyebrow} · {l.count(ALL_PRODUCTS.length)}
             </p>
             <h1
               className="text-[42px] lg:text-[80px] leading-[1] tracking-[-0.03em] font-extrabold text-ink"

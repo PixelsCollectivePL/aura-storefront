@@ -21,6 +21,12 @@ export interface SizeOption {
 }
 
 export interface Product {
+  /**
+   * Shopify Product id (gid://shopify/Product/...).
+   * Optional while running on mock data — `handle` is used as the stable
+   * key today. [shopify-ready]: populated from Shopify Storefront API.
+   */
+  id?: string;
   handle: string;
   title: string;
   shortName: string;
@@ -44,4 +50,15 @@ export interface Product {
   sizeOptions: SizeOption[];
   images: ProductImage[];
   tags?: string[];
+  /**
+   * Marks a product as homepage-featured. While on mock data the homepage
+   * uses `getFeaturedProducts()` (first N). [shopify-ready]: drive from a
+   * Shopify metafield (`custom.featured`) or a dedicated "Featured" collection.
+   */
+  featured?: boolean;
+  /**
+   * Owning collection handle. [shopify-ready]: Shopify Collection.handle —
+   * lets PLP routes and filters map onto Shopify collections.
+   */
+  collection?: string;
 }
