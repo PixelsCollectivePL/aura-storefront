@@ -254,8 +254,8 @@ export const CONTENT = {
     sizeLabel: "Gramatura",
     grindLabel: "Forma",
     qtyLabel: "Ilość",
-    addToCart: "Dodaj do koszyka",
-    addToCartWithPrice: (price: string): string => `Dodaj do koszyka · ${price}`,
+    addToCart: "Wrzuć do koszyka",
+    addToCartWithPrice: (_price: string): string => "Wrzuć do koszyka",
     outOfStock: "Niedostępne",
     ratingsPlaceholder: "4.9 · 312 ocen",
     ratingsAriaLabel: "Ocena 4.9 na 5",
@@ -291,7 +291,7 @@ export const CONTENT = {
 
   product: {
     lotPrefix: "Lot",
-    quickAdd: "Dodaj",
+    quickAdd: "Biorę",
     newBadge: "Nowość",
     stock: {
       inStock: "Na stanie",

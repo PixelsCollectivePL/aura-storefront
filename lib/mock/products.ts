@@ -30,6 +30,11 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
     ],
+    /** [shopify-ready]: map from product.variants edges in Storefront API */
+    variants: [
+      { variantId: "one::200g", title: "200g", price: { amount: 84, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
+      { variantId: "one::500g", title: "500g", price: { amount: 184, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "500g" }], availableForSale: true },
+    ],
     images: [{ src: "", alt: "Aura ONE — Ethiopia Yirgacheffe" }],
     tags: ["filter", "single-origin", "light"],
     harvestYear: "2024",
@@ -62,6 +67,11 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
     ],
+    /** [shopify-ready]: map from product.variants edges in Storefront API */
+    variants: [
+      { variantId: "two::200g", title: "200g", price: { amount: 76, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
+      { variantId: "two::500g", title: "500g", price: { amount: 164, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "500g" }], availableForSale: true },
+    ],
     images: [{ src: "", alt: "Aura TWO — Colombia Huila" }],
     tags: ["filter", "espresso", "single-origin", "medium"],
     harvestYear: "2024",
@@ -91,6 +101,12 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
       { label: "1kg", weight: "1000" },
+    ],
+    /** [shopify-ready]: map from product.variants edges in Storefront API */
+    variants: [
+      { variantId: "three::200g", title: "200g", price: { amount: 68, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
+      { variantId: "three::500g", title: "500g", price: { amount: 148, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "500g" }], availableForSale: true },
+      { variantId: "three::1kg",  title: "1kg",  price: { amount: 269, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "1kg"  }], availableForSale: true },
     ],
     images: [{ src: "", alt: "Aura THREE — House Blend" }],
     tags: ["espresso", "blend", "medium-dark"],
@@ -123,6 +139,11 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
     ],
+    /** [shopify-ready]: map from product.variants edges in Storefront API */
+    variants: [
+      { variantId: "four::200g", title: "200g", price: { amount: 92, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
+      { variantId: "four::500g", title: "500g", price: { amount: 199, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "500g" }], availableForSale: true },
+    ],
     images: [{ src: "", alt: "Aura FOUR — Kenya Nyeri" }],
     tags: ["filter", "single-origin", "light"],
     harvestYear: "2024",
@@ -151,6 +172,12 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
       { label: "1kg", weight: "1000" },
+    ],
+    /** [shopify-ready]: map from product.variants edges in Storefront API */
+    variants: [
+      { variantId: "five::200g", title: "200g", price: { amount: 64, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
+      { variantId: "five::500g", title: "500g", price: { amount: 139, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "500g" }], availableForSale: true },
+      { variantId: "five::1kg",  title: "1kg",  price: { amount: 249, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "1kg"  }], availableForSale: true },
     ],
     images: [{ src: "", alt: "Aura FIVE — Espresso Blend" }],
     tags: ["espresso", "blend", "dark"],
@@ -183,6 +210,11 @@ export const MOCK_PRODUCTS: Product[] = [
     sizeOptions: [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
+    ],
+    /** [shopify-ready]: map from product.variants edges in Storefront API */
+    variants: [
+      { variantId: "six::200g", title: "200g", price: { amount: 72, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
+      { variantId: "six::500g", title: "500g", price: { amount: 159, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "500g" }], availableForSale: true },
     ],
     images: [{ src: "", alt: "Aura SIX — Guatemala Decaf" }],
     tags: ["filter", "espresso", "decaf", "single-origin"],

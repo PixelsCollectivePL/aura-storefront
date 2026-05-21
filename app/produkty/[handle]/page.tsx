@@ -8,7 +8,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { ProductBuyBox } from "@/components/product/ProductBuyBox";
 import { Icon } from "@/components/ui/Icon";
 import { CONTENT, getCategoryLabel } from "@/lib/content/pl";
-import { formatPrice, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const { pdp: t } = CONTENT;
 
@@ -234,29 +234,13 @@ export default async function ProductDetailPage({
               {product.shortName}
             </h1>
 
-            {/* Price + placeholder rating */}
-            <div className="flex items-baseline justify-between mt-4 gap-4">
-              <div className="flex items-baseline gap-3">
-                <span
-                  className="font-bold text-ink tabular-nums"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "clamp(24px, 3.5vw, 32px)",
-                  }}
-                >
-                  {formatPrice(product.price.amount, product.price.currencyCode)}
-                </span>
-                <span className="text-[13px] text-muted">
-                  za {product.sizeOptions[0]?.label ?? "250g"}
-                </span>
-              </div>
-              <div
-                className="flex items-center gap-1.5 text-[12.5px] text-muted"
-                aria-label={t.ratingsAriaLabel}
-              >
-                <StarRow />
-                <span>{t.ratingsPlaceholder}</span>
-              </div>
+            {/* Placeholder rating */}
+            <div
+              className="flex items-center gap-1.5 mt-3 text-[12.5px] text-muted"
+              aria-label={t.ratingsAriaLabel}
+            >
+              <StarRow />
+              <span>{t.ratingsPlaceholder}</span>
             </div>
           </div>
 

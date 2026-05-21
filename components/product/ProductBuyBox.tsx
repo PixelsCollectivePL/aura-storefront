@@ -6,8 +6,7 @@ import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { useCart } from "@/lib/cart/cart-context";
 import { showToast } from "@/lib/toast/toast";
 import { CONTENT } from "@/lib/content/pl";
-import { formatPrice } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { formatPriceFromPLN, formatPricePLN, cn } from "@/lib/utils";
 import type { Product, SizeOption } from "@/types/product";
 
 const { pdp: t } = CONTENT;
@@ -20,6 +19,7 @@ interface ProductBuyBoxProps {
  * ProductBuyBox — interactive buy section.
  * Handles size/grind variant selection, quantity, add-to-cart.
  * Renders a sticky add-to-cart bar on mobile.
+ * Price display updates reactively as the user selects a size.
  * [shopify-ready]: swap mock addItem for Shopify cart mutation.
  */
 export function ProductBuyBox({ product }: ProductBuyBoxProps) {
@@ -34,6 +34,18 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
+  /** Variant matching the currently selected size — drives price display. */
+  const selectedVariant = product.variants?.find((v) =>
+    v.selectedOptions.some(
+      (o) => o.name === "Size" && o.value === selectedSize.label
+    )
+  );
+
+  /** Price string: exact variant price when known, else "OD X PLN" fallback. */
+  const priceDisplay = selectedVariant
+    ? formatPricePLN(selectedVariant.price.amount)
+    : formatPriceFromPLN(product.price.amount);
+
   function handleAddToCart() {
     const variantTitle = `${selectedSize.label} · ${selectedGrind}`;
     addToCart(product, variantTitle, quantity);
@@ -43,12 +55,25 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
     setTimeout(() => setAdded(false), 2000);
   }
 
-  const priceStr = formatPrice(product.price.amount, product.price.currencyCode);
-  const addLabel = added ? "Dodano ✓" : t.addToCartWithPrice(priceStr);
+  const addLabel = added ? "Dodano ✓" : t.addToCart;
   const available = product.availableForSale;
 
   return (
     <>
+      {/* ── Price display (reactive to size selection) ────────────── */}
+      <div className="flex items-baseline gap-3 -mt-2">
+        <span
+          className="font-extrabold tabular-nums text-ink tracking-[-0.025em]"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "clamp(28px, 4vw, 36px)",
+          }}
+        >
+          {priceDisplay}
+        </span>
+        <span className="text-[13px] text-muted">za {selectedSize.label}</span>
+      </div>
+
       {/* ── Size selector ─────────────────────────────────────────── */}
       <VariantGroup label={t.sizeLabel} id="size-selector">
         <div className="flex flex-wrap gap-2">

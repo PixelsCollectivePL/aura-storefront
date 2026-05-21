@@ -20,6 +20,26 @@ export interface SizeOption {
   weight: string;
 }
 
+/**
+ * Per-variant price / availability — mirrors Shopify ProductVariant.
+ * [shopify-ready]: populated from variant fragment in Storefront API response.
+ */
+export interface ProductVariant {
+  /**
+   * Shopify ProductVariant gid (gid://shopify/ProductVariant/...).
+   * Mock value: `${handle}::${title}`.
+   */
+  variantId: string;
+  title: string;
+  price: ProductPrice;
+  /**
+   * Axis values for this variant — e.g. [{ name: "Size", value: "200g" }].
+   * [shopify-ready]: map directly from variant.selectedOptions.
+   */
+  selectedOptions: Array<{ name: string; value: string }>;
+  availableForSale?: boolean;
+}
+
 export interface Product {
   /**
    * Shopify Product id (gid://shopify/Product/...).
@@ -48,6 +68,11 @@ export interface Product {
   isNew?: boolean;
   grindOptions: string[];
   sizeOptions: SizeOption[];
+  /**
+   * Flat list of purchasable variants (size axis only in mock data).
+   * [shopify-ready]: maps from Shopify product.variants edges.
+   */
+  variants?: ProductVariant[];
   images: ProductImage[];
   tags?: string[];
   /**

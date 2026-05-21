@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { cn, formatPriceFrom } from "@/lib/utils";
+import { cn, formatPriceFromPLN } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { useCart } from "@/lib/cart/cart-context";
 import { showToast } from "@/lib/toast/toast";
@@ -90,38 +90,44 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Product info */}
         <div className="flex flex-col gap-0.5 lg:gap-[3px]">
+          {/* Lot eyebrow */}
           <p
             className="text-[10.5px] tracking-[0.08em] text-muted-2 uppercase"
             style={{ fontFamily: "var(--font-mono)" }}
           >
             {p.lotPrefix} {product.lotCode}
           </p>
-          <h3
-            className={cn(
-              "font-extrabold leading-[1.1] text-ink",
-              "text-[17px] tracking-[-0.02em]",
-              "lg:text-[19px]"
-            )}
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {product.shortName}
-          </h3>
+
+          {/* Name + price in same row */}
+          <div className="flex items-start justify-between gap-2 mt-0.5">
+            <h3
+              className={cn(
+                "font-extrabold leading-[1.1] text-ink",
+                "text-[17px] tracking-[-0.02em]",
+                "lg:text-[19px]"
+              )}
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {product.shortName}
+            </h3>
+            <p
+              className={cn(
+                "tabular-nums text-brand font-extrabold shrink-0",
+                "text-[14px] lg:text-[15px]",
+                "tracking-[-0.01em] pt-[2px]"
+              )}
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {formatPriceFromPLN(product.price.amount)}
+            </p>
+          </div>
+
+          {/* Origin + notes */}
           <p className="text-[12px] leading-[1.4] text-muted">{product.origin}</p>
           <p className="text-[12px] leading-[1.4] text-muted-2">
             {product.notes.join(", ")}
           </p>
         </div>
-
-        <p
-          className={cn(
-            "tabular-nums text-ink tracking-[-0.015em]",
-            "mt-2 lg:mt-2.5",
-            "text-[17px] lg:text-[18px] font-extrabold"
-          )}
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {formatPriceFrom(product.price.amount, product.price.currencyCode)}
-        </p>
       </Link>
     </article>
   );
