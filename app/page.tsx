@@ -118,7 +118,7 @@ export default function HomePage() {
                 {/* Layer 2 — white illustration (on top, stable) */}
                 <div className="absolute inset-0">
                   <Image
-                    src="/assets/brand/aura-hero-illustration-white.png"
+                    src="/assets/brand/aura-hero-illustration-front.png"
                     alt="Ilustracja marki Aura"
                     fill
                     className="object-contain"
@@ -144,7 +144,7 @@ export default function HomePage() {
               {/* Layer 2 — white illustration (on top, stable) */}
               <div className="absolute inset-0">
                 <Image
-                  src="/assets/brand/aura-hero-illustration-white.png"
+                  src="/assets/brand/aura-hero-illustration-front.png"
                   alt="Ilustracja marki Aura"
                   fill
                   className="object-contain"
