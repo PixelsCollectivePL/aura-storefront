@@ -23,10 +23,10 @@ export default function HomePage() {
           HERO — dark, full-bleed, controlled layout
       ══════════════════════════════════════════ */}
       <section className="bg-ink text-white overflow-hidden">
-        <div className="px-5 lg:px-20 py-12 lg:py-[88px] lg:grid lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-center">
+        <div className="flex flex-col px-5 lg:px-20 py-12 lg:py-[88px] lg:grid lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-center">
 
           {/* ── Left: copy ── */}
-          <div>
+          <div className="order-2 lg:order-1">
             <p
               className="text-[11px] tracking-[0.14em] uppercase text-brand mb-6 lg:mb-7"
               style={{ fontFamily: "var(--font-mono)" }}
@@ -101,9 +101,9 @@ export default function HomePage() {
           </div>
 
           {/* ── Right: layered brand composition ── */}
-          <div>
-            {/* Mobile: two-layer composition below copy */}
-            <div className="lg:hidden mt-8 flex justify-center">
+          <div className="order-1 lg:order-2">
+            {/* Mobile: two-layer composition above copy */}
+            <div className="lg:hidden mb-6 flex justify-center">
               <div className="relative w-full max-w-[300px]" style={{ aspectRatio: "1 / 1" }}>
                 {/* Layer 1 — rotating star (behind) */}
                 <div className="absolute inset-0 star-spin-bg" aria-hidden="true">
