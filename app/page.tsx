@@ -430,15 +430,15 @@ export default function HomePage() {
             <p className="mt-4 text-[11.5px] text-white/50">{nl.disclaimer}</p>
           </div>
 
-          {/* Right — illustration, centered in column */}
-          <div className="hidden lg:flex items-center justify-center" aria-hidden="true">
-            <div className="relative w-[440px] h-[440px]">
+          {/* Right — illustration, bleeds to edge */}
+          <div className="hidden lg:block" aria-hidden="true" style={{ marginRight: "-80px" }}>
+            <div className="relative w-full" style={{ aspectRatio: "1 / 1" }}>
               <Image
                 src="/assets/brand/aura-footer-illustration.png"
                 alt=""
                 fill
-                className="object-contain"
-                sizes="440px"
+                className="object-contain object-right"
+                sizes="(min-width: 1024px) 55vw, 0px"
               />
             </div>
           </div>
