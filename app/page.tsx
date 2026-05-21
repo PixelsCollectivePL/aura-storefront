@@ -160,7 +160,7 @@ export default function HomePage() {
               className="flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              <Image src="/assets/brand/aura-star.png" alt="" width={13} height={13} aria-hidden="true" />
+              <Image src="/assets/brand/aura-star.png" alt="" width={13} height={13} aria-hidden="true" className="star-spin" />
               {shelf.eyebrow}
             </p>
             <h2
@@ -247,7 +247,7 @@ export default function HomePage() {
               className="flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase text-brand mb-5 lg:mb-6"
               style={{ fontFamily: "var(--font-mono)" }}
             >
-              <Image src="/assets/brand/aura-star.png" alt="" width={13} height={13} aria-hidden="true" />
+              <Image src="/assets/brand/aura-star.png" alt="" width={13} height={13} aria-hidden="true" className="star-spin" />
               {q.eyebrow}
             </p>
             <h2

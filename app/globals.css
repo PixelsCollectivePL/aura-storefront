@@ -271,7 +271,7 @@
   to   { transform: rotate(360deg); }
 }
 @utility star-spin {
-  animation: aura-star-spin 22s linear infinite;
+  animation: aura-star-spin 12s linear infinite;
   transform-origin: center;
 }
 
