@@ -12,3 +12,12 @@ export function formatPrice(amount: number, currencyCode = "PLN"): string {
     minimumFractionDigits: 0,
   }).format(amount);
 }
+
+/**
+ * "od X zł" — signals a minimum/starting price, ready for Shopify variants
+ * where the card shows priceRange.minVariantPrice.
+ * [shopify-ready]: pass minVariantPrice.amount + minVariantPrice.currencyCode.
+ */
+export function formatPriceFrom(amount: number, currencyCode = "PLN"): string {
+  return `od ${formatPrice(amount, currencyCode)}`;
+}

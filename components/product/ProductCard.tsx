@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { cn, formatPrice } from "@/lib/utils";
+import { cn, formatPriceFrom } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { useCart } from "@/lib/cart/cart-context";
 import { showToast } from "@/lib/toast/toast";
@@ -114,12 +114,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         <p
           className={cn(
-            "font-semibold text-ink tabular-nums",
-            "mt-2.5 lg:mt-3",
-            "text-[14px] lg:text-[15px]"
+            "tabular-nums text-ink tracking-[-0.015em]",
+            "mt-2 lg:mt-2.5",
+            "text-[17px] lg:text-[18px] font-extrabold"
           )}
+          style={{ fontFamily: "var(--font-display)" }}
         >
-          {formatPrice(product.price.amount, product.price.currencyCode)}
+          {formatPriceFrom(product.price.amount, product.price.currencyCode)}
         </p>
       </Link>
     </article>
