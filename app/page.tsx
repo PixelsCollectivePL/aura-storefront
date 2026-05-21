@@ -100,43 +100,56 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* ── Right: brand illustration ── */}
+          {/* ── Right: layered brand composition ── */}
           <div>
-            {/* Mobile: illustration below copy, full-width constrained */}
+            {/* Mobile: two-layer composition below copy */}
             <div className="lg:hidden mt-8 flex justify-center">
-              <div className="relative w-full max-w-[320px]" style={{ aspectRatio: "1 / 1" }}>
-                <Image
-                  src="/assets/brand/aura-hero-illustration.png"
-                  alt="Aura — barista w akcji, kawa z charakterem"
-                  fill
-                  className="object-contain"
-                  priority
-                  sizes="320px"
-                />
+              <div className="relative w-full max-w-[300px]" style={{ aspectRatio: "1 / 1" }}>
+                {/* Layer 1 — rotating star (behind) */}
+                <div className="absolute inset-0 star-spin-bg" aria-hidden="true">
+                  <Image
+                    src="/assets/brand/aura-star.png"
+                    alt=""
+                    fill
+                    className="object-contain"
+                    sizes="300px"
+                  />
+                </div>
+                {/* Layer 2 — white illustration (on top, stable) */}
+                <div className="absolute inset-0">
+                  <Image
+                    src="/assets/brand/aura-hero-illustration-white.png"
+                    alt="Ilustracja marki Aura"
+                    fill
+                    className="object-contain"
+                    priority
+                    sizes="300px"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Desktop: large illustration, square aspect container */}
+            {/* Desktop: large two-layer composition */}
             <div className="hidden lg:block relative" style={{ aspectRatio: "1 / 1" }}>
-              <Image
-                src="/assets/brand/aura-hero-illustration.png"
-                alt="Aura — barista w akcji, kawa z charakterem"
-                fill
-                className="object-contain"
-                priority
-                sizes="(min-width: 1024px) 45vw, 0px"
-              />
-              {/* Floating star accent — top-right corner */}
-              <div
-                className="absolute star-float"
-                style={{ top: "6%", right: "2%" }}
-                aria-hidden="true"
-              >
+              {/* Layer 1 — rotating star (behind) */}
+              <div className="absolute inset-0 star-spin-bg" aria-hidden="true">
                 <Image
                   src="/assets/brand/aura-star.png"
                   alt=""
-                  width={56}
-                  height={56}
+                  fill
+                  className="object-contain"
+                  sizes="(min-width: 1024px) 45vw, 0px"
+                />
+              </div>
+              {/* Layer 2 — white illustration (on top, stable) */}
+              <div className="absolute inset-0">
+                <Image
+                  src="/assets/brand/aura-hero-illustration-white.png"
+                  alt="Ilustracja marki Aura"
+                  fill
+                  className="object-contain"
+                  priority
+                  sizes="(min-width: 1024px) 45vw, 0px"
                 />
               </div>
             </div>

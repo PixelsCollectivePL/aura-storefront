@@ -270,8 +270,14 @@
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+/* Small eyebrow accents — 12s */
 @utility star-spin {
   animation: aura-star-spin 12s linear infinite;
+  transform-origin: center;
+}
+/* Large hero background star — 24s */
+@utility star-spin-bg {
+  animation: aura-star-spin 24s linear infinite;
   transform-origin: center;
 }
 
