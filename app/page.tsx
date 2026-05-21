@@ -149,7 +149,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════
           FEATURED SHELF
       ══════════════════════════════════════════ */}
-      <section className="bg-paper px-5 lg:px-14 pt-16 lg:pt-[100px] pb-16 lg:pb-[100px]">
+      <section className="bg-paper bg-grid-subtle px-5 lg:px-14 pt-16 lg:pt-[100px] pb-16 lg:pb-[100px]">
         {/* Section head */}
         <div className="flex items-end justify-between mb-8 lg:mb-10 gap-4">
           <div>
@@ -207,7 +207,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════
           QUALITY / PROMISE — 2-col, paper bg
       ══════════════════════════════════════════ */}
-      <section className="bg-paper-2 border-t border-line px-5 lg:px-14 py-16 lg:py-[100px]">
+      <section className="bg-paper-2 bg-grid-subtle border-t border-line px-5 lg:px-14 py-16 lg:py-[100px]">
         <div className="lg:grid lg:grid-cols-2 lg:gap-20 lg:items-center">
 
           {/* Left — photo placeholder */}
@@ -308,7 +308,7 @@ export default function HomePage() {
       {/* ══════════════════════════════════════════
           REVIEWS — paper-2 bg
       ══════════════════════════════════════════ */}
-      <section className="bg-paper border-t border-line px-5 lg:px-14 py-16 lg:py-[100px]">
+      <section className="bg-paper bg-grid-subtle border-t border-line px-5 lg:px-14 py-16 lg:py-[100px]">
         {/* Head */}
         <div className="flex items-end justify-between mb-8 lg:mb-12 gap-4">
           <div>
