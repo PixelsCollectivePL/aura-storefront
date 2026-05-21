@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aura · Hero final · v2.1.1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #f0eee9; color: #0E0E0C; font-family: "DM Sans", sans-serif; }
+    #root { min-height: 100vh; }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="aura-illustrations.jsx"></script>
+  <script type="text/babel" src="aura-components.jsx"></script>
+  <script type="text/babel" src="aura-hero-final.jsx"></script>
+  <script type="text/babel">
+    function App() {
+      return (
+        <div className="aura" style={{ minHeight: '100vh' }}>
+          <DesignCanvas>
+            <DCSection id="hero" title="Hero final · v2.1.1" subtitle="Produkcyjny hero. Ciemny, mocna typografia, pomarańcz, brand illustration slot.">
+              <DCArtboard id="d" label="Desktop · 1440 (tylko sekcja hero)" width={HF_DESK_W} height={920}>
+                <div className="aura" style={{ background: 'var(--aura-paper)' }}>
+                  <Header cartCount={2} transparent />
+                  <HeroFinalDesktop h={HEADLINE_OPTIONS[0]} />
+                </div>
+              </DCArtboard>
+              <DCArtboard id="m" label="Mobile · 390 (tylko sekcja hero)" width={HF_M_W} height={920}>
+                <div className="aura" style={{ background: 'var(--aura-paper)' }}>
+                  <Header mobile cartCount={2} transparent />
+                  <HeroFinalMobile h={HEADLINE_OPTIONS[0]} />
+                </div>
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="context" title="Hero w kontekście homepage v2.1" subtitle="Hero na górze + reszta strony głównej v2.1 bez zmian">
+              <DCArtboard id="full" label="Desktop · hero + featured products (preview)" width={HF_DESK_W} height={1700}>
+                <div className="aura"><HeroIntegrationPreview /></div>
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="copy" title="Hasła · 3 propozycje" subtitle="Wybierz hasło przewodnie do dropu">
+              <DCArtboard id="headlines" label="3 wersje hasła + ton + sub" width={760} height={1100}>
+                <div className="aura"><HeadlineOptionsBoard /></div>
+              </DCArtboard>
+            </DCSection>
+
+            <DCSection id="notes" title="Notatki wdrożeniowe" subtitle="Struktura, tokens, responsive, placeholder swap, mikroanimacje CSS">
+              <DCArtboard id="impl" label="Implementation notes (Claude Code)" width={1200} height={3400}>
+                <div className="aura"><HeroNotesBoard /></div>
+              </DCArtboard>
+            </DCSection>
+          </DesignCanvas>
+        </div>
+      );
+    }
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

@@ -255,6 +255,54 @@
   animation: aura-ticker 28s linear infinite;
 }
 
+/* ─── Brand burst rotation ─── */
+@keyframes aura-burst-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@utility burst-rotate {
+  animation: aura-burst-rotate 60s linear infinite;
+  transform-origin: center;
+}
+
+/* ─── Generic reveal (fade + rise) ─── */
+@keyframes aura-reveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@utility aura-reveal {
+  animation: aura-reveal 500ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+@utility nav-item-reveal {
+  opacity: 0;
+  animation: aura-reveal 280ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+/* ─── Search panel slide-down ─── */
+@keyframes aura-search-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@utility search-panel-in {
+  animation: aura-search-in 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* ─── Results fade-in ─── */
+@utility results-reveal {
+  animation: aura-reveal 200ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* ─── Toast notification ─── */
+@keyframes aura-toast {
+  0%   { opacity: 0; transform: translate(-50%, 14px); }
+  10%  { opacity: 1; transform: translate(-50%, 0);    }
+  78%  { opacity: 1; transform: translate(-50%, 0);    }
+  100% { opacity: 0; transform: translate(-50%, 6px);  }
+}
+@utility toast-show {
+  animation: aura-toast 2800ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
 /* ─── Base layer ─── */
 @layer base {
   *:focus {

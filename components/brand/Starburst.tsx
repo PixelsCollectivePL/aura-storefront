@@ -6,6 +6,8 @@ interface StarburstProps {
   children?: React.ReactNode;
   style?: React.CSSProperties;
   className?: string;
+  /** Applied to the SVG element only — use for burst-rotate so the figure stays upright */
+  svgClassName?: string;
 }
 
 /** 12-point spiky starburst — original geometric shape, brand placeholder */
@@ -17,6 +19,7 @@ export function Starburst({
   children,
   style,
   className,
+  svgClassName,
 }: StarburstProps) {
   const r = size / 2;
   const inner = r * (1 - depth);
@@ -52,6 +55,7 @@ export function Starburst({
         height={size}
         style={{ position: "absolute", inset: 0 }}
         aria-hidden="true"
+        className={svgClassName}
       >
         <path
           d={pathParts.join(" ")}

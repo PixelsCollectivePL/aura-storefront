@@ -126,11 +126,13 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 <Link
                   href={item.href}
                   onClick={onClose}
+                  style={{ animationDelay: `${i * 45}ms` }}
                   className={cn(
                     "flex items-center justify-between py-5",
                     "border-b border-white/10 text-white no-underline",
                     "hover:text-white/80 transition-colors duration-[120ms]",
-                    "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-[-2px]"
+                    "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-[-2px]",
+                    "nav-item-reveal"
                   )}
                 >
                   <div className="flex items-baseline gap-3.5">

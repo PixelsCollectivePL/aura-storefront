@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn, formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { useCart } from "@/lib/cart/cart-context";
+import { showToast } from "@/lib/toast/toast";
 import { CONTENT } from "@/lib/content/pl";
 import type { Product } from "@/types/product";
 
@@ -19,7 +20,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const { addToCart, openCart } = useCart();
 
   return (
-    <article className={cn("group", className)}>
+    <article className={cn("group transition-transform duration-[200ms] ease-out hover:-translate-y-1", className)}>
       <Link
         href={`/produkty/${product.handle}`}
         className="block focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-md"
@@ -28,12 +29,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div
           className={cn(
             "relative aspect-[3/4] overflow-hidden mb-3 lg:mb-4",
-            "rounded-md bg-paper-2"
+            "rounded-md bg-paper-2",
+            "transition-shadow duration-[200ms]",
+            "group-hover:shadow-card"
           )}
         >
           {/* Placeholder stripes — warm paper-2 with subtle diagonal pattern */}
           <div
-            className="absolute inset-0 rounded-md"
+            className="absolute inset-0 rounded-md transition-transform duration-[300ms] ease-out group-hover:scale-[1.025]"
             style={{
               background: `
                 repeating-linear-gradient(
@@ -77,6 +80,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 e.stopPropagation();
                 addToCart(product);
                 openCart();
+                showToast("Dodano do koszyka");
               }}
             >
               {p.quickAdd}

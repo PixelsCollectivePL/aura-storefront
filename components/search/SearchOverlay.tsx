@@ -106,7 +106,7 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
           "fixed left-0 right-0 z-40",
           "top-14 lg:top-[72px]",
           "bg-paper border-b border-line shadow-popover",
-          "cart-overlay-in"
+          "search-panel-in"
         )}
       >
         {/* ── Input row ──────────────────────────────────────── */}
@@ -200,7 +200,7 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
 
           {/* Search results */}
           {hasQuery && hasResults && (
-            <div>
+            <div className="results-reveal">
               <p
                 className="text-[10.5px] tracking-[0.12em] uppercase text-muted mb-3"
                 style={{ fontFamily: "var(--font-mono)" }}

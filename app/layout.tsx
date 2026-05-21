@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart/cart-context";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { Toast } from "@/components/ui/Toast";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -51,6 +52,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <CartDrawer />
+          <Toast />
         </CartProvider>
       </body>
     </html>

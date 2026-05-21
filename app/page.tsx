@@ -25,7 +25,7 @@ export default function HomePage() {
         <div className="px-5 lg:px-20 py-12 lg:py-[88px] lg:grid lg:grid-cols-[1.15fr_1fr] lg:gap-16 lg:items-center">
 
           {/* ── Left: copy ── */}
-          <div className="order-2 lg:order-1">
+          <div>
             <p
               className="text-[11px] tracking-[0.14em] uppercase text-brand mb-6 lg:mb-7"
               style={{ fontFamily: "var(--font-mono)" }}
@@ -84,32 +84,23 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Inline micro-stats */}
-            <div className="flex gap-8 lg:gap-10">
-              {h.stats.map((s) => (
-                <div key={s.label}>
-                  <div
-                    className="text-brand font-extrabold leading-none tracking-[-0.02em] mb-1"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: "clamp(22px, 3vw, 32px)",
-                    }}
-                  >
-                    {s.value}
-                  </div>
-                  <div
-                    className="text-[10px] tracking-[0.14em] uppercase text-white/50"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
-                    {s.label}
-                  </div>
-                </div>
+            {/* Trust notes */}
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {h.trustNotes.map((note) => (
+                <span
+                  key={note}
+                  className="flex items-center gap-1.5 text-[12px] text-white/60"
+                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.04em" }}
+                >
+                  <span className="text-brand text-[10px]">✦</span>
+                  {note}
+                </span>
               ))}
             </div>
           </div>
 
           {/* ── Right: illustration ── */}
-          <div className="order-1 lg:order-2" aria-hidden="true">
+          <div aria-hidden="true">
             {/* Mobile: compact burst, fixed height */}
             <div className="lg:hidden relative h-[260px] flex items-center justify-center">
               <Starburst color="var(--aura-orange)" size={240} points={12} depth={0.22}>
@@ -130,7 +121,7 @@ export default function HomePage() {
             {/* Desktop: large burst, aspect-ratio container */}
             <div className="hidden lg:block relative" style={{ aspectRatio: "5 / 6" }}>
               <div className="absolute inset-0 flex items-center justify-center">
-                <Starburst color="var(--aura-orange)" size={460} points={12} depth={0.22}>
+                <Starburst color="var(--aura-orange)" size={460} points={12} depth={0.22} svgClassName="burst-rotate">
                   <FigureRunner size={230} color="#0E0E0C" />
                 </Starburst>
               </div>

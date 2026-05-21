@@ -48,12 +48,8 @@ export const CONTENT = {
       subheading:
         "Specialty z polskiej palarni. Trzy blendy na każdy rytuał — espresso, filtr, wieczór.",
       ctaPrimary: "Sprawdź kawy",
-      ctaSecondary: "Porównaj blendy",
-      stats: [
-        { value: "12 kg",  label: "Wsad" },
-        { value: "< 14 d", label: "Od palenia" },
-        { value: "4.9 ★",  label: "2 140 ocen" },
-      ],
+      ctaSecondary: "Poznaj blendy",
+      trustNotes: ["Świeżo palona", "Darmowa dostawa od 150 zł", "Wysyłka 24–48h"],
     },
 
     shelf: {

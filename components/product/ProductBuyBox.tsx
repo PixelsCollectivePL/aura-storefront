@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { useCart } from "@/lib/cart/cart-context";
+import { showToast } from "@/lib/toast/toast";
 import { CONTENT } from "@/lib/content/pl";
 import { formatPrice } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
     addToCart(product, variantTitle, quantity);
     setAdded(true);
     openCart();
+    showToast("Dodano do koszyka");
     setTimeout(() => setAdded(false), 2000);
   }
 
