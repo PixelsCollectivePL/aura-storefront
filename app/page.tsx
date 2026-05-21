@@ -429,18 +429,18 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Decorative illustration — right side, partially clipped */}
+        {/* Decorative illustration — right side, vertically centered */}
         <div
-          className="absolute right-0 bottom-0 hidden lg:block"
+          className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block"
           aria-hidden="true"
         >
-          <div className="relative w-[360px] h-[360px]">
+          <div className="relative w-[520px] h-[520px]">
             <Image
               src="/assets/brand/aura-footer-illustration.png"
               alt=""
               fill
-              className="object-contain object-right-bottom"
-              sizes="360px"
+              className="object-contain"
+              sizes="520px"
             />
           </div>
         </div>
