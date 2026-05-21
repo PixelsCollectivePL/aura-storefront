@@ -2,8 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { ProductCard } from "@/components/product/ProductCard";
 import { TrustStrip } from "@/components/layout/TrustStrip";
-import { Starburst } from "@/components/brand/Starburst";
-import { FigureRunner } from "@/components/brand/FigureRunner";
 import { NewsletterForm } from "@/components/marketing/NewsletterForm";
 import { Icon } from "@/components/ui/Icon";
 import { CONTENT } from "@/lib/content/pl";
@@ -431,15 +429,20 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Decorative starburst — contained, right side */}
+        {/* Decorative illustration — right side, partially clipped */}
         <div
-          className="absolute right-[-80px] top-[-40px] lg:right-[-40px] lg:top-[-40px]"
+          className="absolute right-0 bottom-0 hidden lg:block"
           aria-hidden="true"
-          style={{ transform: "rotate(15deg)" }}
         >
-          <Starburst color="rgba(255,255,255,0.12)" size={400} points={12} depth={0.2}>
-            <FigureRunner size={200} color="rgba(255,255,255,0.18)" />
-          </Starburst>
+          <div className="relative w-[360px] h-[360px]">
+            <Image
+              src="/assets/brand/aura-footer-illustration.png"
+              alt=""
+              fill
+              className="object-contain object-right-bottom"
+              sizes="360px"
+            />
+          </div>
         </div>
       </section>
     </>
