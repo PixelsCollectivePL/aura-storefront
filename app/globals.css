@@ -265,6 +265,26 @@
   transform-origin: center;
 }
 
+/* ─── Brand star slow spin (PNG asset) ─── */
+@keyframes aura-star-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@utility star-spin {
+  animation: aura-star-spin 22s linear infinite;
+  transform-origin: center;
+}
+
+/* ─── Brand star gentle float + sway ─── */
+@keyframes aura-star-float {
+  0%,  100% { transform: translateY(0px)  rotate(0deg);  }
+  38%        { transform: translateY(-9px) rotate(11deg); }
+  68%        { transform: translateY(5px)  rotate(-7deg); }
+}
+@utility star-float {
+  animation: aura-star-float 8s ease-in-out infinite;
+}
+
 /* ─── Generic reveal (fade + rise) ─── */
 @keyframes aura-reveal {
   from { opacity: 0; transform: translateY(14px); }

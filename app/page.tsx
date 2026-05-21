@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ProductCard } from "@/components/product/ProductCard";
 import { TrustStrip } from "@/components/layout/TrustStrip";
 import { Starburst } from "@/components/brand/Starburst";
@@ -99,42 +100,44 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* ── Right: illustration ── */}
-          <div aria-hidden="true">
-            {/* Mobile: compact burst, fixed height */}
-            <div className="lg:hidden relative h-[260px] flex items-center justify-center">
-              <Starburst color="var(--aura-orange)" size={240} points={12} depth={0.22}>
-                <FigureRunner size={118} color="#0E0E0C" />
-              </Starburst>
-              <div className="absolute" style={{ right: "14%", top: "8%" }}>
-                <Starburst color="var(--aura-paper-2)" size={52} points={10} depth={0.26}>
-                  <span
-                    className="text-ink text-center font-bold"
-                    style={{ fontFamily: "var(--font-mono)", fontSize: 7, letterSpacing: "0.12em", textTransform: "uppercase", lineHeight: 1.3 }}
-                  >
-                    DROP<br />01
-                  </span>
-                </Starburst>
+          {/* ── Right: brand illustration ── */}
+          <div>
+            {/* Mobile: illustration below copy, full-width constrained */}
+            <div className="lg:hidden mt-8 flex justify-center">
+              <div className="relative w-full max-w-[320px]" style={{ aspectRatio: "1 / 1" }}>
+                <Image
+                  src="/assets/brand/aura-hero-illustration.png"
+                  alt="Aura — barista w akcji, kawa z charakterem"
+                  fill
+                  className="object-contain"
+                  priority
+                  sizes="320px"
+                />
               </div>
             </div>
 
-            {/* Desktop: large burst, aspect-ratio container */}
-            <div className="hidden lg:block relative" style={{ aspectRatio: "5 / 6" }}>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Starburst color="var(--aura-orange)" size={460} points={12} depth={0.22} svgClassName="burst-rotate">
-                  <FigureRunner size={230} color="#0E0E0C" />
-                </Starburst>
-              </div>
-              {/* Accent burst */}
-              <div className="absolute" style={{ right: 0, bottom: "12%" }}>
-                <Starburst color="var(--aura-paper-2)" size={80} points={10} depth={0.26}>
-                  <span
-                    className="text-ink text-center font-bold"
-                    style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", lineHeight: 1.3 }}
-                  >
-                    DROP<br />01
-                  </span>
-                </Starburst>
+            {/* Desktop: large illustration, square aspect container */}
+            <div className="hidden lg:block relative" style={{ aspectRatio: "1 / 1" }}>
+              <Image
+                src="/assets/brand/aura-hero-illustration.png"
+                alt="Aura — barista w akcji, kawa z charakterem"
+                fill
+                className="object-contain"
+                priority
+                sizes="(min-width: 1024px) 45vw, 0px"
+              />
+              {/* Floating star accent — top-right corner */}
+              <div
+                className="absolute star-float"
+                style={{ top: "6%", right: "2%" }}
+                aria-hidden="true"
+              >
+                <Image
+                  src="/assets/brand/aura-star.png"
+                  alt=""
+                  width={56}
+                  height={56}
+                />
               </div>
             </div>
           </div>
@@ -154,9 +157,10 @@ export default function HomePage() {
         <div className="flex items-end justify-between mb-8 lg:mb-10 gap-4">
           <div>
             <p
-              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
+              className="flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
               style={{ fontFamily: "var(--font-mono)" }}
             >
+              <Image src="/assets/brand/aura-star.png" alt="" width={13} height={13} aria-hidden="true" />
               {shelf.eyebrow}
             </p>
             <h2
@@ -240,9 +244,10 @@ export default function HomePage() {
           {/* Right — copy */}
           <div>
             <p
-              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-5 lg:mb-6"
+              className="flex items-center gap-1.5 text-[11px] tracking-[0.14em] uppercase text-brand mb-5 lg:mb-6"
               style={{ fontFamily: "var(--font-mono)" }}
             >
+              <Image src="/assets/brand/aura-star.png" alt="" width={13} height={13} aria-hidden="true" />
               {q.eyebrow}
             </p>
             <h2
