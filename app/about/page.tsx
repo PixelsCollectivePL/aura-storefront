@@ -14,7 +14,7 @@ export default function AboutPage() {
   return (
     <div>
       {/* ── Hero ── */}
-      <section className="px-5 lg:px-14 pt-10 lg:pt-[120px] pb-12 lg:pb-20 lg:grid lg:grid-cols-2 lg:gap-20 lg:items-end border-b border-line">
+      <section className="px-5 lg:px-14 pt-10 lg:pt-16 pb-12 lg:pb-20 lg:grid lg:grid-cols-2 lg:gap-20 lg:items-end border-b border-line">
         <div>
           <p className="text-eyebrow mb-4 lg:mb-6">{c.eyebrow}</p>
           <h1 className="text-display lg:text-display-lg">
