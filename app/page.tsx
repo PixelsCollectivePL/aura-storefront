@@ -37,7 +37,7 @@ export default function HomePage() {
               className="text-white leading-[0.92] tracking-[-0.035em] font-extrabold mb-5 lg:mb-7"
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(52px, 8.5vw, 116px)",
+                fontSize: "clamp(44px, 5.5vw, 78px)",
               }}
             >
               {h.headingLine1}
