@@ -396,11 +396,13 @@ export default function HomePage() {
           NEWSLETTER CTA — orange bg, single strong accent
       ══════════════════════════════════════════ */}
       <section
-        className="relative overflow-hidden border-t border-brand/20"
+        className="overflow-hidden border-t border-brand/20"
         style={{ background: "var(--aura-orange)" }}
       >
-        <div className="relative z-10 px-5 lg:px-20 py-16 lg:py-[100px]">
-          <div className="max-w-[680px]">
+        <div className="px-5 lg:px-20 py-16 lg:py-[100px] lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
+
+          {/* Left — text content */}
+          <div>
             <p
               className="text-[11px] tracking-[0.14em] uppercase text-white/70 mb-5"
               style={{ fontFamily: "var(--font-mono)" }}
@@ -427,22 +429,20 @@ export default function HomePage() {
 
             <p className="mt-4 text-[11.5px] text-white/50">{nl.disclaimer}</p>
           </div>
-        </div>
 
-        {/* Decorative illustration — right side, vertically centered */}
-        <div
-          className="absolute right-0 top-1/2 -translate-y-1/2 hidden lg:block"
-          aria-hidden="true"
-        >
-          <div className="relative w-[520px] h-[520px]">
-            <Image
-              src="/assets/brand/aura-footer-illustration.png"
-              alt=""
-              fill
-              className="object-contain"
-              sizes="520px"
-            />
+          {/* Right — illustration, centered in column */}
+          <div className="hidden lg:flex items-center justify-center" aria-hidden="true">
+            <div className="relative w-[440px] h-[440px]">
+              <Image
+                src="/assets/brand/aura-footer-illustration.png"
+                alt=""
+                fill
+                className="object-contain"
+                sizes="440px"
+              />
+            </div>
           </div>
+
         </div>
       </section>
     </>
