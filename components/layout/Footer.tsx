@@ -72,7 +72,7 @@ export function Footer() {
             className="block mb-6 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs w-fit"
             aria-label="Aura Coffee — strona główna"
           >
-            <AuraMark size={26} color="white" tagline />
+            <AuraMark size={28} color="white" />
           </Link>
           <p className="text-[13px] leading-[1.65] text-white/50 max-w-[220px]">
             {f.tagline}
@@ -134,7 +134,7 @@ export function Footer() {
           className="block mb-8 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs w-fit"
           aria-label="Aura Coffee — strona główna"
         >
-          <AuraMark size={24} color="white" />
+          <AuraMark size={26} color="white" />
         </Link>
 
         <div className="grid grid-cols-2 gap-8 mb-10">

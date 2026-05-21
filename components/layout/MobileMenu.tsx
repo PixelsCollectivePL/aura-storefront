@@ -100,7 +100,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             className="focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
             aria-label="Strona główna"
           >
-            <AuraMark size={20} color="white" />
+            <AuraMark size={22} color="white" />
           </Link>
           <button
             type="button"

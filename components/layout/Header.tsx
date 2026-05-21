@@ -83,7 +83,7 @@ export function Header() {
             className="absolute left-1/2 -translate-x-1/2 shrink-0 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
             aria-label="Aura Coffee — strona główna"
           >
-            <AuraMark size={26} color="var(--aura-ink)" />
+            <AuraMark size={30} color="var(--aura-ink)" />
           </Link>
 
           {/* Actions — right */}
@@ -116,7 +116,7 @@ export function Header() {
             className="absolute left-1/2 -translate-x-1/2 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
             aria-label="Aura Coffee — strona główna"
           >
-            <AuraMark size={22} color="var(--aura-ink)" />
+            <AuraMark size={24} color="var(--aura-ink)" />
           </Link>
 
           <div className="ml-auto flex items-center">
