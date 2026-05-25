@@ -37,7 +37,7 @@ export default function KontaktPage() {
             {c.channels.map((ch) => (
               <div key={ch.label}>
                 <dt
-                  className="text-[10.5px] tracking-[0.1em] uppercase text-muted mb-1"
+                  className="text-[11.5px] tracking-[0.1em] uppercase text-muted mb-1"
                   style={{ fontFamily: "var(--font-mono)" }}
                 >
                   {ch.label}

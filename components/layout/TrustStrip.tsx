@@ -42,7 +42,7 @@ export function TrustStrip({ className }: TrustStripProps) {
           >
             <span className="text-brand shrink-0">{item.icon}</span>
             <span
-              className="text-[10.5px] tracking-[0.09em] uppercase text-ink leading-tight"
+              className="text-[11px] tracking-[0.09em] uppercase text-ink leading-tight"
               style={{ fontFamily: "var(--font-mono)" }}
             >
               {item.text}
@@ -64,7 +64,7 @@ export function TrustStrip({ className }: TrustStripProps) {
           >
             <span className="text-brand shrink-0">{item.icon}</span>
             <span
-              className="text-[9.5px] tracking-[0.08em] uppercase text-ink/70 leading-tight"
+              className="text-[11px] tracking-[0.07em] uppercase text-ink/80 leading-tight"
               style={{ fontFamily: "var(--font-mono)" }}
             >
               {item.text}

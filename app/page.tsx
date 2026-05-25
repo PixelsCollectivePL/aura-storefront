@@ -47,7 +47,7 @@ export default function HomePage() {
               {h.headingLine3}
             </h1>
 
-            <p className="text-[14px] lg:text-[17px] text-white/70 leading-[1.55] max-w-[340px] lg:max-w-[480px] mb-8 lg:mb-10">
+            <p className="text-[16px] lg:text-[17px] text-white/70 leading-[1.55] max-w-[340px] lg:max-w-[480px] mb-8 lg:mb-10">
               {h.subheading}
             </p>
 
@@ -202,7 +202,7 @@ export default function HomePage() {
             href="/produkty"
             className={cn(
               "lg:hidden shrink-0",
-              "text-[12.5px] font-medium text-muted",
+              "text-[13.5px] font-medium text-muted",
               "hover:text-ink transition-colors duration-[120ms]",
               "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
             )}
@@ -296,7 +296,7 @@ export default function HomePage() {
                   >
                     {pt.title}
                   </div>
-                  <div className="text-[12.5px] text-muted leading-[1.5]">
+                  <div className="text-[14px] text-muted leading-[1.5]">
                     {pt.desc}
                   </div>
                 </div>
@@ -378,7 +378,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[13px] font-semibold text-ink">{review.name}</p>
-                  <p className="text-[12px] text-muted">{review.location}</p>
+                  <p className="text-[13px] text-muted">{review.location}</p>
                 </div>
                 <span
                   className="text-[10px] tracking-[0.1em] uppercase text-muted"

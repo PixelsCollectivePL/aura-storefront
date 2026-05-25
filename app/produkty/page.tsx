@@ -163,7 +163,7 @@ export default function ProduktylPage() {
             {l.description}
           </p>
         </div>
-        <p className="lg:hidden text-[13.5px] text-muted leading-[1.5] mt-4">
+        <p className="lg:hidden text-[15px] text-muted leading-[1.55] mt-4">
           {l.description}
         </p>
       </section>
@@ -171,7 +171,7 @@ export default function ProduktylPage() {
       {/* ── Sticky filter bar ─────────────────────────────────────── */}
       <div
         className={cn(
-          "sticky top-14 lg:top-[72px] z-30",
+          "sticky top-14 lg:top-[80px] z-30",
           "bg-paper/95 backdrop-blur-sm",
           "border-b border-line"
         )}
@@ -184,7 +184,7 @@ export default function ProduktylPage() {
             onClick={() => setDrawerOpen(true)}
             className={cn(
               "flex items-center gap-2 h-9 px-3.5 shrink-0",
-              "rounded-pill border text-[12.5px] font-medium",
+              "rounded-pill border text-[13px] font-medium",
               "transition-colors duration-[120ms] cursor-pointer",
               "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
               drawerActiveCount > 0
@@ -222,7 +222,7 @@ export default function ProduktylPage() {
                   onClick={() => setCategory(cat.value)}
                   className={cn(
                     "inline-flex items-center h-9 px-3.5 rounded-pill",
-                    "text-[12.5px] font-medium whitespace-nowrap shrink-0",
+                    "text-[13px] font-medium whitespace-nowrap shrink-0",
                     "border transition-colors duration-[120ms] cursor-pointer",
                     "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
                     active

@@ -84,7 +84,7 @@ export default function OMarkePage() {
               >
                 {v.title}
               </h3>
-              <p className="text-[14px] text-muted leading-[1.65]">{v.body}</p>
+              <p className="text-[15px] lg:text-[14px] text-muted leading-[1.65]">{v.body}</p>
             </div>
           ))}
         </div>
@@ -114,7 +114,7 @@ export default function OMarkePage() {
               >
                 {step.title}
               </h3>
-              <p className="text-[14px] lg:text-[15.5px] text-muted leading-[1.7] max-w-[600px]">
+              <p className="text-[15px] lg:text-[15.5px] text-muted leading-[1.7] max-w-[600px]">
                 {step.body}
               </p>
             </div>
@@ -137,7 +137,7 @@ export default function OMarkePage() {
           </div>
           <div className="flex flex-col gap-5">
             {pal.freshnessParagraphs.map((p, i) => (
-              <p key={i} className="text-[14px] lg:text-[15.5px] text-muted leading-[1.75]">
+              <p key={i} className="text-[15px] lg:text-[15.5px] text-muted leading-[1.75]">
                 {p}
               </p>
             ))}

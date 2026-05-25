@@ -24,7 +24,7 @@ export function AccordionItem({
         "focus-visible:outline-2 focus-visible:outline-ink-hi focus-visible:outline-offset-[-2px]",
         "[&::-webkit-details-marker]:hidden"
       )}>
-        <span className="text-[15px] lg:text-[17px] font-medium text-ink-hi leading-[1.4] flex-1 max-w-[720px]">
+        <span className="text-[16px] lg:text-[17px] font-medium text-ink-hi leading-[1.4] flex-1 max-w-[720px]">
           {question}
         </span>
         {/* +/− icon: horizontal bar always, vertical bar only when closed */}
@@ -33,7 +33,7 @@ export function AccordionItem({
           <span className="absolute left-[7px] inset-y-0 w-px bg-ink-hi group-open:hidden" />
         </span>
       </summary>
-      <p className="text-[13.5px] lg:text-[15px] text-mute-2 leading-[1.7] pb-6 lg:pb-7 max-w-[760px]">
+      <p className="text-[15px] lg:text-[16px] text-mute-2 leading-[1.7] pb-6 lg:pb-7 max-w-[760px]">
         {answer}
       </p>
     </details>

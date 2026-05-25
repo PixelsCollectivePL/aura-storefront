@@ -230,7 +230,7 @@ function VariantGroup({
 
 function TrustLine({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <div className="flex items-center gap-2.5 text-[12.5px] text-muted">
+    <div className="flex items-center gap-2.5 text-[13.5px] text-muted">
       <span className="text-brand shrink-0">{icon}</span>
       {text}
     </div>
