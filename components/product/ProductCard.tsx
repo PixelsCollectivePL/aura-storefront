@@ -96,22 +96,22 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
 
         {/* Product info */}
-        <div className="flex flex-col gap-0.5 lg:gap-[3px]">
+        <div className="flex flex-col gap-1 lg:gap-[3px] mt-1 lg:mt-0">
           {/* Lot eyebrow */}
           <p
-            className="text-[10.5px] tracking-[0.08em] text-muted-2 uppercase"
+            className="text-[12px] lg:text-[10.5px] tracking-[0.08em] text-muted-2 uppercase"
             style={{ fontFamily: "var(--font-mono)" }}
           >
             {p.lotPrefix} {product.lotCode}
           </p>
 
           {/* Name + price */}
-          <div className="flex items-start justify-between gap-2 mt-0.5">
+          <div className="flex items-start justify-between gap-3 mt-0.5">
             <h3
               className={cn(
                 "font-extrabold leading-[1.1] text-ink",
-                "text-[17px] tracking-[-0.02em]",
-                "lg:text-[19px]"
+                "text-[24px] tracking-[-0.025em]",
+                "lg:text-[19px] lg:tracking-[-0.02em]"
               )}
               style={{ fontFamily: "var(--font-display)" }}
             >
@@ -120,8 +120,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
             <p
               className={cn(
                 "tabular-nums text-brand font-extrabold shrink-0",
-                "text-[14px] lg:text-[15px]",
-                "tracking-[-0.01em] pt-[2px]"
+                "text-[18px] lg:text-[15px]",
+                "tracking-[-0.01em] pt-[3px]"
               )}
               style={{ fontFamily: "var(--font-display)" }}
             >
@@ -130,9 +130,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </div>
 
           {/* Origin */}
-          <p className="text-[12px] leading-[1.4] text-muted">{product.origin}</p>
+          <p className="text-[14px] lg:text-[12px] leading-[1.4] text-muted">{product.origin}</p>
           {/* Notes */}
-          <p className="text-[12px] leading-[1.4] text-muted-2">{product.notes.join(", ")}</p>
+          <p className="text-[13px] lg:text-[12px] leading-[1.4] text-muted-2">{product.notes.join(", ")}</p>
         </div>
       </Link>
 
@@ -140,9 +140,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <button
         type="button"
         className={cn(
-          "mt-3 w-full h-11 lg:hidden",
+          "mt-4 w-full h-12 lg:hidden",
           "inline-flex items-center justify-center",
-          "bg-ink text-white text-[13.5px] font-semibold tracking-[0.01em]",
+          "bg-ink text-white text-[15px] font-semibold tracking-[0.01em]",
           "rounded-pill",
           "active:scale-[0.98] transition-[background-color,transform] duration-[120ms]",
           "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
