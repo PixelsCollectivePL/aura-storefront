@@ -14,12 +14,10 @@ import { getProducts } from "@/lib/mock/products";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { label: "Produkty",  href: "/produkty" },
-  { label: "Blendy",    href: "/blendy" },
-  { label: "O marce",   href: "/o-marce" },
-  { label: "Palarnia",  href: "/palarnia" },
-  { label: "FAQ",       href: "/faq" },
-  { label: "Kontakt",   href: "/kontakt" },
+  { label: "Produkty", href: "/produkty" },
+  { label: "Blendy",   href: "/blendy" },
+  { label: "O marce",  href: "/o-marce" },
+  { label: "Kontakt",  href: "/kontakt" },
 ];
 
 export function Header() {

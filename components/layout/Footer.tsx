@@ -19,19 +19,18 @@ const NAV_COLS = [
   {
     heading: "Marka",
     links: [
-      { label: "O marce",   href: "/o-marce" },
-      { label: "Palarnia",  href: "/palarnia" },
-      { label: "Journal",   href: "/journal" },
-      { label: "Stockiści", href: "/stockists" },
+      { label: "O marce",  href: "/o-marce" },
+      { label: "Palarnia", href: "/o-marce#palarnia" },
+      { label: "Journal",  href: "/journal" },
     ],
   },
   {
     heading: "Pomoc",
     links: [
-      { label: "FAQ",          href: "/faq" },
-      { label: "Kontakt",      href: "/kontakt" },
-      { label: "Dostawa",      href: "/faq#dostawa" },
-      { label: "Zwroty",       href: "/faq#zwroty" },
+      { label: "FAQ",      href: "/o-marce#faq" },
+      { label: "Kontakt",  href: "/kontakt" },
+      { label: "Dostawa",  href: "/o-marce#dostawa" },
+      { label: "Zwroty",   href: "/o-marce#zwroty" },
     ],
   },
 ];

@@ -457,12 +457,10 @@ export const CONTENT = {
   mobileMenu: {
     closeLabel: "Zamknij menu",
     navItems: [
-      { label: "Produkty", sub: "Kawy single origin i blendy",    href: "/produkty" },
-      { label: "Blendy",   sub: "Nasze stałe zestawy",            href: "/blendy" },
-      { label: "O marce",  sub: "Historia i wartości Aury",       href: "/o-marce" },
-      { label: "Palarnia", sub: "Jak palimy · środy w Warszawie", href: "/palarnia" },
-      { label: "FAQ",      sub: "Dostawa, zwroty, świeżość",      href: "/faq" },
-      { label: "Kontakt",  sub: "hello@aura.coffee",              href: "/kontakt" },
+      { label: "Produkty", sub: "Kawy single origin i blendy", href: "/produkty" },
+      { label: "Blendy",   sub: "Nasze stałe zestawy",         href: "/blendy" },
+      { label: "O marce",  sub: "Historia, palarnia i FAQ",    href: "/o-marce" },
+      { label: "Kontakt",  sub: "hello@aura.coffee",           href: "/kontakt" },
     ],
     account: "Konto",
     basket: "Koszyk",
