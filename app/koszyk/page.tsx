@@ -266,37 +266,36 @@ export default function KoszykPage() {
             </div>
           </div>
 
-          {/* ─────────── RIGHT — premium summary aside ─────────── */}
+          {/* ─────────── RIGHT — dark premium summary aside ─────────── */}
           <aside
             className="mt-12 lg:mt-0 lg:sticky lg:top-[100px]"
             aria-label={c.summaryHeading}
           >
-            <div className="relative rounded-lg overflow-hidden border border-line bg-paper shadow-card">
-              {/* Brand accent stripe */}
-              <div className="h-1 bg-brand" aria-hidden="true" />
+            <div className="rounded-lg overflow-hidden bg-ink text-white shadow-card">
 
-              <div className="p-6 lg:p-7">
+              {/* Main */}
+              <div className="px-6 lg:px-8 pt-7 lg:pt-8 pb-6 lg:pb-7">
 
-                {/* Heading */}
-                <div className="flex items-baseline justify-between mb-5">
+                {/* Heading + count */}
+                <div className="flex items-baseline justify-between mb-7">
                   <h2
-                    className="font-extrabold text-[20px] lg:text-[22px] leading-[1.1] tracking-[-0.02em] text-ink"
+                    className="font-extrabold text-[22px] lg:text-[24px] leading-[1.05] tracking-[-0.022em] text-white"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {c.summaryHeading}
                   </h2>
                   <span
-                    className="text-[10.5px] tracking-[0.12em] uppercase text-muted-2 tabular-nums"
+                    className="text-[10.5px] tracking-[0.14em] uppercase text-white/40 tabular-nums"
                     style={{ fontFamily: "var(--font-mono)" }}
                   >
-                    {count} {count === 1 ? "szt" : "szt"}
+                    {count} szt
                   </span>
                 </div>
 
-                {/* Free shipping progress — big, branded */}
-                <div className="mb-6 p-4 rounded-md bg-paper-2">
-                  <div className="flex items-center justify-between gap-3 mb-2.5">
-                    <p className="text-[12.5px] leading-[1.4] text-ink flex-1">
+                {/* Free shipping progress — inline, no nested box */}
+                <div className="mb-7">
+                  <div className="flex items-end justify-between gap-3 mb-2.5">
+                    <p className="text-[12.5px] leading-[1.4] text-white/80 flex-1">
                       {shippingFree ? (
                         <span className="font-semibold text-ok inline-flex items-center gap-1.5">
                           <Icon.check size={13} />
@@ -305,7 +304,7 @@ export default function KoszykPage() {
                       ) : (
                         <>
                           Brakuje{" "}
-                          <span className="font-bold text-ink tabular-nums">
+                          <span className="font-bold text-white tabular-nums">
                             {formatPrice(remaining)}
                           </span>{" "}
                           do darmowej wysyłki
@@ -313,13 +312,13 @@ export default function KoszykPage() {
                       )}
                     </p>
                     <span
-                      className="text-[11px] tracking-[0.1em] text-muted-2 tabular-nums shrink-0"
+                      className="text-[10.5px] tracking-[0.12em] text-white/40 tabular-nums shrink-0 pb-0.5"
                       style={{ fontFamily: "var(--font-mono)" }}
                     >
                       {progressRound}%
                     </span>
                   </div>
-                  <div className="h-2 bg-line rounded-full overflow-hidden" aria-hidden="true">
+                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden" aria-hidden="true">
                     <div
                       className={cn(
                         "h-full rounded-full transition-[width] duration-[400ms] ease-out",
@@ -330,27 +329,27 @@ export default function KoszykPage() {
                   </div>
                 </div>
 
-                {/* Summary rows */}
-                <dl className="flex flex-col gap-3 pb-5 border-b border-line">
+                {/* Summary rows — clean dl */}
+                <dl className="flex flex-col gap-3.5 pb-6 mb-6 border-b border-white/10">
                   <div className="flex justify-between items-baseline text-[14px]">
-                    <dt className="text-muted">{c.subtotalLabel}</dt>
-                    <dd className="tabular-nums text-ink font-medium">{formatPrice(subtotal)}</dd>
+                    <dt className="text-white/60">{c.subtotalLabel}</dt>
+                    <dd className="tabular-nums text-white font-medium">{formatPrice(subtotal)}</dd>
                   </div>
                   <div className="flex justify-between items-baseline text-[14px]">
-                    <dt className="text-muted">{c.shippingLabel}</dt>
+                    <dt className="text-white/60">{c.shippingLabel}</dt>
                     <dd className={cn(
                       "tabular-nums font-medium",
-                      shippingFree ? "text-ok" : "text-ink"
+                      shippingFree ? "text-ok" : "text-white"
                     )}>
                       {shippingFree ? c.shippingFree : formatPrice(shippingCost)}
                     </dd>
                   </div>
                 </dl>
 
-                {/* Total — hero number */}
-                <div className="flex items-end justify-between pt-5 mb-5">
+                {/* Total — hero brand-orange number */}
+                <div className="flex items-end justify-between mb-6">
                   <span
-                    className="text-[11px] tracking-[0.14em] uppercase text-muted pb-1.5"
+                    className="text-[10.5px] tracking-[0.14em] uppercase text-white/50 pb-2"
                     style={{ fontFamily: "var(--font-mono)" }}
                   >
                     {c.totalLabel}
@@ -359,14 +358,14 @@ export default function KoszykPage() {
                     className="font-extrabold tabular-nums text-brand tracking-[-0.025em] leading-none"
                     style={{
                       fontFamily: "var(--font-display)",
-                      fontSize: "clamp(32px, 4vw, 40px)",
+                      fontSize: "clamp(34px, 4.2vw, 44px)",
                     }}
                   >
                     {formatPrice(total)}
                   </span>
                 </div>
 
-                {/* Checkout CTA — Shopify next */}
+                {/* Checkout CTA */}
                 <button
                   type="button"
                   disabled
@@ -375,24 +374,25 @@ export default function KoszykPage() {
                     "group w-full h-14 inline-flex items-center justify-center gap-2",
                     "rounded-pill text-[15px] font-semibold tracking-[-0.005em]",
                     "bg-brand text-white border border-brand",
-                    "opacity-70 cursor-not-allowed"
+                    "opacity-80 cursor-not-allowed"
                   )}
                 >
                   {c.checkoutCta}
                   <Icon.arrow size={16} className="transition-transform duration-[150ms] group-hover:translate-x-0.5" />
                 </button>
                 <p
-                  className="text-[11px] leading-[1.5] text-muted text-center mt-3 px-2"
-                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.04em" }}
+                  className="text-[10.5px] leading-[1.5] text-white/40 text-center mt-3 px-2"
+                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.06em" }}
                 >
                   {c.checkoutNote}
                 </p>
 
                 {/* Promo collapsible */}
-                <div className="mt-6 pt-5 border-t border-line">
+                <div className="mt-6 pt-5 border-t border-white/10">
                   <CollapsibleHeader
                     open={promoOpen}
                     onToggle={() => setPromoOpen((v) => !v)}
+                    tone="dark"
                   >
                     {c.promoEyebrow}
                   </CollapsibleHeader>
@@ -405,16 +405,17 @@ export default function KoszykPage() {
                         placeholder={c.promoPlaceholder}
                         className={cn(
                           "flex-1 min-w-0 h-11 px-3.5 text-[13.5px]",
-                          "bg-paper-2 border border-line rounded-pill",
-                          "outline-none focus:border-ink focus:bg-paper transition-colors duration-[120ms]"
+                          "bg-white/5 border border-white/15 rounded-pill text-white",
+                          "placeholder:text-white/30",
+                          "outline-none focus:border-white/40 focus:bg-white/8 transition-colors duration-[120ms]"
                         )}
                       />
                       <button
                         type="submit"
                         className={cn(
                           "shrink-0 h-11 px-5 text-[12.5px] font-semibold",
-                          "bg-ink text-white rounded-pill",
-                          "hover:bg-ink-2 transition-colors duration-[120ms] cursor-pointer",
+                          "bg-white text-ink rounded-pill",
+                          "hover:bg-white/90 transition-colors duration-[120ms] cursor-pointer",
                           "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
                         )}
                       >
@@ -428,10 +429,11 @@ export default function KoszykPage() {
                 </div>
 
                 {/* Notes collapsible */}
-                <div className="mt-3 pt-5 border-t border-line">
+                <div className="mt-3 pt-5 border-t border-white/10">
                   <CollapsibleHeader
                     open={notesOpen}
                     onToggle={() => setNotesOpen((v) => !v)}
+                    tone="dark"
                   >
                     {c.notesEyebrow}
                   </CollapsibleHeader>
@@ -443,8 +445,9 @@ export default function KoszykPage() {
                       placeholder={c.notesPlaceholder}
                       className={cn(
                         "w-full mt-3 px-3.5 py-3 text-[13.5px] leading-[1.5]",
-                        "bg-paper-2 border border-line rounded-md resize-none",
-                        "outline-none focus:border-ink focus:bg-paper transition-colors duration-[120ms]",
+                        "bg-white/5 border border-white/15 rounded-md text-white resize-none",
+                        "placeholder:text-white/30",
+                        "outline-none focus:border-white/40 focus:bg-white/8 transition-colors duration-[120ms]",
                         "aura-reveal"
                       )}
                     />
@@ -453,16 +456,16 @@ export default function KoszykPage() {
 
               </div>
 
-              {/* Trust footer — separated visual band */}
-              <div className="border-t border-line bg-paper-2 px-6 lg:px-7 py-5">
+              {/* Trust footer — lighter band on dark */}
+              <div className="border-t border-white/10 bg-ink-2 px-6 lg:px-8 py-5">
                 <ul className="flex flex-col gap-3">
                   {c.trustBadges.map((b, i) => (
                     <li
                       key={i}
-                      className="flex items-center gap-3 text-[12.5px] text-ink/80"
+                      className="flex items-center gap-3 text-[12.5px] text-white/75"
                     >
                       <span
-                        className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-paper border border-line text-brand"
+                        className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-white/5 border border-white/10 text-brand"
                         aria-hidden="true"
                       >
                         {b.icon === "shield" && <Icon.shield size={13} />}
@@ -528,10 +531,12 @@ function CollapsibleHeader({
   open,
   onToggle,
   children,
+  tone = "light",
 }: {
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  tone?: "light" | "dark";
 }) {
   return (
     <button
@@ -540,9 +545,12 @@ function CollapsibleHeader({
       aria-expanded={open}
       className={cn(
         "w-full flex items-center justify-between py-1 cursor-pointer",
-        "text-[11px] tracking-[0.14em] uppercase font-semibold text-ink",
-        "hover:text-brand transition-colors duration-[120ms]",
-        "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
+        "text-[11px] tracking-[0.14em] uppercase font-semibold",
+        "transition-colors duration-[120ms]",
+        "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs",
+        tone === "dark"
+          ? "text-white/90 hover:text-brand"
+          : "text-ink hover:text-brand"
       )}
       style={{ fontFamily: "var(--font-mono)" }}
     >
