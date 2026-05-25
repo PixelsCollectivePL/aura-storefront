@@ -45,11 +45,11 @@ export function Header() {
         )}
       >
         {/* ── Desktop ── */}
-        <div className="hidden lg:flex items-center h-[72px] px-14 relative">
+        <div className="hidden lg:flex items-center h-[80px] px-14 relative">
           {/* Nav — left */}
           <nav
             aria-label="Nawigacja główna"
-            className="flex items-center gap-7"
+            className="flex items-center gap-9"
           >
             {NAV_ITEMS.map((item) => {
               const isActive =
@@ -61,13 +61,20 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "text-[13.5px] leading-[1.55] tracking-[-0.005em]",
-                    "transition-colors duration-[120ms]",
+                    "group relative inline-flex items-center h-[80px]",
+                    "text-[12px] tracking-[0.16em] uppercase font-semibold",
+                    "transition-colors duration-[150ms]",
+                    // Underline pseudo-element
+                    "after:absolute after:bottom-[22px] after:left-0 after:right-0",
+                    "after:h-[2px] after:bg-brand after:rounded-pill",
+                    "after:transition-transform after:duration-[220ms] after:ease-out",
                     "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs",
                     isActive
-                      ? "text-ink font-semibold"
-                      : "text-muted hover:text-ink"
+                      ? "text-ink after:scale-x-100"
+                      : "text-muted hover:text-ink after:scale-x-0 after:origin-left hover:after:scale-x-100"
                   )}
+                  style={{ fontFamily: "var(--font-mono)" }}
+                  aria-current={isActive ? "page" : undefined}
                 >
                   {item.label}
                 </Link>
@@ -81,20 +88,19 @@ export function Header() {
             className="absolute left-1/2 -translate-x-1/2 shrink-0 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-4 rounded-xs"
             aria-label="Aura Coffee — strona główna"
           >
-            <AuraMark size={30} color="var(--aura-ink)" variant="brand" />
+            <AuraMark size={32} color="var(--aura-ink)" variant="brand" />
           </Link>
 
           {/* Actions — right */}
-          <div className="ml-auto flex items-center gap-0.5">
-            <IconButton
+          <div className="ml-auto flex items-center gap-2">
+            <DesktopIconButton
               aria-label="Otwórz wyszukiwanie"
               aria-expanded={searchOpen}
-              size={40}
               onClick={() => setSearchOpen(true)}
             >
-              <Icon.search size={19} />
-            </IconButton>
-            <CartButton size={40} />
+              <Icon.search size={20} />
+            </DesktopIconButton>
+            <DesktopCartButton />
           </div>
         </div>
 
@@ -126,7 +132,7 @@ export function Header() {
             >
               <Icon.search size={19} />
             </IconButton>
-            <CartButton size={40} />
+            <MobileCartButton />
           </div>
         </div>
       </header>
@@ -137,13 +143,68 @@ export function Header() {
   );
 }
 
-function CartButton({ size }: { size: number }) {
-  const { openCart, count } = useCart();
+/* ─── Desktop icon button — pill shape, border, generous hit area ─── */
+function DesktopIconButton({
+  className,
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "relative inline-flex items-center justify-center",
+        "w-11 h-11 rounded-pill",
+        "border border-line bg-paper text-ink",
+        "transition-[background-color,border-color,color,transform] duration-[150ms]",
+        "hover:border-ink hover:bg-paper-2",
+        "active:scale-[0.97]",
+        "cursor-pointer",
+        "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 
+/* ─── Desktop cart — same pill shell + brand badge ─── */
+function DesktopCartButton() {
+  const { openCart, count } = useCart();
+  return (
+    <DesktopIconButton
+      aria-label={count > 0 ? `Otwórz koszyk (${count} produktów)` : "Otwórz koszyk"}
+      onClick={openCart}
+    >
+      <Icon.bag size={20} />
+      {count > 0 && (
+        <span
+          className={cn(
+            "absolute -top-1 -right-1",
+            "min-w-[18px] h-[18px] px-1",
+            "flex items-center justify-center",
+            "bg-brand text-white rounded-full",
+            "text-[10px] font-bold leading-none tabular-nums",
+            "ring-2 ring-paper"
+          )}
+          aria-hidden="true"
+        >
+          {count}
+        </span>
+      )}
+    </DesktopIconButton>
+  );
+}
+
+/* ─── Mobile cart — keeps original flat IconButton ─── */
+function MobileCartButton() {
+  const { openCart, count } = useCart();
   return (
     <IconButton
       aria-label={count > 0 ? `Otwórz koszyk (${count} produktów)` : "Otwórz koszyk"}
-      size={size}
+      size={40}
       className="relative"
       onClick={openCart}
     >
