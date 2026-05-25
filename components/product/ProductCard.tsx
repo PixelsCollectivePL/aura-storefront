@@ -37,7 +37,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div
           className={cn(
             "relative overflow-hidden mb-3 lg:mb-4",
-            "aspect-[4/3] lg:aspect-[3/4]",       // landscape on mobile, portrait on desktop
+            "aspect-[4/5] lg:aspect-[3/4]",       // portrait on mobile, taller portrait on desktop
             "rounded-md bg-paper-2",
             "transition-shadow duration-[200ms]",
             "lg:group-hover:shadow-card"
