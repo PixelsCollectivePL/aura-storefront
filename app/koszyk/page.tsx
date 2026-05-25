@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart, FREE_SHIPPING_THRESHOLD } from "@/lib/cart/cart-context";
 import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { ProductCard } from "@/components/product/ProductCard";
@@ -17,22 +18,20 @@ const SHIPPING_FLAT_FEE = 12; // PLN — InPost paczkomat (matches /faq copy)
 export default function KoszykPage() {
   const { lines, count, subtotal, updateCartLine, removeCartLine } = useCart();
 
-  // ── Local UI state ───────────────────────────────────────────────────
-  const [promoInput, setPromoInput]   = useState("");
-  const [promoError, setPromoError]   = useState(false);
-  const [promoOpen,  setPromoOpen]    = useState(false);
-  const [notesOpen,  setNotesOpen]    = useState(false);
-  const [notes,      setNotes]        = useState("");
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState(false);
+  const [promoOpen,  setPromoOpen]  = useState(false);
+  const [notesOpen,  setNotesOpen]  = useState(false);
+  const [notes,      setNotes]      = useState("");
 
-  // ── Derived values ───────────────────────────────────────────────────
   const isEmpty       = lines.length === 0;
   const shippingFree  = subtotal >= FREE_SHIPPING_THRESHOLD;
   const shippingCost  = isEmpty || shippingFree ? 0 : SHIPPING_FLAT_FEE;
   const total         = subtotal + shippingCost;
   const remaining     = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
   const progress      = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+  const progressRound = Math.round(progress);
 
-  // ── Cross-sell: products not already in cart ─────────────────────────
   const crossSell = useMemo(() => {
     const handlesInCart = new Set(lines.map((l) => l.handle));
     return getProducts()
@@ -40,7 +39,6 @@ export default function KoszykPage() {
       .slice(0, 3);
   }, [lines]);
 
-  // ── Promo placeholder (no real backend until Shopify) ────────────────
   function handleApplyPromo(e: React.FormEvent) {
     e.preventDefault();
     setPromoError(promoInput.trim().length > 0);
@@ -48,44 +46,77 @@ export default function KoszykPage() {
 
   return (
     <div>
-      {/* ── Page hero ─────────────────────────────────────────────── */}
-      <section className="px-5 lg:px-14 pt-10 lg:pt-16 pb-8 lg:pb-12 border-b border-line">
-        <p className="text-eyebrow mb-4">{c.eyebrow}</p>
+      {/* ══════════════════════════════════════════
+          HERO — eyebrow + heading + count chip
+      ══════════════════════════════════════════ */}
+      <section className="px-5 lg:px-14 pt-10 lg:pt-16 pb-10 lg:pb-14 border-b border-line">
+        <p
+          className="flex items-center gap-2 text-[11px] tracking-[0.14em] uppercase text-brand mb-4 lg:mb-5"
+          style={{ fontFamily: "var(--font-mono)" }}
+        >
+          <Image
+            src="/assets/brand/aura-star.png"
+            alt=""
+            width={14}
+            height={14}
+            aria-hidden="true"
+            className="star-spin"
+          />
+          {c.eyebrow.replace(/^—\s?/, "")}
+        </p>
+
         <div className="flex items-end justify-between gap-6 flex-wrap">
           <h1
-            className="font-extrabold leading-[1] tracking-[-0.03em] text-ink"
+            className="font-extrabold leading-[0.96] tracking-[-0.03em] text-ink"
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(36px, 6vw, 64px)",
+              fontSize: "clamp(40px, 6.5vw, 76px)",
             }}
           >
             {isEmpty ? c.headingEmpty : c.heading}
           </h1>
+
           {!isEmpty && (
-            <p
-              className="text-[13px] text-muted tabular-nums"
-              style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.04em" }}
+            <span
+              className={cn(
+                "inline-flex items-center gap-2 h-9 px-4 rounded-pill",
+                "border border-line bg-paper",
+                "text-[12px] tracking-[0.08em] uppercase text-muted tabular-nums"
+              )}
+              style={{ fontFamily: "var(--font-mono)" }}
             >
+              <span className="w-1.5 h-1.5 rounded-full bg-brand" aria-hidden="true" />
               {c.countSuffix(count)}
-            </p>
+            </span>
           )}
         </div>
       </section>
 
-      {/* ── Empty state ──────────────────────────────────────────── */}
+      {/* ══════════════════════════════════════════
+          EMPTY STATE
+      ══════════════════════════════════════════ */}
       {isEmpty ? (
-        <section className="px-5 lg:px-14 py-20 lg:py-[120px]">
-          <div className="flex flex-col items-center text-center max-w-[420px] mx-auto">
-            <span className="text-muted mb-6" aria-hidden="true">
-              <Icon.bag size={56} />
-            </span>
-            <p className="text-[16px] lg:text-[17px] text-muted leading-[1.55] mb-8">
+        <section className="px-5 lg:px-14 py-16 lg:py-[120px]">
+          <div className="flex flex-col items-center text-center max-w-[460px] mx-auto">
+            <div className="relative w-[140px] h-[140px] mb-7 opacity-90" aria-hidden="true">
+              <Image
+                src="/assets/brand/aura-star.png"
+                alt=""
+                fill
+                className="object-contain star-spin-bg"
+                sizes="140px"
+              />
+              <div className="absolute inset-0 flex items-center justify-center text-ink">
+                <Icon.bag size={44} />
+              </div>
+            </div>
+            <p className="text-[17px] lg:text-[19px] text-ink leading-[1.5] font-medium mb-3">
               {c.empty.body}
             </p>
             <Link
               href={c.empty.ctaHref}
               className={cn(
-                "inline-flex items-center justify-center gap-2 h-12 px-7",
+                "mt-4 inline-flex items-center justify-center gap-2 h-12 px-7",
                 "bg-brand text-white rounded-pill border border-brand",
                 "text-[14.5px] font-semibold",
                 "hover:bg-brand-deep hover:border-brand-deep",
@@ -100,354 +131,385 @@ export default function KoszykPage() {
         </section>
       ) : (
         /* ══════════════════════════════════════════
-           Items (left) + Summary sidebar (right)
-           ══════════════════════════════════════════ */
-        <section className="px-5 lg:px-14 py-10 lg:py-[80px] lg:grid lg:grid-cols-[1fr_400px] lg:gap-14 lg:items-start">
+            ITEMS (left) + SUMMARY ASIDE (right)
+        ══════════════════════════════════════════ */
+        <section className="px-5 lg:px-14 py-10 lg:py-16 lg:grid lg:grid-cols-[1fr_420px] lg:gap-16 lg:items-start">
 
           {/* ─────────── LEFT — line items ─────────── */}
           <div>
-
-            {/* Table head (desktop only) */}
-            <div className="hidden lg:grid grid-cols-[1fr_140px_120px_40px] gap-6 pb-4 border-b border-line text-eyebrow text-muted">
-              <span>{c.columnProduct}</span>
-              <span className="text-center">{c.columnQty}</span>
-              <span className="text-right">{c.columnTotal}</span>
-              <span />
-            </div>
-
-            {/* Lines */}
-            <ul className="divide-y divide-line">
-              {lines.map((line) => (
-                <li
-                  key={line.id}
-                  className="py-5 lg:py-7 lg:grid lg:grid-cols-[1fr_140px_120px_40px] lg:gap-6 lg:items-center"
-                >
-                  {/* Product cell (image + meta) */}
-                  <div className="flex gap-4 items-start lg:items-center">
-                    <Link
-                      href={`/produkty/${line.handle}`}
-                      className="shrink-0 w-[88px] h-[88px] lg:w-[96px] lg:h-[96px] rounded-md overflow-hidden bg-paper-2 block focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                      aria-label={line.title}
-                    >
-                      <div
-                        className="w-full h-full"
-                        style={{
-                          background: `repeating-linear-gradient(
-                            135deg,
-                            rgba(14,14,12,0.035) 0 5px,
-                            rgba(14,14,12,0) 5px 13px
-                          ), var(--aura-paper-2)`,
-                        }}
-                      />
-                    </Link>
-                    <div className="flex-1 min-w-0">
-                      <Link
-                        href={`/produkty/${line.handle}`}
-                        className="block focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
-                      >
-                        <h3
-                          className="font-extrabold text-[18px] lg:text-[20px] leading-[1.1] tracking-[-0.02em] text-ink"
-                          style={{ fontFamily: "var(--font-display)" }}
-                        >
-                          {line.title}
-                        </h3>
-                      </Link>
-                      <p className="text-[13px] lg:text-[13.5px] leading-[1.4] text-muted mt-1">
-                        {line.variantTitle}
-                      </p>
-                      <p className="text-[12.5px] tabular-nums text-muted-2 mt-1">
-                        {formatPrice(line.price, line.currencyCode)} / szt.
-                      </p>
-
-                      {/* Mobile: qty + price + remove inline */}
-                      <div className="flex items-center justify-between gap-3 mt-3 lg:hidden">
-                        <QuantitySelector
-                          value={line.quantity}
-                          min={1}
-                          max={10}
-                          onChange={(q) => updateCartLine(line.id, q)}
-                        />
-                        <p
-                          className="font-extrabold text-[16px] text-ink tabular-nums"
-                          style={{ fontFamily: "var(--font-display)" }}
-                        >
-                          {formatPrice(line.price * line.quantity, line.currencyCode)}
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeCartLine(line.id)}
-                        aria-label={c.removeLabel(line.title)}
-                        className={cn(
-                          "mt-2 lg:hidden",
-                          "text-[12.5px] text-muted underline underline-offset-4 cursor-pointer",
-                          "hover:text-ink transition-colors duration-[120ms]",
-                          "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                        )}
-                      >
-                        {c.remove}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Desktop: qty selector */}
-                  <div className="hidden lg:flex justify-center">
-                    <QuantitySelector
-                      value={line.quantity}
-                      min={1}
-                      max={10}
-                      onChange={(q) => updateCartLine(line.id, q)}
-                    />
-                  </div>
-
-                  {/* Desktop: line total */}
-                  <p
-                    className="hidden lg:block font-extrabold text-[17px] text-ink tabular-nums text-right"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {formatPrice(line.price * line.quantity, line.currencyCode)}
-                  </p>
-
-                  {/* Desktop: remove */}
-                  <button
-                    type="button"
-                    onClick={() => removeCartLine(line.id)}
-                    aria-label={c.removeLabel(line.title)}
+            <ul className="flex flex-col gap-0 -mt-1">
+              {lines.map((line, idx) => {
+                const lotMatch = line.handle ? line.handle : "";
+                return (
+                  <li
+                    key={line.id}
                     className={cn(
-                      "hidden lg:flex items-center justify-center",
-                      "w-9 h-9 rounded-pill text-muted cursor-pointer",
-                      "hover:text-ink hover:bg-paper-2 transition-colors duration-[120ms]",
-                      "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+                      "py-6 lg:py-7",
+                      idx !== 0 && "border-t border-line"
                     )}
                   >
-                    <Icon.close size={15} />
-                  </button>
-                </li>
-              ))}
+                    <div className="flex gap-4 lg:gap-6 items-start">
+                      {/* Image — square with lot badge overlay */}
+                      <Link
+                        href={`/produkty/${line.handle}`}
+                        className={cn(
+                          "relative shrink-0",
+                          "w-[112px] h-[112px] lg:w-[140px] lg:h-[140px]",
+                          "rounded-md overflow-hidden bg-paper-2 block",
+                          "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+                          "transition-transform duration-[200ms] hover:scale-[1.02]"
+                        )}
+                        aria-label={line.title}
+                      >
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            background: `repeating-linear-gradient(
+                              135deg,
+                              rgba(14,14,12,0.035) 0 5px,
+                              rgba(14,14,12,0) 5px 13px
+                            ), var(--aura-paper-2)`,
+                          }}
+                        />
+                        {lotMatch && (
+                          <span
+                            className="absolute top-2 left-2 text-[9.5px] tracking-[0.08em] uppercase text-muted-2 bg-paper/80 backdrop-blur-sm px-1.5 py-0.5 rounded-xs"
+                            style={{ fontFamily: "var(--font-mono)" }}
+                          >
+                            {line.handle}
+                          </span>
+                        )}
+                      </Link>
+
+                      {/* Info + actions column */}
+                      <div className="flex-1 min-w-0 flex flex-col gap-1.5 lg:gap-2 pt-1">
+
+                        {/* Top row — name + line total */}
+                        <div className="flex items-start justify-between gap-3">
+                          <Link
+                            href={`/produkty/${line.handle}`}
+                            className="block min-w-0 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs hover:text-brand transition-colors duration-[120ms]"
+                          >
+                            <h3
+                              className="font-extrabold text-[20px] lg:text-[24px] leading-[1.05] tracking-[-0.022em] text-ink"
+                              style={{ fontFamily: "var(--font-display)" }}
+                            >
+                              {line.title}
+                            </h3>
+                          </Link>
+                          <p
+                            className="font-extrabold text-brand tabular-nums shrink-0 text-[18px] lg:text-[22px] tracking-[-0.015em]"
+                            style={{ fontFamily: "var(--font-display)" }}
+                          >
+                            {formatPrice(line.price * line.quantity, line.currencyCode)}
+                          </p>
+                        </div>
+
+                        {/* Variant — mono uppercase chip-style line */}
+                        <p
+                          className="text-[11.5px] lg:text-[12px] tracking-[0.08em] uppercase text-muted-2"
+                          style={{ fontFamily: "var(--font-mono)" }}
+                        >
+                          {line.variantTitle}
+                          <span className="mx-2 text-line-2">·</span>
+                          <span className="tabular-nums">
+                            {formatPrice(line.price, line.currencyCode)} / szt
+                          </span>
+                        </p>
+
+                        {/* Qty + remove row */}
+                        <div className="flex items-center justify-between gap-3 mt-3 lg:mt-2.5">
+                          <QuantitySelector
+                            value={line.quantity}
+                            min={1}
+                            max={10}
+                            onChange={(q) => updateCartLine(line.id, q)}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeCartLine(line.id)}
+                            aria-label={c.removeLabel(line.title)}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 px-3 h-9",
+                              "rounded-pill text-[12.5px] text-muted cursor-pointer",
+                              "hover:text-ink hover:bg-paper-2",
+                              "transition-colors duration-[120ms]",
+                              "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+                            )}
+                          >
+                            <Icon.close size={13} />
+                            <span>{c.remove}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
 
-            {/* Continue shopping link */}
-            <div className="mt-6 lg:mt-8">
+            {/* Continue shopping — bottom of left column */}
+            <div className="mt-10 pt-6 border-t border-line">
               <Link
                 href="/produkty"
                 className={cn(
-                  "inline-flex items-center gap-2",
-                  "text-[13.5px] lg:text-[14px] font-semibold text-ink",
-                  "border-b border-ink pb-0.5",
-                  "hover:text-brand hover:border-brand",
-                  "transition-colors duration-[120ms]",
-                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+                  "inline-flex items-center gap-2 group",
+                  "text-[14px] font-semibold text-ink",
+                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
                 )}
               >
-                <Icon.arrow size={14} className="rotate-180" />
+                <span className="inline-flex items-center justify-center w-9 h-9 rounded-pill border border-line group-hover:border-ink group-hover:bg-paper-2 transition-colors duration-[120ms]">
+                  <Icon.arrow size={14} className="rotate-180" />
+                </span>
                 {c.continueShopping}
               </Link>
             </div>
           </div>
 
-          {/* ─────────── RIGHT — sticky summary sidebar ─────────── */}
+          {/* ─────────── RIGHT — premium summary aside ─────────── */}
           <aside
-            className={cn(
-              "mt-12 lg:mt-0 lg:sticky lg:top-[100px]",
-              "bg-paper-2 rounded-lg p-6 lg:p-7"
-            )}
+            className="mt-12 lg:mt-0 lg:sticky lg:top-[100px]"
             aria-label={c.summaryHeading}
           >
-            <h2
-              className="font-extrabold text-[20px] lg:text-[22px] leading-[1.1] tracking-[-0.02em] text-ink mb-5"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {c.summaryHeading}
-            </h2>
+            <div className="relative rounded-lg overflow-hidden border border-line bg-paper shadow-card">
+              {/* Brand accent stripe */}
+              <div className="h-1 bg-brand" aria-hidden="true" />
 
-            {/* Free-shipping progress */}
-            <div className="mb-5">
-              <p className="text-[12.5px] leading-[1.5] text-muted mb-2">
-                {shippingFree ? (
-                  <span className="text-ink font-medium">{CONTENT.cart.freeShipping.unlocked}</span>
-                ) : (
-                  <>
-                    {CONTENT.cart.freeShipping.remainingPrefix}{" "}
-                    <span className="text-ink font-semibold tabular-nums">
-                      {formatPrice(remaining)}
-                    </span>{" "}
-                    {CONTENT.cart.freeShipping.remainingSuffix}
-                  </>
-                )}
-              </p>
-              <div className="h-1.5 bg-line rounded-full overflow-hidden" aria-hidden="true">
-                <div
-                  className="h-full bg-brand rounded-full transition-[width] duration-[300ms] ease-out"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            </div>
+              <div className="p-6 lg:p-7">
 
-            {/* Summary rows */}
-            <dl className="flex flex-col gap-2.5 py-4 border-t border-line">
-              <div className="flex justify-between text-[14px]">
-                <dt className="text-muted">{c.subtotalLabel}</dt>
-                <dd className="tabular-nums text-ink font-medium">{formatPrice(subtotal)}</dd>
-              </div>
-              <div className="flex justify-between text-[14px]">
-                <dt className="text-muted">{c.shippingLabel}</dt>
-                <dd className={cn(
-                  "tabular-nums font-medium",
-                  shippingFree ? "text-ok" : "text-ink"
-                )}>
-                  {shippingFree ? c.shippingFree : formatPrice(shippingCost)}
-                </dd>
-              </div>
-            </dl>
-
-            {/* Total */}
-            <div className="flex items-baseline justify-between py-4 border-t border-line">
-              <span
-                className="font-extrabold text-[16px] tracking-[-0.01em] text-ink"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                {c.totalLabel}
-              </span>
-              <span
-                className="font-extrabold tabular-nums text-ink tracking-[-0.025em]"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "clamp(24px, 3.2vw, 30px)",
-                }}
-              >
-                {formatPrice(total)}
-              </span>
-            </div>
-
-            {/* Checkout CTA — Shopify will own the next step */}
-            <button
-              type="button"
-              disabled
-              title="Wkrótce — checkout Shopify"
-              className={cn(
-                "w-full h-14 inline-flex items-center justify-center gap-2 mt-2",
-                "rounded-pill text-[15px] font-semibold tracking-[-0.005em]",
-                "bg-brand text-white border border-brand",
-                "opacity-70 cursor-not-allowed"
-              )}
-            >
-              {c.checkoutCtaWithAmount(formatPrice(total))}
-              <Icon.arrow size={16} />
-            </button>
-            <p className="text-[11.5px] leading-[1.5] text-muted text-center mt-3">
-              {c.checkoutNote}
-            </p>
-
-            {/* Collapsible: Promo code */}
-            <div className="mt-6 pt-5 border-t border-line">
-              <button
-                type="button"
-                onClick={() => setPromoOpen((v) => !v)}
-                aria-expanded={promoOpen}
-                className="w-full flex items-center justify-between text-eyebrow text-ink cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs py-1"
-              >
-                <span>{c.promoEyebrow}</span>
-                <span className="relative w-3 h-3 shrink-0" aria-hidden="true">
-                  <span className="absolute top-[5px] inset-x-0 h-px bg-ink" />
-                  {!promoOpen && <span className="absolute left-[5px] inset-y-0 w-px bg-ink" />}
-                </span>
-              </button>
-              {promoOpen && (
-                <form onSubmit={handleApplyPromo} className="flex gap-2 mt-3">
-                  <input
-                    type="text"
-                    value={promoInput}
-                    onChange={(e) => { setPromoInput(e.target.value); setPromoError(false); }}
-                    placeholder={c.promoPlaceholder}
-                    className={cn(
-                      "flex-1 min-w-0 h-10 px-3 text-[13.5px]",
-                      "bg-paper border border-line rounded-sm",
-                      "outline-none focus:border-ink transition-colors duration-[120ms]"
-                    )}
-                  />
-                  <button
-                    type="submit"
-                    className={cn(
-                      "shrink-0 h-10 px-4 text-[12.5px] font-semibold",
-                      "bg-ink text-white rounded-sm",
-                      "hover:bg-ink-2 transition-colors duration-[120ms] cursor-pointer",
-                      "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                    )}
+                {/* Heading */}
+                <div className="flex items-baseline justify-between mb-5">
+                  <h2
+                    className="font-extrabold text-[20px] lg:text-[22px] leading-[1.1] tracking-[-0.02em] text-ink"
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
-                    {c.promoApply}
-                  </button>
-                </form>
-              )}
-              {promoError && (
-                <p className="text-[11.5px] text-brand mt-2">{c.promoError}</p>
-              )}
-            </div>
-
-            {/* Collapsible: Order notes */}
-            <div className="mt-3 pt-5 border-t border-line">
-              <button
-                type="button"
-                onClick={() => setNotesOpen((v) => !v)}
-                aria-expanded={notesOpen}
-                className="w-full flex items-center justify-between text-eyebrow text-ink cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs py-1"
-              >
-                <span>{c.notesEyebrow}</span>
-                <span className="relative w-3 h-3 shrink-0" aria-hidden="true">
-                  <span className="absolute top-[5px] inset-x-0 h-px bg-ink" />
-                  {!notesOpen && <span className="absolute left-[5px] inset-y-0 w-px bg-ink" />}
-                </span>
-              </button>
-              {notesOpen && (
-                <textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  rows={3}
-                  placeholder={c.notesPlaceholder}
-                  className={cn(
-                    "w-full mt-3 px-3 py-2.5 text-[13.5px] leading-[1.5]",
-                    "bg-paper border border-line rounded-sm resize-none",
-                    "outline-none focus:border-ink transition-colors duration-[120ms]"
-                  )}
-                />
-              )}
-            </div>
-
-            {/* Trust badges */}
-            <ul className="mt-6 pt-5 border-t border-line flex flex-col gap-2.5">
-              {c.trustBadges.map((b, i) => (
-                <li
-                  key={i}
-                  className="flex items-center gap-2.5 text-[12.5px] text-muted"
-                >
-                  <span className="text-brand shrink-0" aria-hidden="true">
-                    {b.icon === "shield"  && <Icon.shield  size={14} />}
-                    {b.icon === "truck"   && <Icon.truck   size={14} />}
-                    {b.icon === "lock"    && <Icon.check   size={14} />}
+                    {c.summaryHeading}
+                  </h2>
+                  <span
+                    className="text-[10.5px] tracking-[0.12em] uppercase text-muted-2 tabular-nums"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {count} {count === 1 ? "szt" : "szt"}
                   </span>
-                  {b.text}
-                </li>
-              ))}
-            </ul>
+                </div>
+
+                {/* Free shipping progress — big, branded */}
+                <div className="mb-6 p-4 rounded-md bg-paper-2">
+                  <div className="flex items-center justify-between gap-3 mb-2.5">
+                    <p className="text-[12.5px] leading-[1.4] text-ink flex-1">
+                      {shippingFree ? (
+                        <span className="font-semibold text-ok inline-flex items-center gap-1.5">
+                          <Icon.check size={13} />
+                          Darmowa dostawa odblokowana
+                        </span>
+                      ) : (
+                        <>
+                          Brakuje{" "}
+                          <span className="font-bold text-ink tabular-nums">
+                            {formatPrice(remaining)}
+                          </span>{" "}
+                          do darmowej wysyłki
+                        </>
+                      )}
+                    </p>
+                    <span
+                      className="text-[11px] tracking-[0.1em] text-muted-2 tabular-nums shrink-0"
+                      style={{ fontFamily: "var(--font-mono)" }}
+                    >
+                      {progressRound}%
+                    </span>
+                  </div>
+                  <div className="h-2 bg-line rounded-full overflow-hidden" aria-hidden="true">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-[width] duration-[400ms] ease-out",
+                        shippingFree ? "bg-ok" : "bg-brand"
+                      )}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Summary rows */}
+                <dl className="flex flex-col gap-3 pb-5 border-b border-line">
+                  <div className="flex justify-between items-baseline text-[14px]">
+                    <dt className="text-muted">{c.subtotalLabel}</dt>
+                    <dd className="tabular-nums text-ink font-medium">{formatPrice(subtotal)}</dd>
+                  </div>
+                  <div className="flex justify-between items-baseline text-[14px]">
+                    <dt className="text-muted">{c.shippingLabel}</dt>
+                    <dd className={cn(
+                      "tabular-nums font-medium",
+                      shippingFree ? "text-ok" : "text-ink"
+                    )}>
+                      {shippingFree ? c.shippingFree : formatPrice(shippingCost)}
+                    </dd>
+                  </div>
+                </dl>
+
+                {/* Total — hero number */}
+                <div className="flex items-end justify-between pt-5 mb-5">
+                  <span
+                    className="text-[11px] tracking-[0.14em] uppercase text-muted pb-1.5"
+                    style={{ fontFamily: "var(--font-mono)" }}
+                  >
+                    {c.totalLabel}
+                  </span>
+                  <span
+                    className="font-extrabold tabular-nums text-brand tracking-[-0.025em] leading-none"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(32px, 4vw, 40px)",
+                    }}
+                  >
+                    {formatPrice(total)}
+                  </span>
+                </div>
+
+                {/* Checkout CTA — Shopify next */}
+                <button
+                  type="button"
+                  disabled
+                  title="Wkrótce — kasa Shopify"
+                  className={cn(
+                    "group w-full h-14 inline-flex items-center justify-center gap-2",
+                    "rounded-pill text-[15px] font-semibold tracking-[-0.005em]",
+                    "bg-brand text-white border border-brand",
+                    "opacity-70 cursor-not-allowed"
+                  )}
+                >
+                  {c.checkoutCta}
+                  <Icon.arrow size={16} className="transition-transform duration-[150ms] group-hover:translate-x-0.5" />
+                </button>
+                <p
+                  className="text-[11px] leading-[1.5] text-muted text-center mt-3 px-2"
+                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.04em" }}
+                >
+                  {c.checkoutNote}
+                </p>
+
+                {/* Promo collapsible */}
+                <div className="mt-6 pt-5 border-t border-line">
+                  <CollapsibleHeader
+                    open={promoOpen}
+                    onToggle={() => setPromoOpen((v) => !v)}
+                  >
+                    {c.promoEyebrow}
+                  </CollapsibleHeader>
+                  {promoOpen && (
+                    <form onSubmit={handleApplyPromo} className="flex gap-2 mt-3 aura-reveal">
+                      <input
+                        type="text"
+                        value={promoInput}
+                        onChange={(e) => { setPromoInput(e.target.value); setPromoError(false); }}
+                        placeholder={c.promoPlaceholder}
+                        className={cn(
+                          "flex-1 min-w-0 h-11 px-3.5 text-[13.5px]",
+                          "bg-paper-2 border border-line rounded-pill",
+                          "outline-none focus:border-ink focus:bg-paper transition-colors duration-[120ms]"
+                        )}
+                      />
+                      <button
+                        type="submit"
+                        className={cn(
+                          "shrink-0 h-11 px-5 text-[12.5px] font-semibold",
+                          "bg-ink text-white rounded-pill",
+                          "hover:bg-ink-2 transition-colors duration-[120ms] cursor-pointer",
+                          "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+                        )}
+                      >
+                        {c.promoApply}
+                      </button>
+                    </form>
+                  )}
+                  {promoError && (
+                    <p className="text-[11.5px] text-brand mt-2 px-1">{c.promoError}</p>
+                  )}
+                </div>
+
+                {/* Notes collapsible */}
+                <div className="mt-3 pt-5 border-t border-line">
+                  <CollapsibleHeader
+                    open={notesOpen}
+                    onToggle={() => setNotesOpen((v) => !v)}
+                  >
+                    {c.notesEyebrow}
+                  </CollapsibleHeader>
+                  {notesOpen && (
+                    <textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      rows={3}
+                      placeholder={c.notesPlaceholder}
+                      className={cn(
+                        "w-full mt-3 px-3.5 py-3 text-[13.5px] leading-[1.5]",
+                        "bg-paper-2 border border-line rounded-md resize-none",
+                        "outline-none focus:border-ink focus:bg-paper transition-colors duration-[120ms]",
+                        "aura-reveal"
+                      )}
+                    />
+                  )}
+                </div>
+
+              </div>
+
+              {/* Trust footer — separated visual band */}
+              <div className="border-t border-line bg-paper-2 px-6 lg:px-7 py-5">
+                <ul className="flex flex-col gap-3">
+                  {c.trustBadges.map((b, i) => (
+                    <li
+                      key={i}
+                      className="flex items-center gap-3 text-[12.5px] text-ink/80"
+                    >
+                      <span
+                        className="shrink-0 inline-flex items-center justify-center w-7 h-7 rounded-full bg-paper border border-line text-brand"
+                        aria-hidden="true"
+                      >
+                        {b.icon === "shield" && <Icon.shield size={13} />}
+                        {b.icon === "truck"  && <Icon.truck  size={13} />}
+                        {b.icon === "lock"   && <Icon.check  size={13} />}
+                      </span>
+                      <span className="leading-[1.4]">{b.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </aside>
         </section>
       )}
 
-      {/* ── Cross-sell — only when cart has items and there's something to suggest ── */}
+      {/* ══════════════════════════════════════════
+          CROSS-SELL — when cart has items
+      ══════════════════════════════════════════ */}
       {!isEmpty && crossSell.length > 0 && (
-        <section className="border-t border-line px-5 lg:px-14 py-14 lg:py-[80px]">
+        <section className="border-t border-line bg-paper-2 px-5 lg:px-14 py-14 lg:py-[80px]">
           <div className="mb-8 lg:mb-10">
-            <p className="text-eyebrow mb-3">{c.crossSellEyebrow}</p>
+            <p
+              className="flex items-center gap-2 text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              <Image
+                src="/assets/brand/aura-star.png"
+                alt=""
+                width={13}
+                height={13}
+                aria-hidden="true"
+                className="star-spin"
+              />
+              {c.crossSellEyebrow.replace(/^—\s?/, "")}
+            </p>
             <h2
-              className="font-extrabold leading-[1.05] tracking-[-0.025em] text-ink"
+              className="font-extrabold leading-[1.0] tracking-[-0.025em] text-ink"
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(28px, 4vw, 44px)",
+                fontSize: "clamp(30px, 4.5vw, 52px)",
               }}
             >
               {c.crossSellHeading}
             </h2>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-7">
             {crossSell.map((product) => (
               <ProductCard key={product.handle} product={product} />
             ))}
@@ -455,5 +517,42 @@ export default function KoszykPage() {
         </section>
       )}
     </div>
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Sub-components
+   ────────────────────────────────────────────────────────────────── */
+
+function CollapsibleHeader({
+  open,
+  onToggle,
+  children,
+}: {
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={open}
+      className={cn(
+        "w-full flex items-center justify-between py-1 cursor-pointer",
+        "text-[11px] tracking-[0.14em] uppercase font-semibold text-ink",
+        "hover:text-brand transition-colors duration-[120ms]",
+        "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
+      )}
+      style={{ fontFamily: "var(--font-mono)" }}
+    >
+      <span>{children}</span>
+      <span className="relative w-3.5 h-3.5 shrink-0" aria-hidden="true">
+        <span className="absolute top-[6px] inset-x-0 h-[1.5px] bg-current rounded-full" />
+        {!open && (
+          <span className="absolute left-[6px] inset-y-0 w-[1.5px] bg-current rounded-full" />
+        )}
+      </span>
+    </button>
   );
 }
