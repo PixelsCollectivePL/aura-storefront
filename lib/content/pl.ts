@@ -317,9 +317,71 @@ export const CONTENT = {
       unlocked: "Zamówienie kwalifikuje się do darmowej dostawy.",
     },
     subtotalLabel: "Suma częściowa",
-    checkoutCta: "Przejdź do kasy",
+    checkoutCta: "Przejdź do koszyka",
     checkoutNote:
-      "Płatności dostępne w kolejnym etapie. Wysyłka naliczana przy kasie.",
+      "Podgląd zamówienia, kod rabatowy i uwagi — wszystko na kolejnym ekranie.",
+  },
+
+  koszyk: {
+    meta: {
+      title: "Koszyk",
+      description: "Sprawdź swoje zamówienie przed przejściem do kasy.",
+    },
+    eyebrow: "— Koszyk",
+    heading: "Twoje zamówienie",
+    headingEmpty: "Twój koszyk jest pusty",
+    countSuffix: (n: number): string =>
+      n === 1 ? "1 produkt" : n >= 2 && n <= 4 ? `${n} produkty` : `${n} produktów`,
+
+    empty: {
+      body: "Wybierz lot, który chcesz zaparzyć w tym tygodniu — i wracaj tutaj.",
+      cta: "Przeglądaj kawy",
+      ctaHref: "/produkty",
+    },
+
+    // Item table columns
+    columnProduct: "Produkt",
+    columnQty: "Ilość",
+    columnPrice: "Cena",
+    columnTotal: "Razem",
+
+    removeLabel: (name: string): string => `Usuń ${name} z koszyka`,
+    remove: "Usuń",
+
+    // Sidebar — order summary
+    summaryHeading: "Podsumowanie",
+    subtotalLabel: "Suma częściowa",
+    shippingLabel: "Dostawa",
+    shippingFree: "Darmowa",
+    shippingCalc: "Naliczana w kasie",
+    discountLabel: "Rabat",
+    totalLabel: "Razem do zapłaty",
+
+    // Promo + notes
+    promoEyebrow: "— Kod rabatowy",
+    promoPlaceholder: "Wpisz kod",
+    promoApply: "Zastosuj",
+    promoError: "Niepoprawny kod.",
+    notesEyebrow: "— Uwagi do zamówienia",
+    notesPlaceholder: "Np. mielenie do AeroPress albo prośba o gift wrap",
+
+    // Checkout
+    checkoutCta: "Przejdź do kasy",
+    checkoutCtaWithAmount: (amount: string): string => `Przejdź do kasy · ${amount}`,
+    checkoutNote: "Bezpieczna kasa Shopify · płatność BLIK, kartą, Apple Pay",
+
+    continueShopping: "Wróć do zakupów",
+
+    // Trust
+    trustBadges: [
+      { icon: "shield", text: "14 dni na zwrot" },
+      { icon: "truck", text: "InPost · DPD · Odbiór osobisty" },
+      { icon: "lock", text: "Płatność szyfrowana SSL" },
+    ],
+
+    // Cross-sell
+    crossSellEyebrow: "— Pasuje do twojego zamówienia",
+    crossSellHeading: "Spróbuj też",
   },
 
   about: {

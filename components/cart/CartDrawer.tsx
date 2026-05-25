@@ -228,20 +228,23 @@ export function CartDrawer() {
               </span>
             </div>
 
-            {/* Checkout CTA */}
-            <button
-              type="button"
-              disabled
+            {/* Checkout CTA — links to full cart page */}
+            <Link
+              href="/koszyk"
+              onClick={closeCart}
               className={cn(
-                "w-full h-14 inline-flex items-center justify-center",
+                "w-full h-14 inline-flex items-center justify-center gap-2",
                 "rounded-pill text-[15px] font-semibold tracking-[-0.005em]",
                 "bg-brand text-white border border-brand",
-                "opacity-60 cursor-not-allowed"
+                "hover:bg-brand-deep hover:border-brand-deep",
+                "transition-colors duration-[150ms]",
+                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               )}
             >
               {c.checkoutCta}
-            </button>
-            <p className="text-[11px] leading-[1.5] text-muted text-center">
+              <Icon.arrow size={16} />
+            </Link>
+            <p className="text-[11.5px] leading-[1.5] text-muted text-center">
               {c.checkoutNote}
             </p>
           </div>
