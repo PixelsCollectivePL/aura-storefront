@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart, FREE_SHIPPING_THRESHOLD } from "@/lib/cart/cart-context";
 import { Icon } from "@/components/ui/Icon";
 import { IconButton } from "@/components/ui/Button";
@@ -108,29 +109,51 @@ export function CartDrawer() {
 
         {/* Body */}
         {lines.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-            <span className="text-muted mb-4" aria-hidden="true">
-              <Icon.bag size={40} />
-            </span>
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-8">
+            {/* Rotating star + bag icon — same pattern as /koszyk empty state */}
+            <div className="relative w-[120px] h-[120px] mb-6 opacity-90" aria-hidden="true">
+              <Image
+                src="/assets/brand/aura-star.png"
+                alt=""
+                fill
+                className="object-contain star-spin-bg"
+                sizes="120px"
+              />
+              <div className="absolute inset-0 flex items-center justify-center text-ink">
+                <Icon.bag size={36} />
+              </div>
+            </div>
+
+            {/* Eyebrow */}
             <p
-              className="font-extrabold text-[17px] leading-[1.1] tracking-[-0.02em] text-ink mb-1.5"
+              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              — Koszyk
+            </p>
+
+            <p
+              className="font-extrabold text-[22px] lg:text-[24px] leading-[1.05] tracking-[-0.022em] text-ink mb-2.5"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {c.empty.heading}
             </p>
-            <p className="text-[13px] leading-[1.55] text-muted mb-6">{c.empty.body}</p>
+            <p className="text-[14px] leading-[1.55] text-muted max-w-[280px] mb-7">
+              {c.empty.body}
+            </p>
             <Link
               href="/produkty"
               onClick={closeCart}
               className={cn(
-                "inline-flex items-center justify-center",
-                "font-semibold text-[13px] px-5 h-10",
+                "inline-flex items-center justify-center gap-2",
+                "font-semibold text-[14px] px-6 h-12",
                 "rounded-pill bg-brand text-white border border-brand",
-                "hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms]",
+                "hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[150ms]",
                 "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               )}
             >
               {c.empty.browseCta}
+              <Icon.arrow size={15} />
             </Link>
           </div>
         ) : (
