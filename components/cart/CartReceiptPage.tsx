@@ -79,13 +79,7 @@ export function CartReceiptPage() {
           />
           Koszyk · paragon
         </p>
-        <h1
-          className="font-extrabold text-ink leading-[0.9] tracking-[-0.04em]"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(56px, 10vw, 156px)",
-          }}
-        >
+        <h1 className="text-display lg:text-display-lg leading-[0.95]">
           Twoje
           <br />
           zamówienie.
