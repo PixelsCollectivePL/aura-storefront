@@ -211,8 +211,8 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Product grid — 4-col desktop, 2-col mobile */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-10 lg:gap-6">
+        {/* Product grid — 4-col desktop, 1-col mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
           {FEATURED.map((product) => (
             <ProductCard key={product.handle} product={product} />
           ))}

@@ -359,7 +359,7 @@ export default function ProduktylPage() {
         </p>
 
         {filtered.length > 0 ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-7">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-7">
             {filtered.map((product) => (
               <ProductCard key={product.handle} product={product} />
             ))}
