@@ -1,7 +1,6 @@
 "use client";
 
 import { Starburst } from "@/components/brand/Starburst";
-import { Icon } from "@/components/ui/Icon";
 import type { CartLine } from "@/lib/cart/cart-context";
 import { cn } from "@/lib/utils";
 
