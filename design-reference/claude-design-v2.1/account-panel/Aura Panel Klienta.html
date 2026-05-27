@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aura · Panel klienta · Customer Account</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    html, body, #root { height: 100%; margin: 0; }
+    body { background: #f0eee9; font-family: 'DM Sans', system-ui, sans-serif; }
+    /* keep canvas scrollbars clean */
+    .aura *::-webkit-scrollbar { display: none; }
+    .aura * { scrollbar-width: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="aura-illustrations.jsx"></script>
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="aura-account-shell.jsx"></script>
+  <script type="text/babel" src="aura-account-desktop-1.jsx"></script>
+  <script type="text/babel" src="aura-account-desktop-2.jsx"></script>
+  <script type="text/babel" src="aura-account-mobile.jsx"></script>
+  <script type="text/babel" src="aura-account-spec.jsx"></script>
+
+  <script type="text/babel">
+    const { createRoot } = ReactDOM;
+
+    function App() {
+      return (
+        <DesignCanvas>
+
+          {/* Cover / intro */}
+          <DCSection
+            id="intro"
+            title="✱ Aura · Panel klienta"
+            subtitle="Customer Account dla Aura Storefront v2.1. Desktop (1440) + Mobile (390). Czarno-biała baza, pomarańczowy akcent, karty receipt/paragon. Gotowe do integracji z Shopify Customer Accounts.">
+            <DCArtboard id="cover" label="↳ Brief & design direction" width={1440} height={620}>
+              <div className="aura" style={{ width: '100%', height: '100%', background: 'var(--aura-paper)', padding: '56px 64px', display: 'flex', gap: 48, alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+                {/* Big burst left */}
+                <div style={{ position: 'relative', flexShrink: 0 }}>
+                  <Starburst color="var(--aura-orange)" size={340} points={12} depth={0.22}>
+                    <FigureRunner size={170} color="var(--aura-ink)" />
+                  </Starburst>
+                  <div style={{ position: 'absolute', bottom: -10, right: -20, transform: 'rotate(-6deg)', background: 'var(--aura-ink)', color: '#fff', padding: '6px 12px', fontFamily: 'var(--aura-mono)', fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', borderRadius: 6 }}>
+                    Drop 02 · konto
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div className="eyebrow" style={{ color: 'var(--aura-orange)', marginBottom: 16 }}>Customer Account · v2.1 + 1</div>
+                  <h1 style={{ fontFamily: 'var(--aura-display)', fontWeight: 800, fontSize: 110, letterSpacing: '-0.035em', lineHeight: 0.9, marginBottom: 20 }}>
+                    Twoje<br/>konto, <span style={{ color: 'var(--aura-orange)' }}>twoja</span><br/>kawa.
+                  </h1>
+                  <p style={{ fontSize: 18, lineHeight: 1.55, color: 'var(--aura-muted)', maxWidth: 560, marginBottom: 28 }}>
+                    Prosty, szybki panel klienta. Receipty zamiast tabel, mocna typografia zamiast dashboardowych chartów. Integruje się 1:1 z Shopify Customer Accounts i Subscriptions — bez własnego auth i checkoutu.
+                  </p>
+                  <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="chip" style={{ background: 'var(--aura-ink)', color: '#fff', borderColor: 'var(--aura-ink)' }}>7 widoków desktop</span>
+                    <span className="chip" style={{ background: 'var(--aura-ink)', color: '#fff', borderColor: 'var(--aura-ink)' }}>6 widoków mobile</span>
+                    <span className="chip orange">3 empty states</span>
+                    <span className="chip">Shopify-ready</span>
+                  </div>
+                </div>
+              </div>
+            </DCArtboard>
+          </DCSection>
+
+          {/* ─────────── DESKTOP — primary flow ─────────── */}
+          <DCSection
+            id="desktop"
+            title="01 · Desktop · 1440 wide"
+            subtitle="Sidebar (280) + content (flex-1, padded 56/64). Każdy widok ma swój własny Shopify-note pod treścią — żółta dashed ramka tłumaczy skąd wezmą się dane.">
+
+            <DCArtboard id="d-dashboard" label="DESKTOP · 01 · Dashboard konta" width={1440} height={1520}>
+              <AccountDashboard />
+            </DCArtboard>
+
+            <DCArtboard id="d-orders" label="DESKTOP · 02 · Lista zamówień" width={1440} height={920}>
+              <AccountOrders />
+            </DCArtboard>
+
+            <DCArtboard id="d-order-details" label="DESKTOP · 03 · Szczegóły zamówienia" width={1440} height={1340}>
+              <AccountOrderDetails />
+            </DCArtboard>
+
+            <DCArtboard id="d-subs-active" label="DESKTOP · 04 · Subskrypcja aktywna" width={1440} height={1340}>
+              <AccountSubscriptionsActive />
+            </DCArtboard>
+
+            <DCArtboard id="d-subs-empty" label="DESKTOP · 05 · Subskrypcja · empty state" width={1440} height={920}>
+              <AccountSubscriptionsEmpty />
+            </DCArtboard>
+
+            <DCArtboard id="d-addresses" label="DESKTOP · 06 · Adresy" width={1440} height={1020}>
+              <AccountAddresses />
+            </DCArtboard>
+
+            <DCArtboard id="d-details" label="DESKTOP · 07 · Dane konta" width={1440} height={1080}>
+              <AccountDetails />
+            </DCArtboard>
+          </DCSection>
+
+          {/* ─────────── EMPTY STATES (additional) ─────────── */}
+          <DCSection
+            id="empties"
+            title="02 · Empty states"
+            subtitle="Wszystkie stany puste używają tego samego komponentu: Starburst (paper-2) + FigureRunner + dwa CTA. Spokojny ton, bez agresywnych ofert.">
+
+            <DCArtboard id="e-orders" label="Brak zamówień · desktop" width={1440} height={780}>
+              <AccountOrdersEmpty />
+            </DCArtboard>
+
+            <DCArtboard id="e-addresses" label="Brak adresów · desktop" width={1440} height={780}>
+              <AccountAddressesEmpty />
+            </DCArtboard>
+          </DCSection>
+
+          {/* ─────────── MOBILE ─────────── */}
+          <DCSection
+            id="mobile"
+            title="03 · Mobile · 390 wide"
+            subtitle="Mobile-first: prosta nawigacja (top bar + bottom tabs), karty zamiast tabel, touch targets ≥ 44px. Sekcja Menu jest oddzielnym ekranem — pełna mapa konta.">
+
+            <DCArtboard id="m-dashboard" label="MOBILE · 01 · Dashboard" width={390} height={1380}>
+              <MobileDashboard />
+            </DCArtboard>
+
+            <DCArtboard id="m-orders" label="MOBILE · 02 · Lista zamówień" width={390} height={1200}>
+              <MobileOrders />
+            </DCArtboard>
+
+            <DCArtboard id="m-order-details" label="MOBILE · 03 · Szczegóły zamówienia" width={390} height={1500}>
+              <MobileOrderDetails />
+            </DCArtboard>
+
+            <DCArtboard id="m-subs-active" label="MOBILE · 04 · Subskrypcja aktywna" width={390} height={1250}>
+              <MobileSubscriptionActive />
+            </DCArtboard>
+
+            <DCArtboard id="m-addresses" label="MOBILE · 05 · Adresy" width={390} height={1060}>
+              <MobileAddresses />
+            </DCArtboard>
+
+            <DCArtboard id="m-menu" label="MOBILE · 06 · Nawigacja / menu" width={390} height={1340}>
+              <MobileMenu />
+            </DCArtboard>
+          </DCSection>
+
+          {/* ─────────── HANDOFF ─────────── */}
+          <DCSection
+            id="handoff"
+            title="04 · Handoff dla Claude Code"
+            subtitle="Specyfikacja 1:1 z designu. Direction, widoki, komponenty, tokeny, Shopify queries, microinteractions, mock data. Zachowuj się jak v2.1 → /account dorzucone naturalnie.">
+
+            <DCArtboard id="spec" label="HANDOFF · pełna specyfikacja" width={1440} height={2400}>
+              <AccountHandoffSpec />
+            </DCArtboard>
+          </DCSection>
+
+        </DesignCanvas>
+      );
+    }
+
+    createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -100,6 +100,21 @@ export function Header() {
             >
               <Icon.search size={20} />
             </DesktopIconButton>
+            <Link
+              href="/account"
+              aria-label="Konto"
+              className={cn(
+                "relative inline-flex items-center justify-center",
+                "w-11 h-11 rounded-pill",
+                "border border-line bg-paper text-ink",
+                "transition-[background-color,border-color,color,transform] duration-[150ms]",
+                "hover:border-ink hover:bg-paper-2",
+                "active:scale-[0.97]",
+                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+              )}
+            >
+              <Icon.account size={20} />
+            </Link>
             <DesktopCartButton />
           </div>
         </div>
@@ -132,6 +147,13 @@ export function Header() {
             >
               <Icon.search size={19} />
             </IconButton>
+            <Link
+              href="/account"
+              aria-label="Konto"
+              className="inline-flex items-center justify-center w-10 h-10 text-ink hover:text-brand transition-colors duration-[120ms] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-sm"
+            >
+              <Icon.account size={19} />
+            </Link>
             <MobileCartButton />
           </div>
         </div>

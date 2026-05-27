@@ -160,8 +160,9 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           {/* Utility links */}
           <div className="pt-6 pb-2 flex flex-col gap-1">
-            <button
-              type="button"
+            <Link
+              href="/account"
+              onClick={onClose}
               className={cn(
                 "flex items-center justify-between py-3",
                 "text-[13.5px] text-white/50 cursor-pointer hover:text-white",
@@ -174,7 +175,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 {m.account}
               </span>
               <Icon.chevRight size={14} className="text-white/30" />
-            </button>
+            </Link>
 
             <button
               type="button"
