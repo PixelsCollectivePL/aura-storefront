@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AuraMark } from "@/components/brand/AuraMark";
 import { Icon } from "@/components/ui/Icon";
+import { setMockAuthenticated } from "@/lib/account/auth";
 import { showToast } from "@/lib/toast/toast";
 import { cn } from "@/lib/utils";
 
@@ -20,8 +22,17 @@ import { cn } from "@/lib/utils";
  *   with appropriate return URL parameter).
  */
 export function AccountAuthCard() {
+  const router = useRouter();
+
   function handleLogin() {
-    showToast("Integracja logowania Shopify zostanie podpięta w kolejnym etapie");
+    // [shopify-ready]: replace with redirect to Shopify Customer Accounts
+    //   login URL, e.g.:
+    //   window.location.href =
+    //     `${SHOPIFY_LOGIN_URL}?return_url=` +
+    //     encodeURIComponent(window.location.origin + "/account");
+    setMockAuthenticated(true);
+    showToast("Zalogowano (mock) — integracja Shopify w kolejnym etapie");
+    router.push("/account");
   }
 
   return (

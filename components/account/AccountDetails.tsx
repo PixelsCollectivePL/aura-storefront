@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { AcctIcon } from "@/components/account/AccountIcons";
+import { setMockAuthenticated } from "@/lib/account/auth";
 import { cn } from "@/lib/utils";
 import type { AccountCustomer } from "@/types/account";
 
@@ -20,11 +22,18 @@ interface AccountDetailsProps {
  * lastName, phone, acceptsMarketing).
  */
 export function AccountDetails({ customer }: AccountDetailsProps) {
+  const router = useRouter();
   const [consents, setConsents] = useState({
     drops: customer.acceptsMarketing,
     sms: customer.acceptsSms,
     club: true,
   });
+
+  function handleLogout() {
+    // [shopify-ready]: see AccountSidebar.handleLogout()
+    setMockAuthenticated(false);
+    router.push("/account/login");
+  }
 
   const fields = [
     { eb: "Imię",     v: customer.firstName },
@@ -216,6 +225,19 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
             </div>
           </section>
         </div>
+      </div>
+
+      {/* Mobile-only logout — sidebar is desktop-only.
+          [shopify-ready]: see handleLogout() above. */}
+      <div className="lg:hidden mt-6">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="w-full inline-flex items-center justify-center gap-2.5 h-12 rounded-pill border border-line bg-paper text-muted text-[13.5px] font-semibold hover:text-ink hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+        >
+          <AcctIcon.logout size={15} />
+          Wyloguj
+        </button>
       </div>
     </div>
   );

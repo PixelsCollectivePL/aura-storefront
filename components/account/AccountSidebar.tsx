@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Starburst } from "@/components/brand/Starburst";
 import { AcctIcon, type AcctIconName } from "@/components/account/AccountIcons";
+import { setMockAuthenticated } from "@/lib/account/auth";
 import { cn } from "@/lib/utils";
 import type {
   AccountCustomer,
@@ -38,6 +40,15 @@ export function AccountSidebar({
   active,
   onNavigate,
 }: AccountSidebarProps) {
+  const router = useRouter();
+
+  function handleLogout() {
+    // [shopify-ready]: replace with Shopify Customer Account session
+    //   invalidation + redirect (e.g. visit Shopify logout URL).
+    setMockAuthenticated(false);
+    router.push("/account/login");
+  }
+
   const items: NavItem[] = [
     { key: "dashboard",     label: "Dashboard",  icon: "home" },
     { key: "orders",        label: "Zamówienia", icon: "box",   badge: orders.length },
@@ -171,9 +182,11 @@ export function AccountSidebar({
         </div>
       </div>
 
-      {/* Logout — placeholder (Shopify customer account logout flow) */}
+      {/* Logout — mock auth flip, redirects to /account/login.
+          [shopify-ready]: see handleLogout() above. */}
       <button
         type="button"
+        onClick={handleLogout}
         className="flex items-center gap-2.5 text-muted hover:text-ink transition-colors duration-[120ms] text-[13px] font-medium cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
       >
         <AcctIcon.logout size={16} />

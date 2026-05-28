@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -19,6 +19,7 @@ import {
   getSubscription,
   getAddresses,
 } from "@/lib/mock/account";
+import { isMockAuthenticated } from "@/lib/account/auth";
 
 import type { AccountSection, AccountViewState } from "@/types/account";
 
@@ -45,10 +46,29 @@ export default function AccountPage() {
 function AccountPageInner() {
   const searchParams = useSearchParams();
   const stateParam = searchParams.get("state") as AccountViewState | null;
-  const viewState: AccountViewState =
+
+  // Mock-auth check (localStorage). SSR-safe: `null` while we haven't
+  // resolved on the client yet → render the loading state to avoid a
+  // flash of dashboard → logged-out on cold loads.
+  // [shopify-ready]: replace with Customer Account session check.
+  const [mockAuthed, setMockAuthed] = useState<boolean | null>(null);
+  useEffect(() => {
+    setMockAuthed(isMockAuthenticated());
+  }, []);
+
+  // Debug `?state=` query param overrides everything (Vercel preview testing).
+  const debugOverride: AccountViewState | null =
     stateParam === "loggedOut" || stateParam === "loading" || stateParam === "error"
       ? stateParam
-      : "loggedIn";
+      : null;
+
+  const viewState: AccountViewState =
+    debugOverride
+      ?? (mockAuthed === null
+        ? "loading"
+        : mockAuthed
+          ? "loggedIn"
+          : "loggedOut");
 
   // ── Non-logged-in states render their own self-contained UI ────────
   if (viewState !== "loggedIn") {
