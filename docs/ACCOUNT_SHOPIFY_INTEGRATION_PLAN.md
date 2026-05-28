@@ -50,6 +50,54 @@ Branch: `main` · Path: `/account` · Layout source:
 | 2FA / password reset flows | Shopify Customer Accounts UI | We never render these — deep-link only. |
 | `Ostatnie cykle` (subscription history) | Subscription app webhook → metafields | Hardcoded mock data on `AccountSubscriptions` cycles strip. |
 
+## Login flow
+
+**Status today:** UI only — no real auth, no database, no email/password
+form rendered anywhere. The dedicated login screen at `/account/login`
+ships its visual moment (split-screen brand + auth card) so users have
+a place to land that feels like part of the Aura world.
+
+**Files:**
+
+| Path | Purpose |
+|---|---|
+| `app/account/login/page.tsx` | Route entry (server component) |
+| `app/account/login/layout.tsx` | Metadata |
+| `components/account/AccountLogin.tsx` | Composition (split layout) |
+| `components/account/AccountBrandPanel.tsx` | Left brand panel (desktop) / top band (mobile) |
+| `components/account/AccountAuthCard.tsx` | Right login card — primary CTA + Shopify trust note |
+
+**Mock action:** The `Zaloguj się` CTA inside `AccountAuthCard` calls
+`handleLogin()` which fires a toast:
+
+> Integracja logowania Shopify zostanie podpięta w kolejnym etapie
+
+No email/password form is rendered, because Shopify Customer Accounts
+owns the entire login surface. Rendering a fake form would imply
+ownership we don't want to take.
+
+**Linking:**
+
+- Header `Konto` icon (desktop + mobile) → `/account`
+- `/account` (default) → logged-in dashboard
+- `/account?state=loggedOut` → inline `AccountAuthState` with CTA
+  linking to `/account/login`
+- `/account/login` → dedicated split-screen login
+- `Wróć do sklepu` CTA → `/`
+
+**On Shopify integration:**
+
+1. In `AccountAuthCard.handleLogin()`, replace the `showToast(...)` call
+   with a redirect to Shopify Customer Accounts login URL, e.g.
+   `window.location.href = SHOPIFY_LOGIN_URL + '?return_url=' +
+   encodeURIComponent(window.location.origin + '/account')`.
+2. In `app/account/page.tsx`, replace the query-param view-state toggle
+   with a real check: if Customer Account API returns 401 (or no
+   customer access token), redirect to `/account/login` server-side
+   via `redirect()` from `next/navigation`.
+3. Optional: add `/account/logout` route that clears the customer
+   session and redirects to `/`.
+
 ## Auth states already wired (UI only)
 
 The page uses `?state=loggedOut|loading|error` query param (debug-only)

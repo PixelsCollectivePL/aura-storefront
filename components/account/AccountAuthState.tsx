@@ -65,13 +65,14 @@ function LoggedOut() {
       </p>
 
       <div className="flex flex-wrap gap-2.5 justify-center mb-7">
-        {/* [shopify-ready]: redirect to Shopify Customer Accounts login URL */}
-        <button
-          type="button"
+        {/* Dedicated login page; final Shopify login redirect happens
+            inside AccountAuthCard. */}
+        <Link
+          href="/account/login"
           className="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-pill bg-brand text-white border border-brand text-[14.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[150ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
         >
           Zaloguj się
-        </button>
+        </Link>
         <Link
           href="/"
           className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-pill border border-line bg-paper text-ink text-[14.5px] font-semibold hover:border-ink transition-colors duration-[150ms] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
