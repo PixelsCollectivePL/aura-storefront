@@ -6,23 +6,30 @@ import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AcctIcon } from "@/components/account/AccountIcons";
 import { cn, formatPrice } from "@/lib/utils";
 import { formatDateLong, formatDateShort } from "@/lib/account/format";
+import { notifyReorderAction } from "@/lib/account/feedback";
 import type {
   AccountCustomer,
   AccountOrder,
   AccountSection,
+  AccountStats,
   AccountSubscription,
+  AccountTastedBlend,
 } from "@/types/account";
 
 interface AccountDashboardProps {
   customer: AccountCustomer;
   orders: AccountOrder[];
   subscription: AccountSubscription | null;
+  stats: AccountStats;
+  tastedBlends: AccountTastedBlend[];
   onNavigate: (section: AccountSection, orderId?: string) => void;
 }
 
 export function AccountDashboard({
   customer,
   orders,
+  stats,
+  tastedBlends,
   subscription,
   onNavigate,
 }: AccountDashboardProps) {
@@ -64,8 +71,14 @@ export function AccountDashboard({
             </button>
             <button
               type="button"
+              onClick={notifyReorderAction}
               className="inline-flex items-center justify-center h-10 px-5 rounded-pill bg-brand text-white border border-brand text-[13px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-              /* [shopify-ready]: dispatch cartLinesAdd with last order's line items */
+              /* [shopify-ready]: replace onClick with cartLinesAdd mutation:
+                   lastOrder.items.map(it => ({
+                     merchandiseId: it.variantId,
+                     quantity: it.quantity,
+                   }))
+                 then openCart(). */
             >
               Zamów ponownie
             </button>
@@ -153,20 +166,25 @@ export function AccountDashboard({
                   </div>
                 </div>
                 {/* [shopify-ready]: open lastOrder.tracking.url */}
-                <button
-                  type="button"
-                  className="hidden sm:inline-flex text-[13px] font-semibold text-ink border-b border-ink pb-0.5 hover:text-brand hover:border-brand transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                >
-                  Śledź ↗
-                </button>
+                {lastOrder.tracking.url ? (
+                  <a
+                    href={lastOrder.tracking.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden sm:inline-flex text-[13px] font-semibold text-ink border-b border-ink pb-0.5 hover:text-brand hover:border-brand transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+                  >
+                    Śledź ↗
+                  </a>
+                ) : null}
               </div>
             )}
 
             <div className="flex gap-2.5 flex-wrap">
               <button
                 type="button"
+                onClick={notifyReorderAction}
                 className="inline-flex items-center justify-center h-10 px-5 rounded-pill bg-brand text-white border border-brand text-[13px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                /* [shopify-ready]: cartLinesAdd from order.lineItems */
+                /* [shopify-ready]: cartLinesAdd from order.items (variantId + quantity), openCart() */
               >
                 Zamów ponownie
               </button>
@@ -294,10 +312,10 @@ export function AccountDashboard({
       {/* ── Quick-stats strip ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-md overflow-hidden">
         {[
-          { eb: "Zamówień", v: String(orders.length), sub: "łącznie" },
-          { eb: "W tym roku", v: "4", sub: "paczek" },
-          { eb: "Ulubiony blend", v: "Coração", sub: "do espresso" },
-          { eb: "Punkty Aura", v: "128", sub: "do następnej: 22" },
+          { eb: "Zamówień",      v: String(stats.ordersTotal),                       sub: "łącznie" },
+          { eb: "W tym roku",    v: String(stats.ordersThisYear),                    sub: "paczek" },
+          { eb: "Ulubiony blend", v: stats.favoriteBlend ?? "—",                      sub: stats.favoriteBlendSubtitle ?? "" },
+          { eb: "Punkty Aura",   v: String(stats.loyaltyPoints ?? 0),                sub: `do następnej: ${stats.loyaltyPointsToNext ?? 0}` },
         ].map((s) => (
           <div key={s.eb} className="bg-paper p-5">
             <div
@@ -386,31 +404,29 @@ export function AccountDashboard({
             Smakowałeś już…
           </h3>
           <div className="flex flex-col">
-            {["Coração do Brasil", "Verde Tropical", "Lila Nocturna", "Mezcla Casa"].map(
-              (n, i) => (
-                <div
-                  key={n}
-                  className={cn(
-                    "flex items-center gap-3 py-2.5",
-                    i < 3 && "border-b border-dashed border-line"
-                  )}
+            {tastedBlends.map((blend, i) => (
+              <div
+                key={blend.handle}
+                className={cn(
+                  "flex items-center gap-3 py-2.5",
+                  i < tastedBlends.length - 1 && "border-b border-dashed border-line"
+                )}
+              >
+                <span
+                  className="tabular-nums text-muted shrink-0"
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em", minWidth: 20 }}
                 >
-                  <span
-                    className="tabular-nums text-muted shrink-0"
-                    style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em", minWidth: 20 }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="flex-1 text-[14px] font-medium">{n}</span>
-                  <span
-                    className="text-muted uppercase"
-                    style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
-                  >
-                    {i === 0 ? "×3" : "×1"}
-                  </span>
-                </div>
-              )
-            )}
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="flex-1 text-[14px] font-medium">{blend.name}</span>
+                <span
+                  className="text-muted uppercase tabular-nums"
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
+                >
+                  ×{blend.timesOrdered}
+                </span>
+              </div>
+            ))}
           </div>
           <a
             href="/blendy"

@@ -3,9 +3,18 @@
 import { Starburst } from "@/components/brand/Starburst";
 import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AcctIcon, type AcctIconName } from "@/components/account/AccountIcons";
+import { notifySubscriptionAction } from "@/lib/account/feedback";
 import { cn, formatPrice } from "@/lib/utils";
-import { formatDateShort } from "@/lib/account/format";
+import { formatDateShort, formatDateLong } from "@/lib/account/format";
 import type { AccountSubscription } from "@/types/account";
+
+/**
+ * Subscription view.
+ * NOTE — catalog options (SUBSCRIPTION_CADENCE_OPTIONS,
+ * SUBSCRIPTION_BLEND_OPTIONS) live in lib/mock/account.ts and are ready
+ * to be wired into a future cadence picker / blend swap card here.
+ * They map to Shopify's `sellingPlanGroups` on real integration.
+ */
 
 interface AccountSubscriptionsProps {
   subscription: AccountSubscription | null;
@@ -22,15 +31,14 @@ interface AccountSubscriptionsProps {
  * during the subscription integration phase.
  */
 export function AccountSubscriptions({ subscription }: AccountSubscriptionsProps) {
-  if (!subscription) {
-    return <SubscriptionsEmpty />;
-  }
+  if (!subscription) return <SubscriptionsEmpty />;
   return <SubscriptionsActive sub={subscription} />;
 }
 
 /* ─────────── ACTIVE ─────────── */
 
 function SubscriptionsActive({ sub }: { sub: AccountSubscription }) {
+  const cycles = sub.cycles ?? [];
   return (
     <div className="flex flex-col gap-5">
       <header className="flex flex-wrap items-end justify-between gap-4 mb-2 lg:mb-4">
@@ -173,43 +181,47 @@ function SubscriptionsActive({ sub }: { sub: AccountSubscription }) {
             Historia cykli
           </h3>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0">
-          {[
-            { d: "21 maja", s: "delivered" as const, n: 9 },
-            { d: "7 maja", s: "delivered" as const, n: 8 },
-            { d: "23 kwietnia", s: "delivered" as const, n: 7 },
-            { d: "9 kwietnia", s: "delivered" as const, n: 6 },
-            { d: "4 czerwca", s: "unfulfilled" as const, n: 10 },
-          ].map((c, i) => (
-            <div
-              key={i}
-              className={cn(
-                "py-3 px-4",
-                i < 4 && "lg:border-r border-dashed border-line",
-                i < 3 && "sm:border-r"
-              )}
-            >
+        {cycles.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-0">
+            {cycles.map((c, i, arr) => (
               <div
-                className="text-muted uppercase mb-2 tabular-nums"
-                style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
+                key={c.cycleNumber}
+                className={cn(
+                  "py-3 px-4",
+                  i < arr.length - 1 && "lg:border-r border-dashed border-line",
+                  i % 3 !== 2 && "sm:border-r"
+                )}
               >
-                Cykl {String(c.n).padStart(2, "0")}
+                <div
+                  className="text-muted uppercase mb-2 tabular-nums"
+                  style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
+                >
+                  Cykl {String(c.cycleNumber).padStart(2, "0")}
+                </div>
+                <div
+                  className="font-extrabold text-[15px] mb-1.5"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {formatDateLong(c.deliveredAt)}
+                </div>
+                <AccountStatusPill kind={c.status} />
               </div>
-              <div
-                className="font-extrabold text-[15px] mb-1.5"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                {c.d}
-              </div>
-              <AccountStatusPill kind={c.s} />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-[13px] text-muted">Brak historii cykli.</p>
+        )}
       </section>
     </div>
   );
 }
 
+/**
+ * Subscription action button.
+ * [future-integration]: each label maps to a subscription contract
+ * mutation (subscriptionContractSkip / subscriptionContractPause /
+ * subscriptionContractUpdate). UI-only today.
+ */
 function ActionBtn({
   icon,
   label,
@@ -225,6 +237,7 @@ function ActionBtn({
   return (
     <button
       type="button"
+      onClick={() => notifySubscriptionAction(label)}
       className={cn(
         "inline-flex items-center gap-2 h-10 px-4 rounded-pill text-[13px] font-semibold transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
         ghost

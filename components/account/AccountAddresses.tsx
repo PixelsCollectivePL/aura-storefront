@@ -2,6 +2,7 @@
 
 import { AccountEmptyState } from "@/components/account/AccountEmptyState";
 import { AcctIcon } from "@/components/account/AccountIcons";
+import { notifyShopifyAction } from "@/lib/account/feedback";
 import { cn } from "@/lib/utils";
 import type { AccountAddress } from "@/types/account";
 
@@ -66,6 +67,7 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
         </div>
         <button
           type="button"
+          onClick={() => notifyShopifyAction("Dodanie adresu")}
           className="inline-flex items-center gap-2 h-11 px-5 rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
           /* [shopify-ready]: customerAddressCreate */
         >
@@ -104,6 +106,7 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
               </div>
               <button
                 type="button"
+                onClick={() => notifyShopifyAction("Edycja adresu")}
                 aria-label={`Edytuj adres ${a.label}`}
                 className="text-muted hover:text-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-pill p-1"
                 /* [shopify-ready]: open address edit form → customerAddressUpdate */
@@ -152,6 +155,8 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
             <div className="flex gap-2 flex-wrap">
               <button
                 type="button"
+                onClick={() => notifyShopifyAction("Edycja adresu")}
+                /* [shopify-ready]: customerAddressUpdate */
                 className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               >
                 Edytuj
@@ -160,12 +165,16 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
                 <>
                   <button
                     type="button"
+                    onClick={() => notifyShopifyAction("Ustawienie adresu domyślnego")}
+                    /* [shopify-ready]: customerDefaultAddressUpdate */
                     className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
                   >
                     Ustaw jako domyślny
                   </button>
                   <button
                     type="button"
+                    onClick={() => notifyShopifyAction("Usunięcie adresu")}
+                    /* [shopify-ready]: customerAddressDelete */
                     className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-muted text-[12.5px] font-semibold hover:text-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
                   >
                     Usuń
@@ -180,6 +189,7 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
       {/* Add empty slot */}
       <button
         type="button"
+        onClick={() => notifyShopifyAction("Dodanie adresu")}
         className="w-full min-h-[120px] inline-flex items-center justify-center gap-3 border-[1.5px] border-dashed border-line-strong rounded-md text-ink text-[14px] font-semibold hover:bg-paper-2 transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
         /* [shopify-ready]: customerAddressCreate */
       >

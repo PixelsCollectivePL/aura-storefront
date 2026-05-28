@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AcctIcon } from "@/components/account/AccountIcons";
 import { setMockAuthenticated } from "@/lib/account/auth";
+import { notifyShopifyAction } from "@/lib/account/feedback";
 import { cn } from "@/lib/utils";
 import type { AccountCustomer } from "@/types/account";
 
@@ -118,8 +119,9 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
                 </div>
                 <button
                   type="button"
+                  onClick={() => notifyShopifyAction(`Edycja pola: ${row.eb}`)}
                   className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                  /* [shopify-ready]: customerUpdate */
+                  /* [shopify-ready]: customerUpdate mutation per field */
                 >
                   Edytuj
                 </button>
@@ -212,12 +214,18 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
             <div className="flex gap-2 flex-wrap">
               <button
                 type="button"
+                onClick={() => notifyShopifyAction("Eksport danych RODO")}
+                /* [shopify-ready]: deep-link to Shopify Customer Account
+                   GDPR data-export flow */
                 className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               >
                 Pobierz dane
               </button>
               <button
                 type="button"
+                onClick={() => notifyShopifyAction("Usunięcie konta")}
+                /* [shopify-ready]: deep-link to Shopify Customer Account
+                   account-deletion flow */
                 className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-muted text-[12.5px] font-semibold hover:text-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               >
                 Usuń konto

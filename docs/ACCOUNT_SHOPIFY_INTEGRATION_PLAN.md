@@ -4,6 +4,44 @@ Status: **UI complete, mock data, no auth, no Shopify wiring.**
 Branch: `main` · Path: `/account` · Layout source:
 `design-reference/claude-design-v2.1/account-panel/`
 
+## Audit pass (latest)
+
+A full Shopify-readiness audit ran against the account area. Findings
+applied below — diff highlights:
+
+- **Types extended** with the missing Shopify-aligned optional fields:
+  `customer.displayName`, `lineItem.productTitle` & `currencyCode`,
+  `address.province` & `countryCode` (both for saved + shipping
+  addresses), `order.statusUrl`. New structured types added for
+  derived/future data: `AccountFulfillmentEvent`,
+  `AccountSubscriptionCycle`, `AccountStats`, `AccountTastedBlend`,
+  `SubscriptionCadenceOption`, `SubscriptionBlendOption`. Each carries
+  inline mapping notes against the Shopify API so adapter implementation
+  is mechanical.
+- **Hardcoded customer-specific data moved out of JSX into mock data:**
+  - Dashboard quick-stats (`getAccountStats`) — derived in real
+    integration from orders aggregation + loyalty app metafield.
+  - Dashboard "Smakowałeś już…" list (`getTastedBlends`) — derived
+    from order history.
+  - Order timeline (`order.tracking.timeline`) — `fulfillment.events`
+    from Shopify.
+  - Subscription cycles (`subscription.cycles`) — subscription app
+    history.
+- **Subscription catalog options** (`SUBSCRIPTION_CADENCE_OPTIONS`,
+  `SUBSCRIPTION_BLEND_OPTIONS`) live in mock data, ready to back a
+  cadence picker + blend swap card. On real integration these come
+  from `sellingPlanGroups`.
+- **All placeholder buttons** previously without onClick now use
+  `lib/account/feedback.ts` helpers — `notifyShopifyAction`,
+  `notifyReorderAction`, `notifySubscriptionAction`. Each click fires
+  a toast clearly stating the action will be wired through Shopify.
+  Prevents the "broken UI" QA read of dead buttons; signals integration
+  intent honestly.
+- **Tracking / invoice links** wrapped in conditional rendering — no
+  longer assume `tracking.url` or `invoiceUrl` are always present.
+
+## Architectural commitments
+
 ## Architectural commitments
 
 1. **No own auth.** Shopify Customer Accounts owns login, password, 2FA,

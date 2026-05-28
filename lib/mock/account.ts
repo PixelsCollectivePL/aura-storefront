@@ -3,14 +3,19 @@ import type {
   AccountOrder,
   AccountAddress,
   AccountSubscription,
+  AccountStats,
+  AccountTastedBlend,
+  SubscriptionCadenceOption,
+  SubscriptionBlendOption,
 } from "@/types/account";
 
 /**
  * Mock account data — shaped to match Shopify Customer Account API.
  *
- * Data-access seam: all account reads go through the getters below.
- * On Shopify integration, re-implement these to query the Customer Account
- * API (and make them async). See docs/ACCOUNT_SHOPIFY_INTEGRATION_PLAN.md.
+ * Data-access seam: all account UI reads go through the getters below.
+ * On Shopify integration, re-implement these to call the Customer
+ * Account API (and make them async). See
+ * docs/ACCOUNT_SHOPIFY_INTEGRATION_PLAN.md.
  */
 
 const ORANGE = "var(--aura-orange)";
@@ -18,10 +23,14 @@ const GREEN  = "var(--aura-green)";
 const PURPLE = "var(--aura-purple)";
 const INK    = "var(--aura-ink)";
 
+/* ──────────────────────────────────────────────────────────────────
+   Customer
+   ────────────────────────────────────────────────────────────────── */
 export const MOCK_CUSTOMER: AccountCustomer = {
   id: "gid://shopify/Customer/1029384756",
   firstName: "Kuba",
   lastName: "Wójcik",
+  displayName: "Kuba Wójcik",
   email: "kuba@pixelscollective.pl",
   phone: "+48 600 412 087",
   acceptsMarketing: true,
@@ -30,6 +39,9 @@ export const MOCK_CUSTOMER: AccountCustomer = {
   defaultAddressId: "addr-1",
 };
 
+/* ──────────────────────────────────────────────────────────────────
+   Orders
+   ────────────────────────────────────────────────────────────────── */
 export const MOCK_ORDERS: AccountOrder[] = [
   {
     id: "gid://shopify/Order/5582901",
@@ -48,9 +60,11 @@ export const MOCK_ORDERS: AccountOrder[] = [
         variantId: "two::250g",
         handle: "two",
         title: "Coração do Brasil",
+        productTitle: "Coração do Brasil",
         variantTitle: "250g · Ziarno",
         quantity: 1,
         price: 64,
+        currencyCode: "PLN",
         accent: ORANGE,
       },
       {
@@ -59,9 +73,11 @@ export const MOCK_ORDERS: AccountOrder[] = [
         variantId: "four::250g",
         handle: "four",
         title: "Verde Tropical",
+        productTitle: "Verde Tropical",
         variantTitle: "250g · Mielona — filtr",
         quantity: 1,
         price: 72,
+        currencyCode: "PLN",
         accent: GREEN,
       },
       {
@@ -70,9 +86,11 @@ export const MOCK_ORDERS: AccountOrder[] = [
         variantId: "clip::stalowy",
         handle: "clip",
         title: "Klips do paczki",
+        productTitle: "Klips do paczki",
         variantTitle: "Stalowy · czarny",
         quantity: 2,
         price: 10,
+        currencyCode: "PLN",
         accent: INK,
       },
     ],
@@ -80,7 +98,9 @@ export const MOCK_ORDERS: AccountOrder[] = [
       name: "Kuba Wójcik",
       line1: "ul. Próżna 14/8",
       city: "00-107 Warszawa",
+      province: "mazowieckie",
       country: "Polska",
+      countryCode: "PL",
       phone: "+48 600 412 087",
     },
     payment: { brand: "Visa", last4: "4242" },
@@ -88,8 +108,19 @@ export const MOCK_ORDERS: AccountOrder[] = [
       carrier: "InPost",
       number: "693403812749",
       eta: "2026-05-28",
+      // [shopify-ready]: from fulfillments.trackingInfo.url
+      url: "#track",
+      // [shopify-ready]: derived from fulfillment.events + fulfillmentStatus
+      timeline: [
+        { status: "placed",     label: "Zamówienie przyjęte", at: "2026-05-22T14:08" },
+        { status: "packed",     label: "Paczka spakowana",    at: "2026-05-23T09:42" },
+        { status: "in_transit", label: "W drodze · InPost",   at: "2026-05-24T18:11", current: true },
+        { status: "delivered",  label: "Dostarczone" },
+      ],
     },
-    invoiceUrl: "#", // [future-integration]: BaseLinker / invoicing app
+    statusUrl: "#order-status",
+    /** [future-integration]: invoiceUrl typically from BaseLinker / invoicing app */
+    invoiceUrl: "#invoice",
   },
   {
     id: "gid://shopify/Order/5572101",
@@ -108,9 +139,11 @@ export const MOCK_ORDERS: AccountOrder[] = [
         variantId: "five::500g",
         handle: "five",
         title: "Lila Nocturna",
+        productTitle: "Lila Nocturna",
         variantTitle: "500g · Ziarno",
         quantity: 1,
         price: 142,
+        currencyCode: "PLN",
         accent: PURPLE,
       },
     ],
@@ -119,6 +152,7 @@ export const MOCK_ORDERS: AccountOrder[] = [
       line1: "ul. Próżna 14/8",
       city: "00-107 Warszawa",
       country: "Polska",
+      countryCode: "PL",
       phone: "+48 600 412 087",
     },
     payment: { brand: "Visa", last4: "4242" },
@@ -140,9 +174,11 @@ export const MOCK_ORDERS: AccountOrder[] = [
         variantId: "three::250g",
         handle: "three",
         title: "Mezcla Casa",
+        productTitle: "Mezcla Casa",
         variantTitle: "250g · Ziarno",
         quantity: 1,
         price: 58,
+        currencyCode: "PLN",
         accent: ORANGE,
       },
       {
@@ -151,9 +187,11 @@ export const MOCK_ORDERS: AccountOrder[] = [
         variantId: "postcard::drop01",
         handle: "postcard",
         title: "Pocztówka Aura",
+        productTitle: "Pocztówka Aura",
         variantTitle: "Drop 01",
         quantity: 2,
         price: 4,
+        currencyCode: "PLN",
         accent: INK,
       },
     ],
@@ -162,6 +200,7 @@ export const MOCK_ORDERS: AccountOrder[] = [
       line1: "ul. Próżna 14/8",
       city: "00-107 Warszawa",
       country: "Polska",
+      countryCode: "PL",
     },
     payment: { brand: "Visa", last4: "4242" },
   },
@@ -182,9 +221,11 @@ export const MOCK_ORDERS: AccountOrder[] = [
         variantId: "two::250g",
         handle: "two",
         title: "Coração do Brasil",
+        productTitle: "Coração do Brasil",
         variantTitle: "250g · Ziarno",
         quantity: 1,
         price: 64,
+        currencyCode: "PLN",
         accent: ORANGE,
       },
     ],
@@ -193,11 +234,17 @@ export const MOCK_ORDERS: AccountOrder[] = [
       line1: "ul. Próżna 14/8",
       city: "00-107 Warszawa",
       country: "Polska",
+      countryCode: "PL",
     },
     payment: { brand: "Visa", last4: "4242" },
   },
 ];
 
+/* ──────────────────────────────────────────────────────────────────
+   Subscription
+   [future-integration]: real subscription data comes from Shopify
+   Subscriptions / Recharge / Customer Account Extension.
+   ────────────────────────────────────────────────────────────────── */
 export const MOCK_SUBSCRIPTION: AccountSubscription = {
   id: "gid://aura-subs/Sub/77",
   status: "active",
@@ -212,8 +259,37 @@ export const MOCK_SUBSCRIPTION: AccountSubscription = {
   startedAt: "2026-01-12",
   cyclesDelivered: 9,
   accent: ORANGE,
+  cycles: [
+    { cycleNumber: 9, deliveredAt: "2026-05-21", status: "delivered" },
+    { cycleNumber: 8, deliveredAt: "2026-05-07", status: "delivered" },
+    { cycleNumber: 7, deliveredAt: "2026-04-23", status: "delivered" },
+    { cycleNumber: 6, deliveredAt: "2026-04-09", status: "delivered" },
+    { cycleNumber: 10, deliveredAt: "2026-06-04", status: "unfulfilled" },
+  ],
 };
 
+/* ──────────────────────────────────────────────────────────────────
+   Subscription catalog options (cadence + blend swap).
+   NOT customer data — these are catalog/plan options. On Shopify these
+   come from `sellingPlanGroups` query (cadences) and product collection
+   (blends).
+   ────────────────────────────────────────────────────────────────── */
+export const SUBSCRIPTION_CADENCE_OPTIONS: SubscriptionCadenceOption[] = [
+  { cadenceWeeks: 1, label: "Co tydzień",     hint: "Dla codziennych" },
+  { cadenceWeeks: 2, label: "Co 2 tygodnie",  hint: "Polecane",        recommended: true },
+  { cadenceWeeks: 4, label: "Co miesiąc",     hint: "Dla wolniejszych" },
+  { cadenceWeeks: 8, label: "Co 2 miesiące",  hint: "Tylko wieczorem" },
+];
+
+export const SUBSCRIPTION_BLEND_OPTIONS: SubscriptionBlendOption[] = [
+  { handle: "two",   name: "Coração do Brasil", hint: "Espresso · ciemniejszy", accent: ORANGE },
+  { handle: "four",  name: "Verde Tropical",    hint: "Filtr · cytrusowy",       accent: GREEN },
+  { handle: "five",  name: "Lila Nocturna",     hint: "Espresso · winny",        accent: PURPLE },
+];
+
+/* ──────────────────────────────────────────────────────────────────
+   Addresses
+   ────────────────────────────────────────────────────────────────── */
 export const MOCK_ADDRESSES: AccountAddress[] = [
   {
     id: "addr-1",
@@ -223,8 +299,10 @@ export const MOCK_ADDRESSES: AccountAddress[] = [
     lastName: "Wójcik",
     address1: "ul. Próżna 14/8",
     city: "Warszawa",
+    province: "mazowieckie",
     zip: "00-107",
     country: "Polska",
+    countryCode: "PL",
     phone: "+48 600 412 087",
   },
   {
@@ -236,10 +314,35 @@ export const MOCK_ADDRESSES: AccountAddress[] = [
     company: "Pixels Collective sp. z o.o.",
     address1: "ul. Krucza 41",
     city: "Warszawa",
+    province: "mazowieckie",
     zip: "00-525",
     country: "Polska",
+    countryCode: "PL",
     phone: "+48 22 290 11 04",
   },
+];
+
+/* ──────────────────────────────────────────────────────────────────
+   Dashboard stats + tasted blends
+   [derived / future]: in production these come from:
+     - order-history aggregation (this year count, favorite blend),
+     - loyalty app metafield (points).
+   For now: static mock.
+   ────────────────────────────────────────────────────────────────── */
+export const MOCK_STATS: AccountStats = {
+  ordersTotal: MOCK_ORDERS.length,
+  ordersThisYear: 4,
+  favoriteBlend: "Coração",
+  favoriteBlendSubtitle: "do espresso",
+  loyaltyPoints: 128,
+  loyaltyPointsToNext: 22,
+};
+
+export const MOCK_TASTED_BLENDS: AccountTastedBlend[] = [
+  { handle: "two",  name: "Coração do Brasil", timesOrdered: 3 },
+  { handle: "four", name: "Verde Tropical",    timesOrdered: 1 },
+  { handle: "five", name: "Lila Nocturna",     timesOrdered: 1 },
+  { handle: "three", name: "Mezcla Casa",     timesOrdered: 1 },
 ];
 
 /* ─── Data-access seam ──────────────────────────────────────────────
@@ -250,6 +353,8 @@ export const MOCK_ADDRESSES: AccountAddress[] = [
    [shopify-ready]: getOrders         → customer.orders(first:N)
    [shopify-ready]: getOrder          → customer.orders(query:"name:#X") or by id
    [shopify-ready]: getAddresses      → customer.addresses(first:25)
+   [derived]:       getAccountStats   → computed from orders + loyalty app
+   [derived]:       getTastedBlends   → computed from order history
    [future-integration]: getSubscription → Recharge / Shopify Subscriptions
    ────────────────────────────────────────────────────────────────── */
 
@@ -271,4 +376,12 @@ export function getAddresses(): AccountAddress[] {
 
 export function getSubscription(): AccountSubscription | null {
   return MOCK_SUBSCRIPTION;
+}
+
+export function getAccountStats(): AccountStats {
+  return MOCK_STATS;
+}
+
+export function getTastedBlends(): AccountTastedBlend[] {
+  return MOCK_TASTED_BLENDS;
 }

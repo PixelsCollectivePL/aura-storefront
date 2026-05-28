@@ -18,6 +18,8 @@ import {
   getOrders,
   getSubscription,
   getAddresses,
+  getAccountStats,
+  getTastedBlends,
 } from "@/lib/mock/account";
 import { isMockAuthenticated } from "@/lib/account/auth";
 
@@ -88,10 +90,12 @@ function AccountPageInner() {
 
 function LoggedInAccount() {
   // Static mocks for now — sourced via data-access seam (lib/mock/account.ts).
-  const customer     = useMemo(() => getCustomer(),     []);
-  const orders       = useMemo(() => getOrders(),       []);
-  const subscription = useMemo(() => getSubscription(), []);
-  const addresses    = useMemo(() => getAddresses(),    []);
+  const customer     = useMemo(() => getCustomer(),      []);
+  const orders       = useMemo(() => getOrders(),        []);
+  const subscription = useMemo(() => getSubscription(),  []);
+  const addresses    = useMemo(() => getAddresses(),     []);
+  const stats        = useMemo(() => getAccountStats(),  []);
+  const tastedBlends = useMemo(() => getTastedBlends(),  []);
 
   const [section, setSection] = useState<AccountSection>("dashboard");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -141,6 +145,8 @@ function LoggedInAccount() {
           customer={customer}
           orders={orders}
           subscription={subscription}
+          stats={stats}
+          tastedBlends={tastedBlends}
           onNavigate={navigate}
         />
       )}

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AccountEmptyState } from "@/components/account/AccountEmptyState";
+import { notifyReorderAction } from "@/lib/account/feedback";
 import { cn, formatPrice } from "@/lib/utils";
 import { formatDateLong } from "@/lib/account/format";
 import type { AccountOrder, FulfillmentStatus } from "@/types/account";
@@ -155,7 +156,8 @@ export function AccountOrders({ orders, onSelectOrder }: AccountOrdersProps) {
               </button>
               <button
                 type="button"
-                /* [shopify-ready]: cartLinesAdd with this order.items */
+                onClick={notifyReorderAction}
+                /* [shopify-ready]: cartLinesAdd from o.items (variantId, quantity) */
                 className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill bg-brand text-white border border-brand text-[12.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               >
                 Ponów
@@ -209,7 +211,8 @@ export function AccountOrders({ orders, onSelectOrder }: AccountOrdersProps) {
             <div className="flex gap-2 px-4 pb-4">
               <button
                 type="button"
-                /* [shopify-ready]: cartLinesAdd */
+                onClick={notifyReorderAction}
+                /* [shopify-ready]: cartLinesAdd from o.items */
                 className="flex-1 h-10 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13px] font-semibold cursor-pointer"
               >
                 Zamów ponownie

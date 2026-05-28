@@ -4,6 +4,7 @@ import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AccountReceiptRow } from "@/components/account/AccountReceiptRow";
 import { AcctIcon } from "@/components/account/AccountIcons";
+import { notifyReorderAction } from "@/lib/account/feedback";
 import { cn, formatPrice } from "@/lib/utils";
 import { formatDateLong, formatDateShort } from "@/lib/account/format";
 import type { AccountOrder } from "@/types/account";
@@ -58,7 +59,10 @@ export function AccountOrderDetails({ order, onBack }: AccountOrderDetailsProps)
           )}
           <button
             type="button"
-            /* [shopify-ready]: cartLinesAdd with order.items */
+            onClick={notifyReorderAction}
+            /* [shopify-ready]: cartLinesAdd with order.items.map(it =>
+                 ({ merchandiseId: it.variantId, quantity: it.quantity })),
+               then openCart(). */
             className="inline-flex items-center justify-center h-10 px-5 rounded-pill bg-brand text-white border border-brand text-[13px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
           >
             Zamów ponownie
@@ -181,60 +185,84 @@ export function AccountOrderDetails({ order, onBack }: AccountOrderDetailsProps)
                 Szacowana dostawa
               </div>
 
-              <ol className="flex flex-col">
-                {[
-                  { l: "Zamówienie przyjęte", done: true,  d: "22 maja, 14:08" },
-                  { l: "Paczka spakowana",    done: true,  d: "23 maja, 09:42" },
-                  { l: "W drodze · InPost",   done: true,  current: true, d: "24 maja, 18:11" },
-                  { l: "Dostarczone",         done: false, d: "oczekiwane 28 maja" },
-                ].map((s, i, arr) => (
-                  <li key={i} className="flex gap-3.5 items-start pb-3 relative">
-                    <span
-                      className="relative z-10 rounded-full mt-0.5 shrink-0"
-                      style={{
-                        width: 14,
-                        height: 14,
-                        background: s.current ? "var(--aura-orange)" : s.done ? "#fff" : "transparent",
-                        border: `2px solid ${
-                          s.done ? (s.current ? "var(--aura-orange)" : "#fff") : "rgba(255,255,255,0.3)"
-                        }`,
-                      }}
-                      aria-hidden="true"
-                    />
-                    {i < arr.length - 1 && (
-                      <span
-                        className="absolute left-[6px] top-[18px] bottom-0 w-px"
-                        style={{ background: s.done ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.15)" }}
-                        aria-hidden="true"
-                      />
-                    )}
-                    <div className="flex-1">
-                      <div
-                        className={cn(
-                          "text-[13px]",
-                          s.current ? "font-bold text-white" : s.done ? "text-white" : "text-white/50"
-                        )}
-                      >
-                        {s.l}
-                      </div>
-                      <div
-                        className="tabular-nums text-white/55"
-                        style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.1em" }}
-                      >
-                        {s.d}
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+              {/* Timeline — driven by order.tracking.timeline; falls back to
+                  a 4-step default progression if the carrier hasn't reported
+                  events yet (e.g. on fresh orders). */}
+              {(() => {
+                const timeline = order.tracking?.timeline ?? [
+                  { status: "placed",     label: "Zamówienie przyjęte" },
+                  { status: "packed",     label: "Paczka spakowana" },
+                  { status: "in_transit", label: "W drodze",          current: true },
+                  { status: "delivered",  label: "Dostarczone" },
+                ];
+                return (
+                  <ol className="flex flex-col">
+                    {timeline.map((s, i, arr) => {
+                      const done = !!s.at;
+                      const current = !!s.current;
+                      const dateLabel = s.at
+                        ? new Intl.DateTimeFormat("pl-PL", {
+                            day: "numeric", month: "long", hour: "2-digit", minute: "2-digit",
+                          }).format(new Date(s.at))
+                        : "—";
+                      return (
+                        <li key={i} className="flex gap-3.5 items-start pb-3 relative">
+                          <span
+                            className="relative z-10 rounded-full mt-0.5 shrink-0"
+                            style={{
+                              width: 14,
+                              height: 14,
+                              background: current ? "var(--aura-orange)" : done ? "#fff" : "transparent",
+                              border: `2px solid ${
+                                done ? (current ? "var(--aura-orange)" : "#fff") : "rgba(255,255,255,0.3)"
+                              }`,
+                            }}
+                            aria-hidden="true"
+                          />
+                          {i < arr.length - 1 && (
+                            <span
+                              className="absolute left-[6px] top-[18px] bottom-0 w-px"
+                              style={{
+                                background: done ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.15)",
+                              }}
+                              aria-hidden="true"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <div
+                              className={cn(
+                                "text-[13px]",
+                                current ? "font-bold text-white" : done ? "text-white" : "text-white/50"
+                              )}
+                            >
+                              {s.label}
+                            </div>
+                            <div
+                              className="tabular-nums text-white/55"
+                              style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.1em" }}
+                            >
+                              {dateLabel}
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                );
+              })()}
 
-              <button
-                type="button"
-                className="w-full h-11 mt-2 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                /* [shopify-ready]: open tracking.url in new tab */
-              >
-                Śledź paczkę ↗
-              </button>
+              {/* Track CTA — only renders if carrier returned a URL.
+                  [shopify-ready]: from fulfillments.trackingInfo.url */}
+              {order.tracking.url ? (
+                <a
+                  href={order.tracking.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-11 mt-2 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+                >
+                  Śledź paczkę ↗
+                </a>
+              ) : null}
               <div
                 className="text-white/55 uppercase mt-2.5"
                 style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
