@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { getProduct, getProducts } from "@/lib/mock/products";
+import {
+  getProductByHandle,
+  getProducts,
+  getProductHandles,
+} from "@/lib/shopify";
 import { Starburst } from "@/components/brand/Starburst";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductBuyBox } from "@/components/product/ProductBuyBox";
@@ -43,9 +47,16 @@ function getAccent(handle: string): string {
 
 // ── Metadata (SSG-ready) ───────────────────────────────────────────────
 
+/**
+ * Pre-render known product routes at build time.
+ *
+ * An empty result is safe — Next falls back to rendering on first
+ * request, so a product added in Shopify Admin after the build is still
+ * reachable without a redeploy.
+ */
 export async function generateStaticParams() {
-  // [shopify-ready]: await getProducts() once the seam returns a Promise.
-  return getProducts().map((p) => ({ handle: p.handle }));
+  const handles = await getProductHandles();
+  return handles.map((handle) => ({ handle }));
 }
 
 export async function generateMetadata({
@@ -54,11 +65,14 @@ export async function generateMetadata({
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
   const { handle } = await params;
-  const product = getProduct(handle);
+  const product = await getProductByHandle(handle);
   if (!product) return { title: "Kawa · Aura" };
+
+  // `origin` is a metafield and may be unset on a freshly created product.
+  const titleParts = [product.shortName, product.origin].filter(Boolean);
   return {
-    title: `${product.shortName} · ${product.origin} — Aura`,
-    description: product.description ?? product.title,
+    title: `${titleParts.join(" · ")} — Aura`,
+    description: product.description || product.title,
   };
 }
 
@@ -70,13 +84,14 @@ export default async function ProductDetailPage({
   params: Promise<{ handle: string }>;
 }) {
   const { handle } = await params;
-  const product = getProduct(handle);
+  const product = await getProductByHandle(handle);
   if (!product) notFound();
 
   const roastLevel = getRoastLevel(product.roastLevel);
   const categoryLabel = getCategoryLabel(product.tags);
   const accent = getAccent(product.handle);
-  const related = getProducts()
+
+  const related = (await getProducts({ first: 8 }))
     .filter((p) => p.handle !== product.handle)
     .slice(0, 4);
 

@@ -1,9 +1,12 @@
 /**
- * Shopify Storefront API — response shapes (scaffold).
+ * Shopify Storefront API — response shapes.
  *
  * Simplified subset of the Storefront GraphQL schema, covering only the
- * fields the Aura storefront needs. NOT exhaustive. Nothing here is wired
- * into the running app yet — see lib/shopify/README.md.
+ * fields the Aura storefront requests. NOT exhaustive.
+ *
+ * These mirror the fragments in `lib/shopify/fragments.ts` — the two must
+ * stay in sync. Queries use `nodes { ... }` (not `edges { node }`), so the
+ * connection types below are shaped accordingly.
  *
  * Reference: https://shopify.dev/docs/api/storefront
  */
@@ -28,10 +31,15 @@ export interface ShopifySelectedOption {
 }
 
 export interface ShopifyMetafield {
-  namespace: string; // e.g. "custom"
+  namespace: string; // "custom"
   key: string; // e.g. "roast_level"
   value: string;
   type: string; // e.g. "single_line_text_field", "list.single_line_text_field"
+}
+
+/** Generic `nodes`-style connection. */
+export interface ShopifyNodes<T> {
+  nodes: T[];
 }
 
 // ─── Product ─────────────────────────────────────────────────────────────
@@ -48,31 +56,88 @@ export interface ShopifyProductVariant {
   availableForSale: boolean;
   quantityAvailable: number | null;
   price: ShopifyMoney;
+  compareAtPrice: ShopifyMoney | null;
   selectedOptions: ShopifySelectedOption[];
   image: ShopifyImage | null;
 }
 
+export interface ShopifyCollectionRef {
+  handle: string;
+  title: string;
+}
+
+/** Shape returned by `ProductCardFields`. */
 export interface ShopifyProduct {
   id: string; // gid://shopify/Product/...
   handle: string;
   title: string;
   description: string;
-  descriptionHtml: string;
   availableForSale: boolean;
   tags: string[];
+  productType: string;
+  vendor: string;
   priceRange: {
     minVariantPrice: ShopifyMoney;
     maxVariantPrice: ShopifyMoney;
   };
+  compareAtPriceRange: {
+    minVariantPrice: ShopifyMoney;
+  } | null;
   featuredImage: ShopifyImage | null;
-  images: { edges: Array<{ node: ShopifyImage }> };
+  images: ShopifyNodes<ShopifyImage>;
   options: ShopifyProductOption[];
-  variants: { edges: Array<{ node: ShopifyProductVariant }> };
-  /** Bean specs (origin, process, altitude, roast, brewing...) live here. */
+  variants: ShopifyNodes<ShopifyProductVariant>;
+  collections: ShopifyNodes<ShopifyCollectionRef>;
+  /** Positional array — Shopify returns `null` for unset identifiers. */
   metafields: Array<ShopifyMetafield | null>;
 }
 
-// ─── Cart ────────────────────────────────────────────────────────────────
+/** Shape returned by `ProductDetailFields` (card + long-form fields). */
+export interface ShopifyProductDetail extends ShopifyProduct {
+  descriptionHtml: string;
+  seo: {
+    title: string | null;
+    description: string | null;
+  } | null;
+}
+
+// ─── Collection ──────────────────────────────────────────────────────────
+
+export interface ShopifyCollection {
+  id: string;
+  handle: string;
+  title: string;
+  description: string;
+  image: ShopifyImage | null;
+}
+
+// ─── Query result envelopes ──────────────────────────────────────────────
+
+export interface ProductsQueryResult {
+  products: ShopifyNodes<ShopifyProduct>;
+}
+
+export interface ProductHandlesQueryResult {
+  products: ShopifyNodes<{ handle: string }>;
+}
+
+export interface ProductByHandleQueryResult {
+  product: ShopifyProductDetail | null;
+}
+
+export interface CollectionProductsQueryResult {
+  collection: {
+    handle: string;
+    title: string;
+    products: ShopifyNodes<ShopifyProduct>;
+  } | null;
+}
+
+export interface CollectionsQueryResult {
+  collections: ShopifyNodes<ShopifyCollection>;
+}
+
+// ─── Cart (Sprint 2 — not wired yet) ─────────────────────────────────────
 
 export interface ShopifyCartLineMerchandise {
   id: string; // ProductVariant gid
@@ -99,7 +164,7 @@ export interface ShopifyCart {
     subtotalAmount: ShopifyMoney;
     totalAmount: ShopifyMoney;
   };
-  lines: { edges: Array<{ node: ShopifyCartLine }> };
+  lines: ShopifyNodes<ShopifyCartLine>;
 }
 
 // ─── GraphQL envelope ────────────────────────────────────────────────────

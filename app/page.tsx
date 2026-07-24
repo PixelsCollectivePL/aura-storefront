@@ -5,16 +5,18 @@ import { TrustStrip } from "@/components/layout/TrustStrip";
 import { NewsletterForm } from "@/components/marketing/NewsletterForm";
 import { Icon } from "@/components/ui/Icon";
 import { CONTENT } from "@/lib/content/pl";
-import { getFeaturedProducts } from "@/lib/mock/products";
+import { getFeaturedProducts } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 
 const { homepage: hp } = CONTENT;
 const { hero: h, shelf, quality: q, reviews: rv, newsletter: nl } = hp;
 
-// [shopify-ready] getFeaturedProducts → Shopify "featured" collection query
-const FEATURED = getFeaturedProducts(4);
+export default async function HomePage() {
+  // Prefers a Shopify collection named `featured`, falls back to the
+  // first N products. Empty array when the catalogue has nothing yet —
+  // the shelf simply renders no cards.
+  const FEATURED = await getFeaturedProducts(4);
 
-export default function HomePage() {
   return (
     <>
       {/* ══════════════════════════════════════════

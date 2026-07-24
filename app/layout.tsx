@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart/cart-context";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Toast } from "@/components/ui/Toast";
+import { getProducts } from "@/lib/shopify";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -35,11 +36,16 @@ export const metadata: Metadata = {
     "Kawa speciality palona w małych partiach co środę w Warszawie. Wysyłamy w ciągu 72 godzin od palenia.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Search runs client-side inside the (client) Header, so the catalogue
+  // is fetched here on the server and handed down. This keeps the private
+  // Storefront token out of the browser bundle.
+  const products = await getProducts({ first: 50 });
+
   return (
     <html
       lang="pl"
@@ -48,7 +54,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col antialiased">
         <CartProvider>
           <AnnouncementBar />
-          <Header />
+          <Header products={products} />
           <main className="flex-1">{children}</main>
           <Footer />
           <CartDrawer />

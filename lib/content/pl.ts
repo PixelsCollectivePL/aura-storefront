@@ -247,6 +247,11 @@ export const CONTENT = {
       body: "Spróbuj zmienić filtry lub wybrać inną kategorię.",
       clearCta: "Wyczyść filtry",
     },
+    /** Shown when the catalogue itself is empty — no products published. */
+    emptyCatalog: {
+      heading: "Wkrótce sypniemy ziarnem.",
+      body: "Pierwsze loty są jeszcze w palarni. Zajrzyj za chwilę — albo zapisz się na newsletter, damy znać.",
+    },
   },
 
   pdp: {

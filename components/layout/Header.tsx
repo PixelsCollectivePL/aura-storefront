@@ -9,9 +9,8 @@ import { AuraMark } from "@/components/brand/AuraMark";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { useCart } from "@/lib/cart/cart-context";
-// [shopify-ready]: getProducts() seam → Shopify predictiveSearch / products query
-import { getProducts } from "@/lib/mock/products";
 import { cn } from "@/lib/utils";
+import type { Product } from "@/types/product";
 
 const NAV_ITEMS = [
   { label: "Produkty", href: "/produkty" },
@@ -20,7 +19,16 @@ const NAV_ITEMS = [
   { label: "Kontakt",  href: "/kontakt" },
 ];
 
-export function Header() {
+interface HeaderProps {
+  /**
+   * Catalogue used by the search overlay. Fetched server-side in
+   * `app/layout.tsx` — this component is client-side and must not reach
+   * into the Shopify layer, which holds the private token.
+   */
+  products?: Product[];
+}
+
+export function Header({ products = [] }: HeaderProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen]     = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -160,7 +168,7 @@ export function Header() {
       </header>
 
       <MobileMenu    isOpen={menuOpen}   onClose={() => setMenuOpen(false)} />
-      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} products={getProducts()} />
+      <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} products={products} />
     </>
   );
 }

@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { Icon } from "@/components/ui/Icon";
-import { getProduct } from "@/lib/mock/products";
-// [shopify-ready]: replace getProduct() with line.merchandise data fetched via Storefront API
 import type { CartLine } from "@/lib/cart/cart-context";
 import { cn } from "@/lib/utils";
 
@@ -31,12 +29,16 @@ export function CartReceiptLine({
   onRemove,
   variant = "desktop",
 }: CartReceiptLineProps) {
-  // Look up extra product meta (origin, notes, lot). Cart context only
-  // carries shopify-shaped fields, so we look up the rest by handle.
-  const product = getProduct(line.handle);
-  const lot     = product?.lotCode ?? line.handle;
-  const origin  = product?.origin ?? "";
-  const notes   = product?.notes?.join(", ") ?? "";
+  // The cart line carries only Shopify-shaped fields. Coffee metadata
+  // (lot code, origin, tasting notes) lives on the product and is not
+  // fetched here — a client component cannot reach the server-only
+  // Shopify layer.
+  // [sprint-2]: carry these through the cart line itself when the cart
+  // moves onto the Shopify Cart API, where `merchandise.product` is
+  // available on every line.
+  const lot     = line.handle;
+  const origin  = "";
+  const notes   = "";
 
   const lineTotal = line.price * line.quantity;
   const numberStr = String(index + 1).padStart(2, "0");

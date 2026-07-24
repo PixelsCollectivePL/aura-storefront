@@ -21,36 +21,68 @@ export interface SizeOption {
 }
 
 /**
+ * A product option axis — e.g. { name: "Waga", values: ["200g", "500g"] }.
+ * Maps 1:1 from Shopify `product.options`.
+ */
+export interface ProductOption {
+  id?: string;
+  name: string;
+  values: string[];
+}
+
+/**
+ * A collection a product belongs to. Maps from Shopify
+ * `product.collections`.
+ */
+export interface ProductCollectionRef {
+  handle: string;
+  title: string;
+}
+
+/**
  * Per-variant price / availability — mirrors Shopify ProductVariant.
- * [shopify-ready]: populated from variant fragment in Storefront API response.
+ * Populated from the variant fragment in the Storefront API response.
  */
 export interface ProductVariant {
   /**
    * Shopify ProductVariant gid (gid://shopify/ProductVariant/...).
+   * This is the `merchandiseId` used by Cart API mutations — reorder and
+   * add-to-cart must key off this, never off a title string.
    * Mock value: `${handle}::${title}`.
    */
   variantId: string;
   title: string;
   price: ProductPrice;
+  /** Crossed-out "was" price, when the variant is discounted. */
+  compareAtPrice?: ProductPrice;
   /**
-   * Axis values for this variant — e.g. [{ name: "Size", value: "200g" }].
-   * [shopify-ready]: map directly from variant.selectedOptions.
+   * Axis values for this variant — e.g. [{ name: "Waga", value: "200g" }].
+   * Maps directly from Shopify `variant.selectedOptions`.
    */
   selectedOptions: Array<{ name: string; value: string }>;
   availableForSale?: boolean;
+  quantityAvailable?: number;
+  /** Variant-specific image, when the merchant set one. */
+  image?: ProductImage;
 }
 
 export interface Product {
   /**
    * Shopify Product id (gid://shopify/Product/...).
-   * Optional while running on mock data — `handle` is used as the stable
-   * key today. [shopify-ready]: populated from Shopify Storefront API.
+   * Optional only because mock fixtures may omit it — live Shopify data
+   * always carries it.
    */
   id?: string;
   handle: string;
   title: string;
+  /**
+   * Short display name used on cards and in the cart.
+   * Sourced from the `custom.short_name` metafield; falls back to `title`.
+   */
   shortName: string;
   description?: string;
+  /** Rich description from Shopify. Render with care — it is raw HTML. */
+  descriptionHtml?: string;
   origin: string;
   notes: string[];
   lotCode: string;
@@ -69,12 +101,27 @@ export interface Product {
   grindOptions: string[];
   sizeOptions: SizeOption[];
   /**
-   * Flat list of purchasable variants (size axis only in mock data).
-   * [shopify-ready]: maps from Shopify product.variants edges.
+   * Flat list of purchasable variants.
+   * Maps from Shopify `product.variants`.
    */
   variants?: ProductVariant[];
+  /** Option axes as defined in Shopify (`product.options`). */
+  options?: ProductOption[];
+  /** Primary image. Maps from Shopify `product.featuredImage`. */
+  featuredImage?: ProductImage;
   images: ProductImage[];
+  /**
+   * Lowest "was" price across variants, when the product is discounted.
+   * Maps from Shopify `compareAtPriceRange.minVariantPrice`.
+   */
+  compareAtPrice?: ProductPrice;
   tags?: string[];
+  /** Shopify `product.productType`. */
+  productType?: string;
+  /** Shopify `product.vendor`. */
+  vendor?: string;
+  /** All collections this product belongs to (Shopify `product.collections`). */
+  collections?: ProductCollectionRef[];
   /**
    * Marks a product as homepage-featured. While on mock data the homepage
    * uses `getFeaturedProducts()` (first N). [shopify-ready]: drive from a
@@ -82,8 +129,20 @@ export interface Product {
    */
   featured?: boolean;
   /**
-   * Owning collection handle. [shopify-ready]: Shopify Collection.handle —
-   * lets PLP routes and filters map onto Shopify collections.
+   * Primary collection handle, for PLP routing and filters.
+   * Derived from the first entry of `collections`.
    */
   collection?: string;
+}
+
+/**
+ * A Shopify collection, as surfaced by `getCollections()`.
+ * Used for catalogue navigation.
+ */
+export interface Collection {
+  id: string;
+  handle: string;
+  title: string;
+  description?: string;
+  image?: ProductImage;
 }

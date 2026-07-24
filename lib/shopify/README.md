@@ -1,29 +1,102 @@
-# lib/shopify — integration scaffold (NOT wired up)
+# `lib/shopify` — catalogue data layer
 
-This folder is a **placeholder structure** for the future Shopify Storefront API
-integration. As of PR #10 nothing here is imported by the running app, no
-network requests are made, and no environment variables are read.
+**Live.** Products, collections and the PDP read from Shopify Storefront API
+through this folder.
 
-The live app reads products through the data-access seam in
-`lib/mock/products.ts` (`getProducts` / `getProduct` / `getFeaturedProducts`).
-Integration = re-implementing that seam on top of the files below.
+Server-only — holds the private Storefront token. Never import it from a
+Client Component.
 
-## Files
+## Layout
 
-| File         | Purpose                                                        | Status      |
-|--------------|----------------------------------------------------------------|-------------|
-| `types.ts`   | Shopify Storefront API response shapes (TypeScript interfaces). | Scaffold    |
-| `queries.ts` | GraphQL query/mutation strings (plain strings, not executed).   | Scaffold    |
-| `client.ts`  | `shopifyFetch` wrapper — **stub that throws** until configured. | Stub        |
-| `mappers.ts` | Shopify → Aura `Product` mapping helpers.                       | Scaffold    |
+```
+client.ts              GraphQL transport, cache tags, error type
+fragments.ts           shared GraphQL fragments + metafield identifiers
+types.ts               Shopify response shapes
+queries/
+  products.ts          list, collection-products, handles
+  product.ts           single product by handle
+  collections.ts       collection list
+mappers/
+  product.ts           ShopifyProduct → Product  (+ Collection)
+  cart.ts              ShopifyCartLine → CartLine   (Sprint 2, unused)
+index.ts               PUBLIC API — the only file pages import
+```
 
-## How integration will work
+## Public API
 
-1. Add env vars (see `docs/SHOPIFY_INTEGRATION_PLAN.md`).
-2. Implement `client.ts` (`shopifyFetch`) against the Storefront GraphQL endpoint.
-3. Implement `mappers.ts` to convert Shopify products → the app's `Product` type.
-4. Re-point the seam in `lib/mock/products.ts` (or replace it) to call
-   `shopifyFetch` + the mappers. Make the seam functions `async`.
-5. Wire the cart context to the cart mutations.
+```ts
+import {
+  getProducts,          // (opts?) => Product[]
+  getProductByHandle,   // (handle) => Product | null
+  getProductHandles,    // () => string[]        — generateStaticParams
+  getFeaturedProducts,  // (count?) => Product[] — homepage shelf
+  getCollections,       // () => Collection[]
+} from "@/lib/shopify";
+```
 
-See `docs/SHOPIFY_INTEGRATION_PLAN.md` for the full plan and ordering.
+Pages consume `Product` from `types/product.ts` and never see a Shopify
+shape — swapping the backend means rewriting `mappers/product.ts` only.
+
+## Failure policy
+
+List reads **never throw**. A missing env var, an outage, or a GraphQL
+error degrades to `[]` (or `null` for a single product) and logs to the
+server console — the page renders its empty state instead of 500-ing.
+
+`getProductByHandle` returning `null` is how the PDP triggers `notFound()`.
+
+## Caching & revalidation
+
+Next 16 does **not** cache `fetch` by default, so every request opts in
+explicitly:
+
+```ts
+next: { revalidate: 60, tags: ["shopify", "shopify:products", ...] }
+```
+
+Shopify Admin edits therefore appear within ~60s with no deploy.
+
+Tags are the future webhook surface. Adding instant invalidation later
+means writing a webhook route that calls:
+
+```ts
+revalidateTag(SHOPIFY_TAGS.products);          // any list
+revalidateTag(SHOPIFY_TAGS.product(handle));   // one PDP
+revalidateTag(SHOPIFY_TAGS.collections);
+```
+
+No change to this layer is required for that.
+
+## Metafields
+
+Coffee-specific fields (origin, lot code, roast level, tasting notes,
+brewing recipes) have no native Shopify equivalent and come from `custom.*`
+metafields.
+
+The Storefront API requires explicit `identifiers` — there is **no**
+"fetch all metafields" query. Creating a metafield in Shopify Admin is not
+enough: its key must also be added to `PRODUCT_METAFIELD_IDENTIFIERS` in
+`fragments.ts`.
+
+All of them are optional. A product with nothing but a title and a price
+renders correctly; metafield-backed fields fall back to empty values.
+
+## Mock fixtures
+
+Off by default and impossible to enable in production:
+
+```ts
+process.env.AURA_USE_MOCK_CATALOG === "true" && NODE_ENV !== "production"
+```
+
+They exist for local visual work while the Shopify catalogue is empty, and
+load via dynamic `import()` so they stay out of the production path.
+
+## Environment
+
+| Variable | Required | Notes |
+|---|---|---|
+| `SHOPIFY_STORE_DOMAIN` | yes | `<store>.myshopify.com` |
+| `SHOPIFY_STOREFRONT_PRIVATE_TOKEN` | yes | server-side only |
+| `SHOPIFY_STOREFRONT_API_VERSION` | no | defaults to `2025-10` |
+| `AURA_USE_MOCK_CATALOG` | no | dev-only escape hatch |
