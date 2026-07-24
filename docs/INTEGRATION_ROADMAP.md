@@ -41,9 +41,15 @@ Before any code can run against Shopify.
 - [ ] (Optional now, required for Sprint 3) Customer Account API app registered in Partners
 - [ ] At least 3 test products added in Shopify admin (any data — can be polished later)
 - [ ] Shop domain noted (`<store>.myshopify.com`)
+- [ ] Env vars set in Vercel (Production + Preview):
+  `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`,
+  `SHOPIFY_STOREFRONT_PRIVATE_TOKEN`
+- [ ] Verify via `GET /api/test/shopify-env` (returns booleans only)
+- [ ] **Delete `app/api/test/shopify-env/route.ts` once verified** —
+  temporary diagnostic route, must not ship to production long-term
 
-**Deliverable:** two strings handed off to me — `SHOPIFY_STORE_DOMAIN`
-and `SHOPIFY_STOREFRONT_TOKEN`.
+**Deliverable:** env vars live in Vercel and the diagnostic endpoint
+reports `true` for all three.
 
 ---
 
