@@ -45,8 +45,11 @@ Before any code can run against Shopify.
   `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`,
   `SHOPIFY_STOREFRONT_PRIVATE_TOKEN`
 - [ ] Verify via `GET /api/test/shopify-env` (returns booleans only)
-- [ ] **Delete `app/api/test/shopify-env/route.ts` once verified** —
-  temporary diagnostic route, must not ship to production long-term
+- [ ] Verify live connectivity via `GET /api/test/shopify`
+  (one GraphQL request using the private token, server-side)
+- [ ] **Delete both temporary diagnostic routes once verified:**
+  `app/api/test/shopify-env/route.ts` and `app/api/test/shopify/route.ts`
+  — neither should ship to production long-term
 
 **Deliverable:** env vars live in Vercel and the diagnostic endpoint
 reports `true` for all three.
