@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, DM_Sans, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -9,25 +9,21 @@ import { Toast } from "@/components/ui/Toast";
 import { getProducts } from "@/lib/shopify";
 import "./globals.css";
 
-const archivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+// Fractul is the single type family for the whole shop — it covers every role
+// the design system used to split across three faces (display / sans / mono).
+// Weights mirror the ones those faces provided, so no component needs to change.
+const fractul = localFont({
+  variable: "--font-fractul",
   display: "swap",
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
+  src: [
+    { path: "./fonts/Fractul-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/Fractul-Italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/Fractul-Medium.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/Fractul-SemiBold.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/Fractul-Bold.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/Fractul-ExtraBold.woff2", weight: "800", style: "normal" },
+    { path: "./fonts/Fractul-Black.woff2", weight: "900", style: "normal" },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -49,7 +45,7 @@ export default async function RootLayout({
   return (
     <html
       lang="pl"
-      className={`${archivo.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full`}
+      className={`${fractul.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
         <CartProvider>

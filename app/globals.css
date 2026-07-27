@@ -39,10 +39,12 @@
 
 /* ─── Tailwind v4 theme tokens ─── */
 @theme inline {
-  /* Fonts — resolved at runtime from next/font/google */
-  --font-display: var(--font-archivo), "Archivo", "Archivo Black", ui-sans-serif, system-ui, sans-serif;
-  --font-sans:    var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono:    var(--font-jetbrains), "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+  /* Fonts — Fractul, self-hosted via next/font/local (see app/layout.tsx).
+     All three roles resolve to the same family; they stay separate tokens so
+     component classes (font-display / font-sans / font-mono) keep working. */
+  --font-display: var(--font-fractul), "Fractul", ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    var(--font-fractul), "Fractul", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    var(--font-fractul), "Fractul", ui-sans-serif, system-ui, sans-serif;
 }
 
 @theme {
@@ -351,7 +353,9 @@
     background-color: var(--aura-paper);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "ss01", "cv11";
+    /* Fractul ships kerning + standard ligatures on by default; the previous
+       "ss01"/"cv11" sets were DM Sans specific and mean something else here. */
+    font-feature-settings: "kern", "liga";
   }
 
   @media (prefers-reduced-motion: reduce) {

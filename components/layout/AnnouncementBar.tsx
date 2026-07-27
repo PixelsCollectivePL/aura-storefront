@@ -13,7 +13,7 @@ const MESSAGES = [
 const TRACK = [...MESSAGES, ...MESSAGES];
 
 /**
- * Scrolling ticker — dark bg, JetBrains Mono uppercase, infinite marquee.
+ * Scrolling ticker — dark bg, tracked-out uppercase micro-label, infinite marquee.
  * Falls back to static centered text when prefers-reduced-motion is active.
  */
 export function AnnouncementBar() {
