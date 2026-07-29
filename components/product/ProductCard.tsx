@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { cn, formatPriceFromPLN } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
@@ -28,7 +29,7 @@ interface ProductCardProps {
   className?: string;
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ product, priority, className }: ProductCardProps) {
   const { addToCart, openCart } = useCart();
 
   // Quick-add has no variant pickers, so it takes the product's first
@@ -62,7 +63,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
             "lg:group-hover:shadow-card"
           )}
         >
-          {/* Placeholder — diagonal stripe pattern */}
+          {/* Placeholder — diagonal stripe pattern. Stays as the backdrop
+              so a product without a photo looks exactly as before. */}
           <div
             className="absolute inset-0 rounded-md transition-transform duration-[300ms] ease-out lg:group-hover:scale-[1.025]"
             style={{
@@ -76,6 +78,19 @@ export function ProductCard({ product, className }: ProductCardProps) {
               `,
             }}
           />
+
+          {/* Shopify product photo, when the merchant set one. Carries the
+              same hover zoom the placeholder had, so the motion is unchanged. */}
+          {product.featuredImage && (
+            <Image
+              src={product.featuredImage.src}
+              alt={product.featuredImage.alt}
+              fill
+              sizes="(min-width: 1024px) 25vw, 50vw"
+              priority={priority}
+              className="object-cover rounded-md transition-transform duration-[300ms] ease-out lg:group-hover:scale-[1.025]"
+            />
+          )}
 
           {product.isNew && (
             <Badge label={p.newBadge} className="absolute top-3 left-3 z-10" />

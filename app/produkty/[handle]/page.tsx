@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -90,6 +91,8 @@ export default async function ProductDetailPage({
   const roastLevel = getRoastLevel(product.roastLevel);
   const categoryLabel = getCategoryLabel(product.tags);
   const accent = getAccent(product.handle);
+  // Gallery leads with featuredImage (the mapper already put it first).
+  const mainImage = product.images[0] ?? product.featuredImage;
 
   const related = (await getProducts({ first: 8 }))
     .filter((p) => p.handle !== product.handle)
@@ -150,27 +153,39 @@ export default async function ProductDetailPage({
               }}
             />
 
-            {/* Central product label */}
-            <div className="relative z-10 flex flex-col items-center gap-3 select-none">
-              <Starburst
-                color={accent}
-                size={180}
-                points={12}
-                depth={0.22}
-                style={{ opacity: 0.9 }}
-              >
-                <span
-                  className="font-extrabold text-ink text-center leading-[1]"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: 36,
-                    letterSpacing: "-0.04em",
-                  }}
+            {/* Shopify packshot when the merchant uploaded one; otherwise
+                the generated starburst label, unchanged. */}
+            {mainImage ? (
+              <Image
+                src={mainImage.src}
+                alt={mainImage.alt}
+                fill
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                priority
+                className="object-cover"
+              />
+            ) : (
+              <div className="relative z-10 flex flex-col items-center gap-3 select-none">
+                <Starburst
+                  color={accent}
+                  size={180}
+                  points={12}
+                  depth={0.22}
+                  style={{ opacity: 0.9 }}
                 >
-                  {product.shortName}
-                </span>
-              </Starburst>
-            </div>
+                  <span
+                    className="font-extrabold text-ink text-center leading-[1]"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: 36,
+                      letterSpacing: "-0.04em",
+                    }}
+                  >
+                    {product.shortName}
+                  </span>
+                </Starburst>
+              </div>
+            )}
 
             {/* Accent starburst — top right corner */}
             <div className="absolute top-5 right-5 z-20" aria-hidden="true">
@@ -200,29 +215,33 @@ export default async function ProductDetailPage({
             </div>
           </div>
 
-          {/* Thumbnail strip — placeholder slots */}
-          <div className="hidden lg:flex gap-3 mt-4">
-            {(["ZIARNO", "BREW", "FARMA", "DETAIL"] as const).map((label, i) => (
-              <button
-                key={label}
-                type="button"
-                aria-label={`Zdjęcie ${i + 1}`}
-                className={cn(
-                  "flex-1 aspect-square rounded-lg bg-paper-2 overflow-hidden",
-                  "flex items-center justify-center",
-                  "text-[9px] tracking-[0.1em] uppercase text-muted/50",
-                  "border-2 transition-colors duration-[120ms] cursor-pointer",
-                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
-                  i === 0
-                    ? "border-ink"
-                    : "border-transparent hover:border-line"
-                )}
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          {/* Thumbnail strip — one slot per real Shopify image.
+              Hidden for a single-image product, where a strip of one
+              would just repeat the packshot.
+              [future]: making these switch the packshot needs client
+              state, i.e. extracting a gallery component. Static for now. */}
+          {product.images.length > 1 && (
+            <div className="hidden lg:flex gap-3 mt-4">
+              {product.images.slice(0, 4).map((img, i) => (
+                <div
+                  key={img.src}
+                  className={cn(
+                    "relative flex-1 aspect-square rounded-lg bg-paper-2 overflow-hidden",
+                    "border-2 transition-colors duration-[120ms]",
+                    i === 0 ? "border-ink" : "border-transparent"
+                  )}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes="12vw"
+                    className="object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ── Right: Product info + buy box ─────────────────────── */}
