@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { QuantitySelector } from "@/components/product/QuantitySelector";
 import { useCart } from "@/lib/cart/cart-context";
+import { findVariant } from "@/lib/product/variant";
 import { showToast } from "@/lib/toast/toast";
 import { CONTENT } from "@/lib/content/pl";
 import { formatPriceFromPLN, formatPricePLN, cn } from "@/lib/utils";
@@ -25,21 +26,27 @@ interface ProductBuyBoxProps {
 export function ProductBuyBox({ product }: ProductBuyBoxProps) {
   const { addToCart, openCart } = useCart();
 
-  const [selectedSize, setSelectedSize] = useState<SizeOption>(
+  const [selectedSize, setSelectedSize] = useState<SizeOption | undefined>(
     product.sizeOptions[0]
   );
-  const [selectedGrind, setSelectedGrind] = useState<string>(
+  const [selectedGrind, setSelectedGrind] = useState<string | undefined>(
     product.grindOptions[0]
   );
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
-  /** Variant matching the currently selected size — drives price display. */
-  const selectedVariant = product.variants?.find((v) =>
-    v.selectedOptions.some(
-      (o) => o.name === "Size" && o.value === selectedSize.label
-    )
-  );
+  /**
+   * The one variant the current selection points at.
+   *
+   * Matched across *every* axis the product exposes (size and grind), by
+   * the merchant's own option names — so this is the real
+   * `ProductVariant.id` that Cart API will accept. `null` means the
+   * merchant does not offer this combination.
+   */
+  const selectedVariant = findVariant(product, {
+    size: selectedSize?.label,
+    grind: selectedGrind,
+  });
 
   /** Price string: exact variant price when known, else "OD X PLN" fallback. */
   const priceDisplay = selectedVariant
@@ -47,8 +54,8 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
     : formatPriceFromPLN(product.price.amount);
 
   function handleAddToCart() {
-    const variantTitle = `${selectedSize.label} · ${selectedGrind}`;
-    addToCart(product, variantTitle, quantity);
+    if (!selectedVariant) return;
+    addToCart(product, selectedVariant, quantity);
     setAdded(true);
     openCart();
     showToast("Dodano do koszyka");
@@ -56,7 +63,15 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
   }
 
   const addLabel = added ? "Dodano ✓" : t.addToCart;
-  const available = product.availableForSale;
+  // Purchasable only when the *selected combination* exists and is in
+  // stock — product-level availability says nothing about this variant.
+  const available =
+    product.availableForSale &&
+    selectedVariant !== null &&
+    selectedVariant.availableForSale !== false;
+  /** Upper bound on quantity: variant stock when Shopify reports it. */
+  const maxQuantity =
+    selectedVariant?.quantityAvailable ?? product.quantityAvailable ?? 10;
 
   return (
     <>
@@ -71,7 +86,9 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
         >
           {priceDisplay}
         </span>
-        <span className="text-[13px] text-muted">za {selectedSize.label}</span>
+        {selectedSize && (
+          <span className="text-[13px] text-muted">za {selectedSize.label}</span>
+        )}
       </div>
 
       {/* ── Size selector ─────────────────────────────────────────── */}
@@ -82,12 +99,12 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
               key={opt.weight}
               type="button"
               onClick={() => setSelectedSize(opt)}
-              aria-pressed={selectedSize.weight === opt.weight}
+              aria-pressed={selectedSize?.weight === opt.weight}
               className={cn(
                 "h-10 px-4 rounded-pill border text-[13.5px] font-medium",
                 "transition-colors duration-[120ms] cursor-pointer",
                 "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
-                selectedSize.weight === opt.weight
+                selectedSize?.weight === opt.weight
                   ? "bg-ink text-white border-ink"
                   : "bg-white text-ink border-line hover:border-ink"
               )}
@@ -127,7 +144,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
         <QuantitySelector
           value={quantity}
           min={1}
-          max={product.quantityAvailable ?? 10}
+          max={Math.max(1, maxQuantity)}
           onChange={setQuantity}
         />
         <button
@@ -170,7 +187,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
         <QuantitySelector
           value={quantity}
           min={1}
-          max={product.quantityAvailable ?? 10}
+          max={Math.max(1, maxQuantity)}
           onChange={setQuantity}
           className="shrink-0"
         />

@@ -4,11 +4,23 @@ import Link from "next/link";
 import { cn, formatPriceFromPLN } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { useCart } from "@/lib/cart/cart-context";
+import { resolveDefaultVariant } from "@/lib/product/variant";
 import { showToast } from "@/lib/toast/toast";
 import { CONTENT } from "@/lib/content/pl";
 import type { Product } from "@/types/product";
 
 const { product: p } = CONTENT;
+
+/** Shared so the button and its link fallback are pixel-identical. */
+const mobileQuickAddClass = cn(
+  "mt-4 w-full h-12 lg:hidden",
+  "inline-flex items-center justify-center",
+  "bg-ink text-white text-[15px] font-semibold tracking-[0.01em]",
+  "rounded-pill",
+  "active:scale-[0.98] transition-[background-color,transform] duration-[120ms]",
+  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+  "cursor-pointer"
+);
 
 interface ProductCardProps {
   product: Product;
@@ -19,8 +31,15 @@ interface ProductCardProps {
 export function ProductCard({ product, className }: ProductCardProps) {
   const { addToCart, openCart } = useCart();
 
+  // Quick-add has no variant pickers, so it takes the product's first
+  // purchasable variant. Products whose variants Shopify hasn't returned
+  // send the customer to the PDP instead of adding a line we can't
+  // identify.
+  const quickAddVariant = resolveDefaultVariant(product);
+
   function handleQuickAdd() {
-    addToCart(product);
+    if (!quickAddVariant) return;
+    addToCart(product, quickAddVariant);
     openCart();
     showToast("Dodano do koszyka");
   }
@@ -85,6 +104,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
               )}
               aria-label={`${p.quickAdd}: ${product.shortName}`}
               onClick={(e) => {
+                // No resolvable variant → fall through to the wrapping
+                // link, which opens the PDP.
+                if (!quickAddVariant) return;
                 e.preventDefault();
                 e.stopPropagation();
                 handleQuickAdd();
@@ -136,23 +158,27 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
       </Link>
 
-      {/* Mobile quick-add — always visible, sits below the Link */}
-      <button
-        type="button"
-        className={cn(
-          "mt-4 w-full h-12 lg:hidden",
-          "inline-flex items-center justify-center",
-          "bg-ink text-white text-[15px] font-semibold tracking-[0.01em]",
-          "rounded-pill",
-          "active:scale-[0.98] transition-[background-color,transform] duration-[120ms]",
-          "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
-          "cursor-pointer"
-        )}
-        aria-label={`${p.quickAdd}: ${product.shortName}`}
-        onClick={handleQuickAdd}
-      >
-        {p.quickAdd}
-      </button>
+      {/* Mobile quick-add — always visible, sits below the Link.
+          Without a resolvable variant it keeps its exact appearance but
+          links to the PDP rather than adding an unidentifiable line. */}
+      {quickAddVariant ? (
+        <button
+          type="button"
+          className={mobileQuickAddClass}
+          aria-label={`${p.quickAdd}: ${product.shortName}`}
+          onClick={handleQuickAdd}
+        >
+          {p.quickAdd}
+        </button>
+      ) : (
+        <Link
+          href={`/produkty/${product.handle}`}
+          className={mobileQuickAddClass}
+          aria-label={`${p.quickAdd}: ${product.shortName}`}
+        >
+          {p.quickAdd}
+        </Link>
+      )}
 
     </article>
   );

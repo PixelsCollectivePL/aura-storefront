@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
-import type { Product } from "@/types/product";
+import { formatVariantTitle } from "@/lib/product/variant";
+import type { Product, ProductVariant } from "@/types/product";
 
 const MAX_LINE_QUANTITY = 10;
 const FREE_SHIPPING_THRESHOLD = 150;
@@ -10,7 +11,12 @@ const FREE_SHIPPING_THRESHOLD = 150;
 export interface CartLine {
   id: string;              // local: "line-N", shopify: gid://shopify/CartLine/...
   productId: string;       // product.handle,   shopify: Product.id
-  variantId: string;       // `${handle}::${variantTitle}`, shopify: ProductVariant.id
+  /**
+   * Shopify `ProductVariant.id` — the `merchandiseId` of a cart line.
+   * Always the real catalogue identifier: callers pass a resolved
+   * `ProductVariant`, never a title string we composed ourselves.
+   */
+  variantId: string;
   handle: string;
   title: string;
   variantTitle: string;    // "200g · Ziarna"
@@ -26,8 +32,15 @@ interface CartContextValue {
   count: number;
   subtotal: number;
   checkoutUrl: string | null; // [shopify-ready]: Shopify cart.checkoutUrl
-  // [shopify-ready]: map addToCart → cartLinesAdd mutation
-  addToCart: (product: Product, variantTitle?: string, qty?: number) => void;
+  /**
+   * Add a resolved variant to the cart.
+   *
+   * [shopify-ready]: maps to `cartLinesAdd({ merchandiseId: variant.variantId,
+   * quantity })`. The variant must come from the catalogue (see
+   * `lib/product/variant.ts`) — there is deliberately no overload that
+   * accepts a product alone, because that would require inventing an id.
+   */
+  addToCart: (product: Product, variant: ProductVariant, qty?: number) => void;
   // [shopify-ready]: map updateCartLine → cartLinesUpdate mutation
   updateCartLine: (id: string, quantity: number) => void;
   // [shopify-ready]: map removeCartLine → cartLinesRemove mutation
@@ -38,7 +51,7 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-let lineCounter = 0;
+const lineCounter = 0;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
@@ -46,8 +59,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const counterRef = useRef(lineCounter);
 
   const addToCart = useCallback(
-    (product: Product, variantTitle = "Standard", qty = 1) => {
-      const variantId = `${product.handle}::${variantTitle}`;
+    (product: Product, variant: ProductVariant, qty = 1) => {
+      const variantId = variant.variantId;
+      if (!variantId) return; // nothing purchasable — never guess an id
+
+      const image = variant.image ?? product.featuredImage;
+
       setLines((prev) => {
         const existing = prev.find((l) => l.variantId === variantId);
         if (existing) {
@@ -64,10 +81,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           variantId,
           handle: product.handle,
           title: product.shortName,
-          variantTitle,
-          image: { src: "", alt: product.shortName },
-          price: product.price.amount,
-          currencyCode: product.price.currencyCode,
+          variantTitle: formatVariantTitle(variant),
+          image: {
+            src: image?.src ?? "",
+            alt: image?.alt ?? product.shortName,
+          },
+          // Per-variant price — the product-level price is only a "from" value.
+          price: variant.price.amount,
+          currencyCode: variant.price.currencyCode,
           quantity: Math.min(MAX_LINE_QUANTITY, qty),
         };
         return [...prev, newLine];

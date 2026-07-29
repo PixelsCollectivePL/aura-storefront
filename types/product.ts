@@ -101,6 +101,16 @@ export interface Product {
   grindOptions: string[];
   sizeOptions: SizeOption[];
   /**
+   * Name of the Shopify option axis backing `sizeOptions` (e.g. "Waga").
+   * Required to resolve a selection back to a real `ProductVariant` —
+   * `variant.selectedOptions` is keyed by this name, and it is the
+   * merchant's own label, not a constant we can hardcode.
+   * Absent when the product has no size axis.
+   */
+  sizeOptionName?: string;
+  /** Name of the Shopify option axis backing `grindOptions` (e.g. "Mielenie"). */
+  grindOptionName?: string;
+  /**
    * Flat list of purchasable variants.
    * Maps from Shopify `product.variants`.
    */

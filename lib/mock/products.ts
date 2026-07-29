@@ -30,6 +30,8 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
     ],
+    /** Axis name backing `sizeOptions` — mirrors `variant.selectedOptions`. */
+    sizeOptionName: "Size",
     /** [shopify-ready]: map from product.variants edges in Storefront API */
     variants: [
       { variantId: "one::200g", title: "200g", price: { amount: 84, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
@@ -67,6 +69,8 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
     ],
+    /** Axis name backing `sizeOptions` — mirrors `variant.selectedOptions`. */
+    sizeOptionName: "Size",
     /** [shopify-ready]: map from product.variants edges in Storefront API */
     variants: [
       { variantId: "two::200g", title: "200g", price: { amount: 76, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
@@ -102,6 +106,8 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "500g", weight: "500" },
       { label: "1kg", weight: "1000" },
     ],
+    /** Axis name backing `sizeOptions` — mirrors `variant.selectedOptions`. */
+    sizeOptionName: "Size",
     /** [shopify-ready]: map from product.variants edges in Storefront API */
     variants: [
       { variantId: "three::200g", title: "200g", price: { amount: 68, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
@@ -139,6 +145,8 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
     ],
+    /** Axis name backing `sizeOptions` — mirrors `variant.selectedOptions`. */
+    sizeOptionName: "Size",
     /** [shopify-ready]: map from product.variants edges in Storefront API */
     variants: [
       { variantId: "four::200g", title: "200g", price: { amount: 92, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
@@ -173,6 +181,8 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "500g", weight: "500" },
       { label: "1kg", weight: "1000" },
     ],
+    /** Axis name backing `sizeOptions` — mirrors `variant.selectedOptions`. */
+    sizeOptionName: "Size",
     /** [shopify-ready]: map from product.variants edges in Storefront API */
     variants: [
       { variantId: "five::200g", title: "200g", price: { amount: 64, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },
@@ -211,6 +221,8 @@ export const MOCK_PRODUCTS: Product[] = [
       { label: "200g", weight: "200" },
       { label: "500g", weight: "500" },
     ],
+    /** Axis name backing `sizeOptions` — mirrors `variant.selectedOptions`. */
+    sizeOptionName: "Size",
     /** [shopify-ready]: map from product.variants edges in Storefront API */
     variants: [
       { variantId: "six::200g", title: "200g", price: { amount: 72, currencyCode: "PLN" }, selectedOptions: [{ name: "Size", value: "200g" }], availableForSale: true },

@@ -229,6 +229,11 @@ export function mapShopifyProduct(
       label,
       weight: label.replace(/[^0-9]/g, ""),
     })),
+    // Carry the merchant's own axis names through: variant resolution
+    // matches `variant.selectedOptions` by name, and those names are
+    // whatever the merchant typed in Shopify Admin.
+    sizeOptionName: sizeOption?.name,
+    grindOptionName: grindOption?.name,
 
     // ── Media ──
     featuredImage,

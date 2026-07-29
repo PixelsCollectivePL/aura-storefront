@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Design source material, not application code: standalone HTML/JS
+    // mockups that are never imported or built. Linting them buried the
+    // ~10 real findings under ~680 irrelevant ones, which made
+    // `npm run lint` useless as a gate.
+    "design-reference/**",
   ]),
 ]);
 
