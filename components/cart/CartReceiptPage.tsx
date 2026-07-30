@@ -224,7 +224,6 @@ export function CartReceiptPage() {
           <CartReceiptSummary
             lines={lines}
             subtotal={subtotal}
-            shippingFree={shippingFree}
             total={productsTotal}
             variant="desktop"
             showCta
@@ -239,7 +238,6 @@ export function CartReceiptPage() {
         <CartReceiptSummary
           lines={lines}
           subtotal={subtotal}
-          shippingFree={shippingFree}
           total={productsTotal}
           variant="mobile"
           showCta={false}
@@ -256,7 +254,9 @@ export function CartReceiptPage() {
             className="text-muted uppercase"
             style={{ fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.16em" }}
           >
-            Razem
+            {/* Not "Razem" — shipping is still unknown at this point, and
+                the number below is the products only. */}
+            Produkty
           </div>
           <div
             className="text-brand font-extrabold tabular-nums leading-none mt-0.5"

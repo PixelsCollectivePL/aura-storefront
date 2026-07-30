@@ -15,7 +15,11 @@ const RECEIPT_CLIP_MOBILE =
 interface CartReceiptSummaryProps {
   lines: CartLine[];
   subtotal: number;
-  shippingFree: boolean;
+  /**
+   * Total of the products themselves — Shopify's cart total, so it already
+   * reflects discount codes. Never includes shipping: that is computed at
+   * checkout, once Shopify knows the address.
+   */
   total: number;
   variant?: "desktop" | "mobile";
   /** Whether to render the disabled checkout CTA (desktop yes, mobile uses sticky bar) */
@@ -29,7 +33,6 @@ interface CartReceiptSummaryProps {
 export function CartReceiptSummary({
   lines,
   subtotal,
-  shippingFree,
   total,
   variant = "desktop",
   showCta = true,
@@ -149,10 +152,19 @@ export function CartReceiptSummary({
           value={`${subtotal},00 zł`}
           fontSize={isMobile ? 12 : 13}
         />
+        {/*
+          Always "naliczana w kasie", never "GRATIS".
+
+          The free-shipping threshold is a local constant, not a rule read
+          from Shopify — only the checkout knows the real rate for the
+          customer's address. Printing "GRATIS" on the receipt would be a
+          claim we cannot back, and it is exactly the class of promise that
+          the payment-method footer used to make. The threshold stays as an
+          informational strip above; this row states a fact.
+        */}
         <BreakdownRow
           label="Dostawa"
-          value={shippingFree ? "GRATIS" : "NALICZANA W KASIE"}
-          valueClass={shippingFree ? "text-brand font-bold" : ""}
+          value="NALICZANA W KASIE"
           fontSize={isMobile ? 12 : 13}
         />
         <BreakdownRow
