@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * Branded bridge to the real Shopify Customer Accounts OAuth flow.
  * There are deliberately no credentials fields: Aura never handles passwords.
  */
-export function AccountAuthCard() {
+export function AccountAuthCard({ returnTo = "/konto" }: { returnTo?: string }) {
   return (
     <section
       className="bg-paper flex flex-col justify-center px-5 py-12 lg:px-14 xl:px-20 lg:py-20"
@@ -57,7 +57,7 @@ export function AccountAuthCard() {
         {/* CTAs */}
         <div className="flex flex-col gap-2.5 mb-10">
           <a
-            href="/api/auth/shopify/login?returnTo=/konto"
+            href={`/api/auth/shopify/login?returnTo=${encodeURIComponent(returnTo)}`}
             className={cn(
               "inline-flex items-center justify-center gap-2 h-14 w-full",
               "rounded-pill bg-brand text-white border border-brand",

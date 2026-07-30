@@ -23,10 +23,10 @@
 import { cookies } from "next/headers";
 
 import { getSessionSecret } from "./config";
+import { OAUTH_COOKIE, SESSION_COOKIE } from "./cookie-names";
 import { openPayload, sealPayload } from "./crypto";
 
-export const SESSION_COOKIE = "aura_customer";
-export const OAUTH_COOKIE = "aura_oauth";
+export { OAUTH_COOKIE, SESSION_COOKIE } from "./cookie-names";
 
 /** The OAuth transaction lives only as long as a login attempt plausibly takes. */
 const OAUTH_COOKIE_MAX_AGE = 60 * 10; // 10 min

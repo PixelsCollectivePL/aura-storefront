@@ -10,7 +10,7 @@ import { AccountAuthCard } from "@/components/account/AccountAuthCard";
  * Fills the viewport minus the project header (mobile ≈56px / desktop 80px)
  * so the page reads as its own focused moment.
  */
-export function AccountLogin() {
+export function AccountLogin({ returnTo = "/konto" }: { returnTo?: string }) {
   return (
     <div
       className="grid lg:grid-cols-2 bg-paper"
@@ -20,7 +20,7 @@ export function AccountLogin() {
       }}
     >
       <AccountBrandPanel />
-      <AccountAuthCard />
+      <AccountAuthCard returnTo={returnTo} />
     </div>
   );
 }

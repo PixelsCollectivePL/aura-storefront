@@ -18,14 +18,14 @@ async function loadAccountShellData() {
     return await getAccountOverview();
   } catch (error) {
     if (error instanceof CustomerApiError && error.kind === "unauthorized") {
-      redirect("/api/auth/shopify/login?returnTo=/konto");
+      redirect("/account/login?returnTo=/konto");
     }
     throw error;
   }
 }
 
 export default async function KontoLayout({ children }: { children: React.ReactNode }) {
-  if (!(await readSession())) redirect("/api/auth/shopify/login?returnTo=/konto");
+  if (!(await readSession())) redirect("/account/login?returnTo=/konto");
   const { customer, orders } = await loadAccountShellData();
   return (
     <AccountShell customer={customer} ordersCount={orders.length}>
