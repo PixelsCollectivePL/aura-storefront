@@ -1,6 +1,11 @@
-# Account panel — Shopify integration plan
+# Account panel — Shopify integration plan (archiwum)
 
-Status: **UI complete, mock data, no auth, no Shopify wiring.**
+> Dokument historyczny opisujący stan sprzed produkcyjnej integracji.
+> Aktualnym źródłem prawdy są implementacja w `lib/shopify/customer-account`
+> oraz chronione trasy `app/konto`. Mock konta, tymczasowy endpoint klienta
+> i logowanie przez `localStorage` zostały usunięte po zakończeniu integracji.
+
+Status historyczny: **UI complete, mock data, no auth, no Shopify wiring.**
 Branch: `main` · Path: `/account` · Layout source:
 `design-reference/claude-design-v2.1/account-panel/`
 

@@ -195,25 +195,6 @@ export interface AccountSubscription {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   Subscription catalog options (cadence + blend swap)
-   These are NOT customer data — they're plan / catalog data.
-   On Shopify they come from `sellingPlanGroups` query.
-   ────────────────────────────────────────────────────────────────── */
-export interface SubscriptionCadenceOption {
-  cadenceWeeks: number;
-  label: string;
-  hint: string;
-  recommended?: boolean;
-}
-
-export interface SubscriptionBlendOption {
-  handle: string;
-  name: string;
-  hint: string;
-  accent?: string;
-}
-
-/* ──────────────────────────────────────────────────────────────────
    Derived / aggregate stats shown on the dashboard.
    On Shopify: computed from `customer.orders` or from a loyalty app
    metafield (`loyaltyPoints`). Today: mock values.
@@ -245,6 +226,3 @@ export type AccountSection =
   | "subscriptions"
   | "addresses"
   | "details";
-
-/** Auth view state — drives whether to render the panel or a special state. */
-export type AccountViewState = "loggedIn" | "loggedOut" | "loading" | "error";

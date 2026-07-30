@@ -21,7 +21,7 @@ interface AuraErrorScreenProps {
  *
  * Used by Next.js `error.tsx` files. Full-screen brand moment (option A
  * from the loading/error proposal) — rotating star + headline + body +
- * retry/home CTAs. Mirrors AccountAuthState error look so users see a
+ * retry/home CTAs. Matches the account error-state look so users see a
  * consistent "something broke" experience across the site.
  *
  * Must be "use client" — Next.js error.tsx files always are, and we

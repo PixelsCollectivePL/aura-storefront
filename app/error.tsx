@@ -20,7 +20,6 @@ export default function RootError({
   // [shopify-ready]: pipe to Sentry / observability sink during integration
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
       console.error("[aura/root-error]", error);
     }
   }, [error]);

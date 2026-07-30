@@ -260,7 +260,7 @@ export const CONTENT = {
     grindLabel: "Forma",
     qtyLabel: "Ilość",
     addToCart: "Wrzuć do koszyka",
-    addToCartWithPrice: (_price: string): string => "Wrzuć do koszyka",
+    addToCartWithPrice: (): string => "Wrzuć do koszyka",
     outOfStock: "Niedostępne",
     ratingsPlaceholder: "4.9 · 312 ocen",
     ratingsAriaLabel: "Ocena 4.9 na 5",

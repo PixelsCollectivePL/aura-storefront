@@ -29,7 +29,6 @@ export function AuraMark({
   size = 28,
   color = "currentColor",
   variant = "mono",
-  tagline: _tagline,
   className,
 }: AuraMarkProps) {
   const height    = size;

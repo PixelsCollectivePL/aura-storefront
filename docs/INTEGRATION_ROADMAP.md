@@ -1,4 +1,9 @@
-# Shopify Integration Roadmap
+# Shopify Integration Roadmap (archiwum)
+
+> Dokument historyczny z początku integracji. Katalog, Cart API, checkout,
+> Customer Account OAuth, sesja serwerowa, zamówienia, adresy i dane klienta
+> są już podłączone. Tymczasowe endpointy diagnostyczne i mock konta zostały
+> usunięte; aktualnym źródłem prawdy jest kod aplikacji.
 
 Working document. Covers **HOW** we get from today's mock-data storefront
 to a live, Shopify-backed shop. The sister doc

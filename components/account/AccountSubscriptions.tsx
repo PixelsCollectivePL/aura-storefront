@@ -8,14 +8,6 @@ import { cn, formatPrice } from "@/lib/utils";
 import { formatDateShort, formatDateLong } from "@/lib/account/format";
 import type { AccountSubscription } from "@/types/account";
 
-/**
- * Subscription view.
- * NOTE — catalog options (SUBSCRIPTION_CADENCE_OPTIONS,
- * SUBSCRIPTION_BLEND_OPTIONS) live in lib/mock/account.ts and are ready
- * to be wired into a future cadence picker / blend swap card here.
- * They map to Shopify's `sellingPlanGroups` on real integration.
- */
-
 interface AccountSubscriptionsProps {
   subscription: AccountSubscription | null;
 }
