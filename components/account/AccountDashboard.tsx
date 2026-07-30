@@ -96,9 +96,9 @@ export function AccountDashboard({
         )}
       </header>
 
-      {/* ── Hero row: last order + subscription ── */}
+      {/* ── Latest order ── */}
       {lastOrder && (
-        <div className="grid lg:grid-cols-[1.4fr_1fr] gap-5">
+        <div className="grid gap-5">
           {/* Last order */}
           <article className="relative bg-paper border border-line rounded-md p-6 lg:p-7 overflow-hidden">
             <div className="flex justify-between items-start gap-4 mb-5">
@@ -217,7 +217,7 @@ export function AccountDashboard({
           </article>
 
           {/* Subscription (dark) */}
-          <article className="relative bg-ink text-white rounded-md p-6 lg:p-7 overflow-hidden flex flex-col">
+          <article className="hidden" aria-hidden="true">
             <div className="absolute -top-10 -right-10 opacity-50 pointer-events-none" aria-hidden="true">
               <Starburst color="var(--aura-orange)" size={180} points={12} depth={0.22} />
             </div>

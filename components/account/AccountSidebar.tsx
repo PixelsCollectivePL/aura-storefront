@@ -37,7 +37,6 @@ export function AccountSidebar({
   const items: NavItem[] = [
     { key: "dashboard", label: "Dashboard", icon: "home", href: "/konto" },
     { key: "orders", label: "Zamówienia", icon: "box", badge: ordersCount, href: "/konto/zamowienia" },
-    { key: "subscriptions", label: "Subskrypcje", icon: "repeat", href: "/konto/subskrypcje" },
     { key: "addresses", label: "Adresy", icon: "pin", href: "/konto/adresy" },
     { key: "details", label: "Dane konta", icon: "user", href: "/konto/dane" },
   ];

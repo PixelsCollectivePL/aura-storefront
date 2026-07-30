@@ -14,7 +14,6 @@ interface Tab {
 const TABS: Tab[] = [
   { key: "dashboard", label: "Konto", icon: "home", href: "/konto" },
   { key: "orders", label: "Zamówienia", icon: "box", href: "/konto/zamowienia" },
-  { key: "subscriptions", label: "Subskrypcja", icon: "repeat", href: "/konto/subskrypcje" },
   { key: "details", label: "Menu", icon: "user", href: "/konto/dane" },
 ];
 
@@ -29,7 +28,7 @@ export function AccountMobileTabBar() {
       aria-label="Sekcje konta"
       className={cn(
         "lg:hidden fixed bottom-0 inset-x-0 z-30",
-        "grid grid-cols-4",
+        "grid grid-cols-3",
         "bg-paper border-t border-line"
       )}
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}

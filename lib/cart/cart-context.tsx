@@ -57,6 +57,8 @@ interface CartContextValue {
   isOpen: boolean;
   count: number;
   subtotal: number;
+  /** Shopify cart total after applicable product discounts, before checkout shipping. */
+  productsTotal: number;
   /** Shopify-hosted checkout URL. Prefer `checkout()` over using it directly. */
   checkoutUrl: string | null;
   /** Discount codes on the cart, with Shopify's verdict on each. */
@@ -281,6 +283,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     () => lines.reduce((sum, l) => sum + l.price * l.quantity, 0),
     [lines]
   );
+  const productsTotal = cart?.total ?? subtotal;
 
   const value = useMemo<CartContextValue>(
     () => ({
@@ -288,6 +291,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       isOpen,
       count,
       subtotal,
+      productsTotal,
       checkoutUrl: cart?.checkoutUrl ?? null,
       discountCodes: cart?.discountCodes ?? EMPTY_DISCOUNTS,
       isPending,
@@ -307,6 +311,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       isOpen,
       count,
       subtotal,
+      productsTotal,
       cart?.checkoutUrl,
       cart?.discountCodes,
       isPending,

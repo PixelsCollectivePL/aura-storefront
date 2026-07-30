@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Konto — Aura Coffee Roasters",
-  description: "Panel klienta — zamówienia, subskrypcje, adresy, dane konta.",
+  description: "Panel klienta — zamówienia, adresy i dane konta.",
 };
 
 export default function AccountLayout({

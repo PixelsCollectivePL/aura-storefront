@@ -738,7 +738,6 @@ export const CONTENT = {
         items: [
           { q: "Czym różnią się loty?", a: "Każdy lot to inne ziarno, inna farma, inny kraj. Profil smakowy, metoda obróbki i zalecane parzenie różnią się między lotami. Opisy znajdziesz na kartach produktów." },
           { q: "Czy mlelecie kawę na zamówienie?", a: "Tak. Wybierasz stopień mielenia przy zamówieniu — ziarna całe, filtr gruby, filtr drobny, espresso, moka lub cafetière. Mlelimy tuż przed pakowaniem." },
-          { q: "Czy dostępna jest subskrypcja?", a: "Pracujemy nad tym. Subskrypcja pojawi się jako osobna opcja — zapisz się do newslettera, żeby dostać info jako pierwszy." },
         ],
       },
     ],

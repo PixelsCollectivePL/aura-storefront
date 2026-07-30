@@ -8,8 +8,6 @@ import { Icon } from "@/components/ui/Icon";
 import { CartReceiptLine } from "@/components/cart/CartReceiptLine";
 import { CartReceiptSummary } from "@/components/cart/CartReceiptSummary";
 
-const SHIPPING_FLAT_FEE = 12; // PLN — InPost paczkomat (matches /faq copy)
-
 /**
  * Cart page — V2 Receipt / Paragon (Claude Design).
  *
@@ -22,13 +20,11 @@ const SHIPPING_FLAT_FEE = 12; // PLN — InPost paczkomat (matches /faq copy)
  * disabled CTA until Shopify is wired up.
  */
 export function CartReceiptPage() {
-  const { lines, count, subtotal, updateCartLine, removeCartLine, checkout, isPending } =
+  const { lines, count, subtotal, productsTotal, updateCartLine, removeCartLine, checkout, isPending } =
     useCart();
 
   const isEmpty      = lines.length === 0;
   const shippingFree = subtotal >= FREE_SHIPPING_THRESHOLD;
-  const shipping     = isEmpty || shippingFree ? 0 : SHIPPING_FLAT_FEE;
-  const total        = subtotal + shipping;
   const progress     = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
   const remaining    = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
 
@@ -97,7 +93,7 @@ export function CartReceiptPage() {
             className="tabular-nums font-semibold shrink-0"
             style={{ fontFamily: "var(--font-mono)", fontSize: 14 }}
           >
-            SUMA · {total},00 zł
+            SUMA PRODUKTÓW · {productsTotal},00 zł
           </span>
         </div>
       </section>
@@ -228,8 +224,8 @@ export function CartReceiptPage() {
           <CartReceiptSummary
             lines={lines}
             subtotal={subtotal}
-            shipping={shipping}
-            total={total}
+            shippingFree={shippingFree}
+            total={productsTotal}
             variant="desktop"
             showCta
           />
@@ -243,21 +239,11 @@ export function CartReceiptPage() {
         <CartReceiptSummary
           lines={lines}
           subtotal={subtotal}
-          shipping={shipping}
-          total={total}
+          shippingFree={shippingFree}
+          total={productsTotal}
           variant="mobile"
           showCta={false}
         />
-      </section>
-
-      <section className="lg:hidden px-5 pb-5">
-        <div
-          className="flex justify-between items-center py-3.5 border-t border-b border-line uppercase"
-          style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em" }}
-        >
-          <span>＋ Kod rabatowy</span>
-          <span className="text-muted">Rozwiń</span>
-        </div>
       </section>
 
       {/* Mobile sticky bottom CTA */}
@@ -276,7 +262,7 @@ export function CartReceiptPage() {
             className="text-brand font-extrabold tabular-nums leading-none mt-0.5"
             style={{ fontFamily: "var(--font-display)", fontSize: 24 }}
           >
-            {total},00 zł
+            {productsTotal},00 zł
           </div>
         </div>
         <button

@@ -1,5 +1,5 @@
-import { AccountSubscriptions } from "@/components/account/AccountSubscriptions";
+import { redirect } from "next/navigation";
 
 export default function SubscriptionsPage() {
-  return <AccountSubscriptions subscription={null} />;
+  redirect("/konto");
 }

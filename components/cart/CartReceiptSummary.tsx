@@ -4,6 +4,7 @@ import { Starburst } from "@/components/brand/Starburst";
 import { useCart } from "@/lib/cart/cart-context";
 import type { CartLine } from "@/lib/cart/cart-context";
 import { cn } from "@/lib/utils";
+import { CartDiscountCodeForm } from "@/components/cart/CartDiscountCodeForm";
 
 // Receipt zig-zag bottom edge — exact polygon from the V2 design (Aura Koszyk Warianty).
 const RECEIPT_CLIP_DESKTOP =
@@ -14,7 +15,7 @@ const RECEIPT_CLIP_MOBILE =
 interface CartReceiptSummaryProps {
   lines: CartLine[];
   subtotal: number;
-  shipping: number;
+  shippingFree: boolean;
   total: number;
   variant?: "desktop" | "mobile";
   /** Whether to render the disabled checkout CTA (desktop yes, mobile uses sticky bar) */
@@ -28,7 +29,7 @@ interface CartReceiptSummaryProps {
 export function CartReceiptSummary({
   lines,
   subtotal,
-  shipping,
+  shippingFree,
   total,
   variant = "desktop",
   showCta = true,
@@ -38,7 +39,7 @@ export function CartReceiptSummary({
   // the provider in both places it is rendered.
   const { checkout, isPending } = useCart();
 
-  const vat = Math.round((subtotal * 0.23) / 1.23);
+  const vat = Math.round((total * 0.23) / 1.23);
   const isMobile = variant === "mobile";
   const clipPath = isMobile ? RECEIPT_CLIP_MOBILE : RECEIPT_CLIP_DESKTOP;
 
@@ -150,8 +151,8 @@ export function CartReceiptSummary({
         />
         <BreakdownRow
           label="Dostawa"
-          value={shipping === 0 ? "GRATIS" : `${shipping},00 zł`}
-          valueClass={shipping === 0 ? "text-brand font-bold" : ""}
+          value={shippingFree ? "GRATIS" : "NALICZANA W KASIE"}
+          valueClass={shippingFree ? "text-brand font-bold" : ""}
           fontSize={isMobile ? 12 : 13}
         />
         <BreakdownRow
@@ -160,6 +161,8 @@ export function CartReceiptSummary({
           fontSize={isMobile ? 12 : 13}
         />
       </div>
+
+      <CartDiscountCodeForm id={`cart-discount-code-${variant}`} />
 
       {/* ── Total ── */}
       <div className={cn("text-center", isMobile ? "pt-5 pb-1.5" : "py-6")}>
@@ -170,7 +173,7 @@ export function CartReceiptSummary({
           )}
           style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
         >
-          Razem do zapłaty
+          Suma produktów
         </div>
         <div
           className="text-brand font-black tabular-nums tracking-[-0.03em] leading-none"

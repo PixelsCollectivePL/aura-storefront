@@ -10,6 +10,10 @@ import { SESSION_COOKIE } from "@/lib/shopify/customer-account/cookie-names";
  * render only to redirect during hydration.
  */
 export function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === "/konto/subskrypcje") {
+    return NextResponse.redirect(new URL("/konto", request.url));
+  }
+
   if (request.cookies.has(SESSION_COOKIE)) return NextResponse.next();
 
   const returnTo = `${request.nextUrl.pathname}${request.nextUrl.search}`;

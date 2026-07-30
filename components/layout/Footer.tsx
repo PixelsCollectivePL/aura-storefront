@@ -13,7 +13,6 @@ const NAV_COLS = [
     links: [
       { label: "Produkty",      href: "/produkty" },
       { label: "Blendy",        href: "/blendy" },
-      { label: "Subskrypcja",   href: "/subskrypcja" },
     ],
   },
   {

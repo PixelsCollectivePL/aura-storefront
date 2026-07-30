@@ -25,4 +25,15 @@ describe("account route proxy", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("x-middleware-next")).toBe("1");
   });
+
+  it("keeps the future subscription module outside the active storefront", () => {
+    const response = proxy(
+      new NextRequest("https://aura.example/konto/subskrypcje", {
+        headers: { cookie: `${SESSION_COOKIE}=signed-session` },
+      })
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe("https://aura.example/konto");
+  });
 });

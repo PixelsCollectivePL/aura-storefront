@@ -4,7 +4,7 @@ export default function AccountLoading() {
   return (
     <AuraLoading
       message="Otwieramy twoje konto…"
-      hint="Pobieramy zamówienia i subskrypcje."
+      hint="Pobieramy dane Twojego konta."
     />
   );
 }
