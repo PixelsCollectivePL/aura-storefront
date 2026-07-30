@@ -35,7 +35,7 @@ export function AccountBrandPanel() {
               height={14}
               className="star-spin"
             />
-            Konto Aura · drop 02
+            Aura Coffee Club
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export function AccountBrandPanel() {
           >
             <span className="text-white/55">Coffee club</span>
             <span className="flex-1 h-px bg-white/20" />
-            <span className="text-white/85">na zawsze</span>
+            <span className="text-white/85">Twój codzienny rytuał</span>
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@ export function AccountBrandPanel() {
                 height={12}
                 className="star-spin"
               />
-              Konto Aura
+              Aura Coffee Club
             </p>
             <h2
               className="font-extrabold text-white leading-[0.95] tracking-[-0.03em]"

@@ -109,7 +109,7 @@ export function Header({ products = [] }: HeaderProps) {
               <Icon.search size={20} />
             </DesktopIconButton>
             <Link
-              href="/account"
+              href="/account/login"
               aria-label="Konto"
               className={cn(
                 "relative inline-flex items-center justify-center",
@@ -156,7 +156,7 @@ export function Header({ products = [] }: HeaderProps) {
               <Icon.search size={19} />
             </IconButton>
             <Link
-              href="/account"
+              href="/account/login"
               aria-label="Konto"
               className="inline-flex items-center justify-center w-10 h-10 text-ink hover:text-brand transition-colors duration-[120ms] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-sm"
             >

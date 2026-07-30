@@ -161,7 +161,7 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {/* Utility links */}
           <div className="pt-6 pb-2 flex flex-col gap-1">
             <Link
-              href="/account"
+              href="/account/login"
               onClick={onClose}
               className={cn(
                 "flex items-center justify-between py-3",
