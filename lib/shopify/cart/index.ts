@@ -31,6 +31,7 @@ import {
   CART_LINES_UPDATE_MUTATION,
   CART_LINES_REMOVE_MUTATION,
   CART_DISCOUNT_CODES_UPDATE_MUTATION,
+  CART_BUYER_IDENTITY_UPDATE_MUTATION,
 } from "./operations";
 import type {
   CartQueryResult,
@@ -39,6 +40,7 @@ import type {
   CartLinesUpdateResult,
   CartLinesRemoveResult,
   CartDiscountCodesUpdateResult,
+  CartBuyerIdentityUpdateResult,
   ShopifyCartMutationPayload,
 } from "../types";
 import type { Cart, CartResult } from "@/types/cart";
@@ -255,6 +257,28 @@ export async function setCartDiscountCodes(
       cart: null,
       error: describeFailure("cartDiscountCodesUpdate", err),
     };
+  }
+}
+
+/** Associate a Customer Account access token with an existing cart. */
+export async function setCartBuyerIdentity(
+  cartId: string,
+  customerAccessToken: string,
+  ctx: CartContext = {}
+): Promise<CartResult> {
+  try {
+    const data = await shopifyFetch<CartBuyerIdentityUpdateResult>({
+      query: CART_BUYER_IDENTITY_UPDATE_MUTATION,
+      variables: {
+        cartId,
+        buyerIdentity: { customerAccessToken },
+      },
+      buyerIp: ctx.buyerIp,
+      ...NO_CACHE,
+    });
+    return readMutation("cartBuyerIdentityUpdate", data.cartBuyerIdentityUpdate);
+  } catch (err) {
+    return { cart: null, error: describeFailure("cartBuyerIdentityUpdate", err) };
   }
 }
 

@@ -211,6 +211,9 @@ export type CartLinesRemoveResult = {
 export type CartDiscountCodesUpdateResult = {
   cartDiscountCodesUpdate: ShopifyCartMutationPayload;
 };
+export type CartBuyerIdentityUpdateResult = {
+  cartBuyerIdentityUpdate: ShopifyCartMutationPayload;
+};
 
 // ─── GraphQL envelope ────────────────────────────────────────────────────
 

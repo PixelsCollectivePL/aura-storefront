@@ -25,9 +25,12 @@ import {
   updateCartLineQuantity,
   removeCartLines,
   setCartDiscountCodes,
+  setCartBuyerIdentity,
   type CartContext,
 } from "@/lib/shopify/cart";
 import type { CartResult } from "@/types/cart";
+import { getValidCustomerSession } from "@/lib/shopify/customer-account/client";
+import { readSession } from "@/lib/shopify/customer-account/session";
 
 const CART_COOKIE = "aura_cart_id";
 
@@ -215,15 +218,46 @@ export async function applyDiscountCodeAction(
  * notice the cart expired. The URL is used exactly as Shopify returns it —
  * never rebuilt by hand.
  *
- * [Faza 5]: once Customer Accounts land, the logged-in customer's token
- * gets attached to `cart.buyerIdentity` here so they stay recognised
- * inside checkout.
+ * If a Customer Account session exists, its current access token is attached
+ * to buyerIdentity before obtaining the final checkout URL. The token never
+ * leaves the server action.
  */
 export async function checkoutAction(): Promise<CartResult> {
   const cartId = await readCartId();
   if (!cartId) return { cart: null, error: "Koszyk jest pusty." };
 
-  const { cart, error } = await getCart(cartId, await cartContext());
+  const ctx = await cartContext();
+  const existingCustomerSession = await readSession();
+
+  if (existingCustomerSession) {
+    try {
+      const customerSession = await getValidCustomerSession();
+      const identityResult = await setCartBuyerIdentity(
+        cartId,
+        customerSession.accessToken,
+        ctx
+      );
+      if (identityResult.error) return identityResult;
+      if (!identityResult.cart) {
+        await clearCartId();
+        return { cart: null, error: "Koszyk wygasł. Dodaj produkty ponownie." };
+      }
+    } catch (error) {
+      console.error(
+        `[aura/cart] Nie udało się odświeżyć sesji klienta przed checkoutem: ${
+          error instanceof Error ? error.message : "nieznany błąd"
+        }`
+      );
+      return {
+        cart: null,
+        error: "Sesja klienta wygasła. Zaloguj się ponownie przed przejściem do kasy.",
+      };
+    }
+  }
+
+  // Re-read after buyerIdentity update. Shopify recommends obtaining the
+  // checkout URL immediately before navigation and with the same buyer IP.
+  const { cart, error } = await getCart(cartId, ctx);
 
   if (error) return { cart, error };
 

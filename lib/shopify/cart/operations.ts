@@ -82,3 +82,16 @@ export const CART_DISCOUNT_CODES_UPDATE_MUTATION = /* GraphQL */ `
     }
   }
 `;
+
+export const CART_BUYER_IDENTITY_UPDATE_MUTATION = /* GraphQL */ `
+  ${CART_FRAGMENT}
+
+  mutation CartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+      cart {
+        ...CartFields
+      }
+      ${CART_USER_ERRORS}
+    }
+  }
+`;
