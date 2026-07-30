@@ -1,8 +1,6 @@
 "use client";
 
 import { AccountEmptyState } from "@/components/account/AccountEmptyState";
-import { AcctIcon } from "@/components/account/AccountIcons";
-import { notifyShopifyAction } from "@/lib/account/feedback";
 import { cn } from "@/lib/utils";
 import type { AccountAddress } from "@/types/account";
 
@@ -39,8 +37,7 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
         </header>
         <AccountEmptyState
           title="Pusto."
-          body="Dodaj adres dostawy, żebyśmy mogli przyjąć Twoje pierwsze zamówienie. Możesz mieć ich kilka — dom, biuro, do mamy."
-          cta={{ label: "Dodaj adres", href: "#add-address" }}
+          body="Nie masz jeszcze zapisanego adresu w Shopify. Dodawanie i edycję włączymy po podłączeniu mutacji adresowych."
         />
       </div>
     );
@@ -65,15 +62,7 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
             wysłać paczkę?
           </h1>
         </div>
-        <button
-          type="button"
-          onClick={() => notifyShopifyAction("Dodanie adresu")}
-          className="inline-flex items-center gap-2 h-11 px-5 rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-          /* [shopify-ready]: customerAddressCreate */
-        >
-          <AcctIcon.plus size={14} />
-          Dodaj adres
-        </button>
+        <span className="text-[13px] text-muted">Adresy zsynchronizowane z Shopify</span>
       </header>
 
       <div className="grid sm:grid-cols-2 gap-4 lg:gap-5 mb-5">
@@ -93,7 +82,7 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
                   className="uppercase bg-ink text-white px-2.5 py-1 rounded-xs"
                   style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.14em", fontWeight: 600 }}
                 >
-                  {a.label}
+                  {a.label ?? "Adres"}
                 </span>
                 {a.isDefault && (
                   <span
@@ -104,15 +93,6 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
                   </span>
                 )}
               </div>
-              <button
-                type="button"
-                onClick={() => notifyShopifyAction("Edycja adresu")}
-                aria-label={`Edytuj adres ${a.label}`}
-                className="text-muted hover:text-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-pill p-1"
-                /* [shopify-ready]: open address edit form → customerAddressUpdate */
-              >
-                <AcctIcon.edit size={16} />
-              </button>
             </div>
 
             <div
@@ -147,55 +127,10 @@ export function AccountAddresses({ addresses }: AccountAddressesProps) {
               {a.phone}
             </div>
 
-            <div
-              className={cn("h-px my-5", a.isDefault ? "bg-ink/10" : "bg-line")}
-              aria-hidden="true"
-            />
-
-            <div className="flex gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={() => notifyShopifyAction("Edycja adresu")}
-                /* [shopify-ready]: customerAddressUpdate */
-                className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-              >
-                Edytuj
-              </button>
-              {!a.isDefault && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => notifyShopifyAction("Ustawienie adresu domyślnego")}
-                    /* [shopify-ready]: customerDefaultAddressUpdate */
-                    className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                  >
-                    Ustaw jako domyślny
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => notifyShopifyAction("Usunięcie adresu")}
-                    /* [shopify-ready]: customerAddressDelete */
-                    className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-muted text-[12.5px] font-semibold hover:text-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                  >
-                    Usuń
-                  </button>
-                </>
-              )}
-            </div>
           </article>
         ))}
       </div>
 
-      {/* Add empty slot */}
-      <button
-        type="button"
-        onClick={() => notifyShopifyAction("Dodanie adresu")}
-        className="w-full min-h-[120px] inline-flex items-center justify-center gap-3 border-[1.5px] border-dashed border-line-strong rounded-md text-ink text-[14px] font-semibold hover:bg-paper-2 transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-        /* [shopify-ready]: customerAddressCreate */
-      >
-        <AcctIcon.plus size={16} />
-        Dodaj nowy adres dostawy
-      </button>
     </div>
   );
 }

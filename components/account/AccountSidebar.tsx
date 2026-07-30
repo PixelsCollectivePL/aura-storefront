@@ -1,16 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Starburst } from "@/components/brand/Starburst";
 import { AcctIcon, type AcctIconName } from "@/components/account/AccountIcons";
-import { setMockAuthenticated } from "@/lib/account/auth";
 import { cn } from "@/lib/utils";
 import type {
   AccountCustomer,
   AccountSection,
-  AccountOrder,
-  AccountSubscription,
 } from "@/types/account";
 
 interface NavItem {
@@ -19,14 +16,12 @@ interface NavItem {
   icon: AcctIconName;
   badge?: number;
   badgeDot?: boolean;
+  href: string;
 }
 
 interface AccountSidebarProps {
   customer: AccountCustomer;
-  orders: AccountOrder[];
-  subscription: AccountSubscription | null;
-  active: AccountSection;
-  onNavigate: (section: AccountSection) => void;
+  ordersCount: number;
 }
 
 /**
@@ -35,26 +30,16 @@ interface AccountSidebarProps {
  */
 export function AccountSidebar({
   customer,
-  orders,
-  subscription,
-  active,
-  onNavigate,
+  ordersCount,
 }: AccountSidebarProps) {
-  const router = useRouter();
-
-  function handleLogout() {
-    // [shopify-ready]: replace with Shopify Customer Account session
-    //   invalidation + redirect (e.g. visit Shopify logout URL).
-    setMockAuthenticated(false);
-    router.push("/account/login");
-  }
+  const pathname = usePathname();
 
   const items: NavItem[] = [
-    { key: "dashboard",     label: "Dashboard",  icon: "home" },
-    { key: "orders",        label: "Zamówienia", icon: "box",   badge: orders.length },
-    { key: "subscriptions", label: "Subskrypcje", icon: "repeat", badgeDot: subscription?.status === "active" },
-    { key: "addresses",     label: "Adresy",     icon: "pin" },
-    { key: "details",       label: "Dane konta", icon: "user" },
+    { key: "dashboard", label: "Dashboard", icon: "home", href: "/konto" },
+    { key: "orders", label: "Zamówienia", icon: "box", badge: ordersCount, href: "/konto/zamowienia" },
+    { key: "subscriptions", label: "Subskrypcje", icon: "repeat", href: "/konto/subskrypcje" },
+    { key: "addresses", label: "Adresy", icon: "pin", href: "/konto/adresy" },
+    { key: "details", label: "Dane konta", icon: "user", href: "/konto/dane" },
   ];
 
   const memberSince = new Date(customer.createdAt).getFullYear();
@@ -113,13 +98,12 @@ export function AccountSidebar({
       {/* Nav */}
       <nav className="flex flex-col gap-1">
         {items.map((it) => {
-          const isActive = active === it.key || (it.key === "orders" && active === "order-details");
+          const isActive = it.href === "/konto" ? pathname === it.href : pathname.startsWith(it.href);
           const IconCmp = AcctIcon[it.icon];
           return (
-            <button
+            <Link
               key={it.key}
-              type="button"
-              onClick={() => onNavigate(it.key)}
+              href={it.href}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer text-left",
                 "text-[14px] font-medium tracking-[-0.005em]",
@@ -150,7 +134,7 @@ export function AccountSidebar({
                   aria-hidden="true"
                 />
               )}
-            </button>
+            </Link>
           );
         })}
       </nav>
@@ -174,7 +158,7 @@ export function AccountSidebar({
           </p>
           {/* [shopify-ready]: link to Shopify customer account settings URL */}
           <Link
-            href="#manage-account"
+            href="/konto/dane"
             className="inline-block mt-1.5 text-[12px] font-semibold text-ink border-b border-ink hover:text-brand hover:border-brand transition-colors duration-[120ms]"
           >
             Zarządzaj kontem ↗
@@ -182,16 +166,13 @@ export function AccountSidebar({
         </div>
       </div>
 
-      {/* Logout — mock auth flip, redirects to /account/login.
-          [shopify-ready]: see handleLogout() above. */}
-      <button
-        type="button"
-        onClick={handleLogout}
+      <a
+        href="/api/auth/shopify/logout"
         className="flex items-center gap-2.5 text-muted hover:text-ink transition-colors duration-[120ms] text-[13px] font-medium cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
       >
         <AcctIcon.logout size={16} />
         Wyloguj
-      </button>
+      </a>
     </aside>
   );
 }

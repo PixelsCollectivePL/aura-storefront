@@ -12,7 +12,7 @@ import {
 } from "./session";
 import type { CustomerGraphQLResponse, GraphQLErrorShape } from "./types";
 
-interface CustomerRequestOptions {
+export interface CustomerRequestOptions {
   /** Persisting a refreshed token requires a Route Handler or Server Action. */
   persistRefresh?: boolean;
   /** Some future views can deliberately render partial GraphQL data. */

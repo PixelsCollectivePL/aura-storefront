@@ -8,25 +8,22 @@ interface Tab {
   key: Exclude<AccountSection, "order-details">;
   label: string;
   icon: AcctIconName;
+  href: string;
 }
 
 const TABS: Tab[] = [
-  { key: "dashboard",     label: "Konto",       icon: "home" },
-  { key: "orders",        label: "Zamówienia",  icon: "box" },
-  { key: "subscriptions", label: "Subskrypcja", icon: "repeat" },
-  { key: "details",       label: "Menu",        icon: "user" },
+  { key: "dashboard", label: "Konto", icon: "home", href: "/konto" },
+  { key: "orders", label: "Zamówienia", icon: "box", href: "/konto/zamowienia" },
+  { key: "subscriptions", label: "Subskrypcja", icon: "repeat", href: "/konto/subskrypcje" },
+  { key: "details", label: "Menu", icon: "user", href: "/konto/dane" },
 ];
-
-interface AccountMobileTabBarProps {
-  active: AccountSection;
-  onNavigate: (section: AccountSection) => void;
-}
 
 /**
  * Sticky bottom tab bar (mobile). 4 sections, touch targets ≥48px.
  * Active tab gets a brand-orange top indicator + ink label.
  */
-export function AccountMobileTabBar({ active, onNavigate }: AccountMobileTabBarProps) {
+export function AccountMobileTabBar() {
+  const pathname = usePathname();
   return (
     <nav
       aria-label="Sekcje konta"
@@ -39,14 +36,12 @@ export function AccountMobileTabBar({ active, onNavigate }: AccountMobileTabBarP
     >
       {TABS.map((t) => {
         const isActive =
-          t.key === active ||
-          (t.key === "orders" && active === "order-details");
+          t.href === "/konto" ? pathname === t.href : pathname.startsWith(t.href);
         const IconCmp = AcctIcon[t.icon];
         return (
-          <button
+          <Link
             key={t.key}
-            type="button"
-            onClick={() => onNavigate(t.key)}
+            href={t.href}
             className={cn(
               "relative flex flex-col items-center justify-center gap-1 py-3 cursor-pointer min-h-[56px]",
               "transition-colors duration-[120ms]",
@@ -73,9 +68,11 @@ export function AccountMobileTabBar({ active, onNavigate }: AccountMobileTabBarP
             >
               {t.label}
             </span>
-          </button>
+          </Link>
         );
       })}
     </nav>
   );
 }
+import Link from "next/link";
+import { usePathname } from "next/navigation";

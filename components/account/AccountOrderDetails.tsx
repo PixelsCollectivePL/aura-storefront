@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AccountReceiptRow } from "@/components/account/AccountReceiptRow";
@@ -11,16 +12,16 @@ import type { AccountOrder } from "@/types/account";
 
 interface AccountOrderDetailsProps {
   order: AccountOrder;
-  onBack: () => void;
 }
 
-export function AccountOrderDetails({ order, onBack }: AccountOrderDetailsProps) {
+export function AccountOrderDetails({ order }: AccountOrderDetailsProps) {
+  const router = useRouter();
   return (
     <div>
       {/* Back row (desktop only — mobile uses MobileBar back arrow) */}
       <button
         type="button"
-        onClick={onBack}
+        onClick={() => router.push("/konto/zamowienia")}
         className="hidden lg:inline-flex items-center gap-2 mb-6 text-[13px] font-semibold text-muted hover:text-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs"
       >
         <AcctIcon.back size={14} />
@@ -176,13 +177,13 @@ export function AccountOrderDetails({ order, onBack }: AccountOrderDetailsProps)
                 className="font-extrabold tracking-[-0.025em] leading-none text-[22px] lg:text-[26px]"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {formatDateShort(order.tracking.eta)}
+                {order.tracking.eta ? formatDateShort(order.tracking.eta) : "W trakcie realizacji"}
               </div>
               <div
                 className="text-white/55 uppercase mt-1.5 mb-5"
                 style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
               >
-                Szacowana dostawa
+                {order.tracking.eta ? "Szacowana dostawa" : "Status przesyłki"}
               </div>
 
               {/* Timeline — driven by order.tracking.timeline; falls back to

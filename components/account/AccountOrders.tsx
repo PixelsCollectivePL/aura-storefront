@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AccountEmptyState } from "@/components/account/AccountEmptyState";
@@ -11,7 +12,6 @@ import type { AccountOrder, FulfillmentStatus } from "@/types/account";
 
 interface AccountOrdersProps {
   orders: AccountOrder[];
-  onSelectOrder: (orderId: string) => void;
 }
 
 type Filter = "all" | "in_transit" | "delivered";
@@ -22,7 +22,9 @@ const FILTERS: { value: Filter; label: string }[] = [
   { value: "delivered",   label: "Dostarczone" },
 ];
 
-export function AccountOrders({ orders, onSelectOrder }: AccountOrdersProps) {
+export function AccountOrders({ orders }: AccountOrdersProps) {
+  const router = useRouter();
+  const selectOrder = (id: string) => router.push(`/konto/zamowienia/${id.split("/").pop()}`);
   const [filter, setFilter] = useState<Filter>("all");
 
   const filtered = useMemo(() => {
@@ -149,7 +151,7 @@ export function AccountOrders({ orders, onSelectOrder }: AccountOrdersProps) {
             <div className="flex gap-2 justify-end">
               <button
                 type="button"
-                onClick={() => onSelectOrder(o.id)}
+                onClick={() => selectOrder(o.id)}
                 className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               >
                 Szczegóły
@@ -219,7 +221,7 @@ export function AccountOrders({ orders, onSelectOrder }: AccountOrdersProps) {
               </button>
               <button
                 type="button"
-                onClick={() => onSelectOrder(o.id)}
+                onClick={() => selectOrder(o.id)}
                 className="inline-flex items-center justify-center h-10 px-4 rounded-pill border border-line bg-paper text-ink text-[13px] font-semibold cursor-pointer"
               >
                 Szczegóły

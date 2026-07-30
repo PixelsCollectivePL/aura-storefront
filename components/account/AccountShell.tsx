@@ -5,23 +5,16 @@ import { AccountMobileBar } from "@/components/account/AccountMobileBar";
 import { AccountMobileTabBar } from "@/components/account/AccountMobileTabBar";
 import type {
   AccountCustomer,
-  AccountOrder,
-  AccountSection,
-  AccountSubscription,
 } from "@/types/account";
 
 interface AccountShellProps {
   customer: AccountCustomer;
-  orders: AccountOrder[];
-  subscription: AccountSubscription | null;
-  active: AccountSection;
-  onNavigate: (section: AccountSection) => void;
+  ordersCount: number;
   /** Title shown in the mobile top bar (each section sets its own). */
   mobileTitle: string;
   /** Whether the mobile bar shows back arrow (e.g. order details). */
   mobileBack?: boolean;
   /** Callback for mobile back. */
-  onMobileBack?: () => void;
   /** Optional mobile-bar right-side action (e.g. invoice icon). */
   mobileAction?: React.ReactNode;
   children: React.ReactNode;
@@ -33,13 +26,9 @@ interface AccountShellProps {
  */
 export function AccountShell({
   customer,
-  orders,
-  subscription,
-  active,
-  onNavigate,
+  ordersCount,
   mobileTitle,
   mobileBack,
-  onMobileBack,
   mobileAction,
   children,
 }: AccountShellProps) {
@@ -47,17 +36,14 @@ export function AccountShell({
     <div className="flex bg-paper min-h-screen">
       <AccountSidebar
         customer={customer}
-        orders={orders}
-        subscription={subscription}
-        active={active}
-        onNavigate={onNavigate}
+        ordersCount={ordersCount}
       />
 
       <main className="flex-1 min-w-0 flex flex-col">
         <AccountMobileBar
           title={mobileTitle}
           back={mobileBack}
-          onBack={onMobileBack}
+          onBack={() => window.history.back()}
           action={mobileAction}
         />
 
@@ -66,7 +52,7 @@ export function AccountShell({
         </div>
       </main>
 
-      <AccountMobileTabBar active={active} onNavigate={onNavigate} />
+      <AccountMobileTabBar />
     </div>
   );
 }

@@ -1,10 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { AcctIcon } from "@/components/account/AccountIcons";
-import { setMockAuthenticated } from "@/lib/account/auth";
-import { notifyShopifyAction } from "@/lib/account/feedback";
 import { cn } from "@/lib/utils";
 import type { AccountCustomer } from "@/types/account";
 
@@ -23,19 +19,6 @@ interface AccountDetailsProps {
  * lastName, phone, acceptsMarketing).
  */
 export function AccountDetails({ customer }: AccountDetailsProps) {
-  const router = useRouter();
-  const [consents, setConsents] = useState({
-    drops: customer.acceptsMarketing,
-    sms: customer.acceptsSms,
-    club: true,
-  });
-
-  function handleLogout() {
-    // [shopify-ready]: see AccountSidebar.handleLogout()
-    setMockAuthenticated(false);
-    router.push("/account/login");
-  }
-
   const fields = [
     { eb: "Imię",     v: customer.firstName },
     { eb: "Nazwisko", v: customer.lastName },
@@ -62,13 +45,7 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
             dane.
           </h1>
         </div>
-        {/* [shopify-ready]: deep-link to Shopify customer account URL */}
-        <a
-          href="#manage-account"
-          className="inline-flex items-center h-10 px-4 rounded-pill border border-line bg-paper text-ink text-[13px] font-semibold hover:border-ink transition-colors duration-[120ms] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-        >
-          Zarządzaj kontem Shopify ↗
-        </a>
+        <span className="text-[13px] text-muted">Dane zsynchronizowane z Shopify</span>
       </header>
 
       <div className="grid lg:grid-cols-[1.4fr_1fr] gap-5">
@@ -117,14 +94,7 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
                     )}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => notifyShopifyAction(`Edycja pola: ${row.eb}`)}
-                  className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                  /* [shopify-ready]: customerUpdate mutation per field */
-                >
-                  Edytuj
-                </button>
+                <span className="text-[11px] uppercase text-muted">Tylko do odczytu</span>
               </div>
             ))}
           </div>
@@ -145,12 +115,6 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
                 Dane konta będą zarządzane bezpiecznie przez Shopify Customer Accounts.
               </div>
             </div>
-            <a
-              href="#manage-account"
-              className="hidden sm:inline-flex items-center justify-center h-9 px-4 rounded-pill bg-brand text-white border border-brand text-[12.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms]"
-            >
-              Otwórz panel ↗
-            </a>
           </div>
         </section>
 
@@ -171,25 +135,9 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
               Co dostajesz
             </h3>
 
-            {[
-              { key: "drops" as const, l: "Drop emaile",  sub: "Nowe partie, świeże palenia, story" },
-              { key: "sms" as const,   l: "SMS o wysyłce", sub: "Tylko jeden, gdy paczka rusza" },
-              { key: "club" as const,  l: "Coffee club",  sub: "Cuppingi, eventy, kod −10% co kwartał" },
-            ].map((c) => (
-              <ConsentToggle
-                key={c.key}
-                label={c.l}
-                sub={c.sub}
-                on={consents[c.key]}
-                onChange={(v) => setConsents((s) => ({ ...s, [c.key]: v }))}
-              />
-            ))}
-
-            <p
-              className="text-muted uppercase mt-3 leading-[1.5]"
-              style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
-            >
-              RODO · zgody wymagane do wysyłki maili promocyjnych
+            <p className="text-[13px] text-muted leading-[1.5]">
+              Zarządzanie zgodami nie jest jeszcze podłączone. Nie pokazujemy przełączników,
+              dopóki zapis przez Shopify nie będzie aktywny.
             </p>
           </section>
 
@@ -211,26 +159,7 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
               Pobierz wszystkie swoje dane (RODO) lub poproś o trwałe usunięcie
               konta. Zamówienia archiwizowane zgodnie z prawem.
             </p>
-            <div className="flex gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={() => notifyShopifyAction("Eksport danych RODO")}
-                /* [shopify-ready]: deep-link to Shopify Customer Account
-                   GDPR data-export flow */
-                className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-              >
-                Pobierz dane
-              </button>
-              <button
-                type="button"
-                onClick={() => notifyShopifyAction("Usunięcie konta")}
-                /* [shopify-ready]: deep-link to Shopify Customer Account
-                   account-deletion flow */
-                className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-muted text-[12.5px] font-semibold hover:text-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-              >
-                Usuń konto
-              </button>
-            </div>
+            <p className="text-[12px] text-muted">Funkcja będzie dostępna po podłączeniu właściwego procesu Shopify.</p>
           </section>
         </div>
       </div>
@@ -238,56 +167,14 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
       {/* Mobile-only logout — sidebar is desktop-only.
           [shopify-ready]: see handleLogout() above. */}
       <div className="lg:hidden mt-6">
-        <button
-          type="button"
-          onClick={handleLogout}
+        <a
+          href="/api/auth/shopify/logout"
           className="w-full inline-flex items-center justify-center gap-2.5 h-12 rounded-pill border border-line bg-paper text-muted text-[13.5px] font-semibold hover:text-ink hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
         >
           <AcctIcon.logout size={15} />
           Wyloguj
-        </button>
+        </a>
       </div>
-    </div>
-  );
-}
-
-/** Toggle row used in marketing consents. UI-only. */
-function ConsentToggle({
-  label,
-  sub,
-  on,
-  onChange,
-}: {
-  label: string;
-  sub: string;
-  on: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center gap-3.5 py-3 border-b border-dashed border-line">
-      <div className="flex-1 min-w-0">
-        <div className="font-semibold text-[14px]">{label}</div>
-        <div className="text-[12px] text-muted">{sub}</div>
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={on}
-        aria-label={`${label}: ${on ? "Włączone" : "Wyłączone"}`}
-        onClick={() => onChange(!on)}
-        className={cn(
-          "relative w-11 h-6 rounded-full shrink-0 transition-colors duration-[150ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
-          on ? "bg-brand" : "bg-line"
-        )}
-      >
-        <span
-          className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white transition-[left] duration-[150ms]"
-          style={{
-            left: on ? 21 : 3,
-            boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
-          }}
-        />
-      </button>
     </div>
   );
 }

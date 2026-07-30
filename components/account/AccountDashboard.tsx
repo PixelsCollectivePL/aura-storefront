@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Starburst } from "@/components/brand/Starburst";
 import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
@@ -10,7 +11,6 @@ import { notifyReorderAction } from "@/lib/account/feedback";
 import type {
   AccountCustomer,
   AccountOrder,
-  AccountSection,
   AccountStats,
   AccountSubscription,
   AccountTastedBlend,
@@ -22,7 +22,6 @@ interface AccountDashboardProps {
   subscription: AccountSubscription | null;
   stats: AccountStats;
   tastedBlends: AccountTastedBlend[];
-  onNavigate: (section: AccountSection, orderId?: string) => void;
 }
 
 export function AccountDashboard({
@@ -31,8 +30,17 @@ export function AccountDashboard({
   stats,
   tastedBlends,
   subscription,
-  onNavigate,
 }: AccountDashboardProps) {
+  const router = useRouter();
+  const navigate = (section: string, orderId?: string) => {
+    const paths: Record<string, string> = {
+      dashboard: "/konto", orders: "/konto/zamowienia",
+      subscriptions: "/konto/subskrypcje", addresses: "/konto/adresy", details: "/konto/dane",
+    };
+    router.push(section === "order-details" && orderId
+      ? `/konto/zamowienia/${orderId.split("/").pop()}`
+      : paths[section] ?? "/konto");
+  };
   const lastOrder = orders[0];
   const previous  = orders.slice(1, 4);
 
@@ -64,7 +72,7 @@ export function AccountDashboard({
           <div className="hidden lg:flex gap-2">
             <button
               type="button"
-              onClick={() => onNavigate("details")}
+              onClick={() => navigate("details")}
               className="inline-flex items-center justify-center h-10 px-4 rounded-pill border border-line bg-paper text-ink text-[13px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
             >
               Zarządzaj kontem ↗
@@ -162,7 +170,7 @@ export function AccountDashboard({
                   <div className="text-[13px] text-ink leading-tight">
                     <strong>{lastOrder.tracking.carrier} · w drodze</strong>
                     {" · dostawa "}
-                    <strong className="tabular-nums">{formatDateShort(lastOrder.tracking.eta)}</strong>
+                    {lastOrder.tracking.eta ? <strong className="tabular-nums">{formatDateShort(lastOrder.tracking.eta)}</strong> : null}
                   </div>
                 </div>
                 {/* [shopify-ready]: open lastOrder.tracking.url */}
@@ -190,7 +198,7 @@ export function AccountDashboard({
               </button>
               <button
                 type="button"
-                onClick={() => onNavigate("order-details", lastOrder.id)}
+                onClick={() => navigate("order-details", lastOrder.id)}
                 className="inline-flex items-center justify-center h-10 px-5 rounded-pill bg-paper text-ink border border-line text-[13px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               >
                 Zobacz szczegóły
@@ -263,7 +271,7 @@ export function AccountDashboard({
                   <div className="flex flex-col gap-2 mt-auto">
                     <button
                       type="button"
-                      onClick={() => onNavigate("subscriptions")}
+                      onClick={() => navigate("subscriptions")}
                       className="w-full h-11 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
                     >
                       Zarządzaj subskrypcją
@@ -297,7 +305,7 @@ export function AccountDashboard({
                   </p>
                   <button
                     type="button"
-                    onClick={() => onNavigate("subscriptions")}
+                    onClick={() => navigate("subscriptions")}
                     className="mt-auto w-full h-11 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer"
                   >
                     Uruchom subskrypcję
@@ -347,7 +355,7 @@ export function AccountDashboard({
             </h3>
             <button
               type="button"
-              onClick={() => onNavigate("orders")}
+              onClick={() => navigate("orders")}
               className="text-[13px] font-semibold text-ink border-b border-ink hover:text-brand hover:border-brand transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
             >
               Wszystkie zamówienia
@@ -381,7 +389,7 @@ export function AccountDashboard({
               </span>
               <button
                 type="button"
-                onClick={() => onNavigate("order-details", o.id)}
+                onClick={() => navigate("order-details", o.id)}
                 className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill border border-line bg-paper text-ink text-[12.5px] font-semibold hover:border-ink transition-colors duration-[120ms] cursor-pointer"
               >
                 Szczegóły

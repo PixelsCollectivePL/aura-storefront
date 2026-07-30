@@ -112,7 +112,7 @@ export interface AccountFulfillmentEvent {
 export interface AccountOrderTracking {
   carrier: string;                 // e.g. "InPost"
   number: string;
-  eta: string;                     // ISO date
+  eta?: string;                    // ISO date, only when provided by fulfillment data
   url?: string;                    // carrier tracking URL
   /** Optional timeline events; falls back to default progression in UI. */
   timeline?: AccountFulfillmentEvent[];
