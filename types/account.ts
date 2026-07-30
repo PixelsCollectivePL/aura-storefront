@@ -93,6 +93,7 @@ export interface AccountOrderAddress {
   city: string;                    // includes postal code when stored as one line
   /** Shopify: `province` / `provinceCode` (state / region) */
   province?: string;
+  zoneCode?: string;
   country: string;
   /** ISO country code (Shopify returns both `country` and `countryCodeV2`). */
   countryCode?: string;
@@ -155,6 +156,7 @@ export interface AccountAddress {
   address2?: string;
   city: string;
   province?: string;
+  zoneCode?: string;
   zip: string;
   country: string;
   countryCode?: string;

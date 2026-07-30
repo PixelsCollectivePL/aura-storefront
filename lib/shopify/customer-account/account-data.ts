@@ -169,6 +169,7 @@ export async function getCustomerAddresses(): Promise<AccountAddress[]> {
       address2: node.address2 ?? undefined,
       city: node.city ?? "",
       province: node.province ?? undefined,
+      zoneCode: node.zoneCode ?? undefined,
       zip: node.zip ?? "",
       country: node.country ?? "",
       countryCode: node.territoryCode ?? undefined,
