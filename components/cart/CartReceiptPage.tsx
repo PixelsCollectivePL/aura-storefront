@@ -22,7 +22,8 @@ const SHIPPING_FLAT_FEE = 12; // PLN — InPost paczkomat (matches /faq copy)
  * disabled CTA until Shopify is wired up.
  */
 export function CartReceiptPage() {
-  const { lines, count, subtotal, updateCartLine, removeCartLine } = useCart();
+  const { lines, count, subtotal, updateCartLine, removeCartLine, checkout, isPending } =
+    useCart();
 
   const isEmpty      = lines.length === 0;
   const shippingFree = subtotal >= FREE_SHIPPING_THRESHOLD;
@@ -280,11 +281,15 @@ export function CartReceiptPage() {
         </div>
         <button
           type="button"
-          disabled
-          title="Wkrótce — kasa Shopify"
-          className="flex-1 h-14 inline-flex items-center justify-center gap-2 rounded-pill bg-brand text-white border border-brand text-[15px] font-bold tracking-[-0.005em] opacity-80 cursor-not-allowed"
+          onClick={checkout}
+          disabled={isPending}
+          className={`flex-1 h-14 inline-flex items-center justify-center gap-2 rounded-pill bg-brand text-white border border-brand text-[15px] font-bold tracking-[-0.005em] transition-colors duration-[150ms] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 ${
+            isPending
+              ? "opacity-80 cursor-not-allowed"
+              : "hover:bg-brand-deep hover:border-brand-deep cursor-pointer"
+          }`}
         >
-          Przejdź do kasy
+          {isPending ? "Otwieramy kasę…" : "Przejdź do kasy"}
           <Icon.arrow size={16} />
         </button>
       </div>

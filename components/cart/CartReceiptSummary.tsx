@@ -1,6 +1,7 @@
 "use client";
 
 import { Starburst } from "@/components/brand/Starburst";
+import { useCart } from "@/lib/cart/cart-context";
 import type { CartLine } from "@/lib/cart/cart-context";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,11 @@ export function CartReceiptSummary({
   variant = "desktop",
   showCta = true,
 }: CartReceiptSummaryProps) {
+  // Checkout is driven from the cart context rather than a prop: the CTA
+  // needs the live pending state, and this component already sits under
+  // the provider in both places it is rendered.
+  const { checkout, isPending } = useCart();
+
   const vat = Math.round((subtotal * 0.23) / 1.23);
   const isMobile = variant === "mobile";
   const clipPath = isMobile ? RECEIPT_CLIP_MOBILE : RECEIPT_CLIP_DESKTOP;
@@ -182,16 +188,20 @@ export function CartReceiptSummary({
         <>
           <button
             type="button"
-            disabled
-            title="Wkrótce — kasa Shopify"
+            onClick={checkout}
+            disabled={isPending || lines.length === 0}
             className={cn(
               "w-full h-14 inline-flex items-center justify-center gap-2.5 mt-1.5",
               "rounded-pill text-[15px] font-semibold tracking-[-0.005em]",
               "bg-brand text-white border border-brand",
-              "opacity-80 cursor-not-allowed"
+              "transition-colors duration-[150ms]",
+              "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+              isPending || lines.length === 0
+                ? "opacity-80 cursor-not-allowed"
+                : "hover:bg-brand-deep hover:border-brand-deep cursor-pointer"
             )}
           >
-            Przejdź do kasy →
+            {isPending ? "Otwieramy kasę…" : "Przejdź do kasy →"}
           </button>
 
           <div

@@ -38,11 +38,11 @@ export function ProductCard({ product, priority, className }: ProductCardProps) 
   // identify.
   const quickAddVariant = resolveDefaultVariant(product);
 
-  function handleQuickAdd() {
+  async function handleQuickAdd() {
     if (!quickAddVariant) return;
-    addToCart(product, quickAddVariant);
     openCart();
-    showToast("Dodano do koszyka");
+    const ok = await addToCart(product, quickAddVariant);
+    if (ok) showToast("Dodano do koszyka");
   }
 
   return (

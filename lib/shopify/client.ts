@@ -105,6 +105,14 @@ export interface ShopifyFetchArgs<TVariables> {
   tags?: string[];
   /** Seconds; `false` disables caching for this request. */
   revalidate?: number | false;
+  /**
+   * Buyer's IP address, forwarded as `Shopify-Storefront-Buyer-IP`.
+   *
+   * Required for server-side cart/checkout calls: without it Shopify sees
+   * our server's IP for every shopper, which skews fraud analysis and risks
+   * rate-limiting the whole storefront as one client. Ignored when absent.
+   */
+  buyerIp?: string;
 }
 
 /**
@@ -118,6 +126,7 @@ export async function shopifyFetch<TData, TVariables = Record<string, unknown>>(
   variables,
   tags = [SHOPIFY_TAGS.all],
   revalidate = CATALOG_REVALIDATE_SECONDS,
+  buyerIp,
 }: ShopifyFetchArgs<TVariables>): Promise<TData> {
   // Guard: this module must never execute in the browser — the private
   // token would be exposed in the client bundle.
@@ -146,6 +155,7 @@ export async function shopifyFetch<TData, TVariables = Record<string, unknown>>(
         // Private (server-side) Storefront tokens use this header.
         // Public tokens would use "X-Shopify-Storefront-Access-Token".
         "Shopify-Storefront-Private-Token": token,
+        ...(buyerIp ? { "Shopify-Storefront-Buyer-IP": buyerIp } : {}),
       },
       body: JSON.stringify({ query, variables }),
       // Next 16: fetch is uncached unless told otherwise.

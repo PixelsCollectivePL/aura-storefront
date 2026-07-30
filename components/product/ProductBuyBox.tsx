@@ -24,7 +24,7 @@ interface ProductBuyBoxProps {
  * [shopify-ready]: swap mock addItem for Shopify cart mutation.
  */
 export function ProductBuyBox({ product }: ProductBuyBoxProps) {
-  const { addToCart, openCart } = useCart();
+  const { addToCart, openCart, isPending } = useCart();
 
   const [selectedSize, setSelectedSize] = useState<SizeOption | undefined>(
     product.sizeOptions[0]
@@ -53,11 +53,16 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
     ? formatPricePLN(selectedVariant.price.amount)
     : formatPriceFromPLN(product.price.amount);
 
-  function handleAddToCart() {
+  async function handleAddToCart() {
     if (!selectedVariant) return;
-    addToCart(product, selectedVariant, quantity);
-    setAdded(true);
+    // Open the drawer straight away — the shopper should see something
+    // happen while Shopify confirms the line.
     openCart();
+    const ok = await addToCart(product, selectedVariant, quantity);
+    // Only claim success once Shopify accepted it; a rejection already
+    // raised its own toast from the cart context.
+    if (!ok) return;
+    setAdded(true);
     showToast("Dodano do koszyka");
     setTimeout(() => setAdded(false), 2000);
   }
@@ -150,7 +155,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
         <button
           type="button"
           onClick={handleAddToCart}
-          disabled={!available}
+          disabled={!available || isPending}
           className={cn(
             "flex-1 h-14 inline-flex items-center justify-center gap-2",
             "rounded-pill text-[15px] font-semibold tracking-[-0.005em]",
@@ -194,7 +199,7 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
         <button
           type="button"
           onClick={handleAddToCart}
-          disabled={!available}
+          disabled={!available || isPending}
           className={cn(
             "flex-1 h-12 inline-flex items-center justify-center",
             "rounded-pill text-[14px] font-semibold tracking-[-0.005em]",
