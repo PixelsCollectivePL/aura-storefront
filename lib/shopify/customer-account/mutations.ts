@@ -46,6 +46,14 @@ const DELETE = /* GraphQL */ `
     }
   }
 `;
+const UPDATE_CUSTOMER = /* GraphQL */ `
+  mutation CustomerUpdate($input: CustomerUpdateInput!) {
+    customerUpdate(input: $input) {
+      customer { id firstName lastName }
+      userErrors { field message }
+    }
+  }
+`;
 
 function result(payload: AddressPayload | undefined): { ok: boolean; error?: string } {
   if (!payload) return { ok: false, error: "Shopify nie zwróciło wyniku operacji." };
@@ -77,4 +85,11 @@ export async function setDefaultCustomerAddress(id: string) {
     UPDATE, { addressId: id, address: null, defaultAddress: true }
   );
   return result(data.customerAddressUpdate);
+}
+
+export async function updateCustomerProfile(input: { firstName: string; lastName: string }) {
+  const data = await customerAccountFetch<{
+    customerUpdate: { customer: { id: string } | null; userErrors: MutationError[] };
+  }>(UPDATE_CUSTOMER, { input });
+  return result(data.customerUpdate);
 }

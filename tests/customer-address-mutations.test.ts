@@ -9,6 +9,7 @@ import {
   deleteCustomerAddress,
   setDefaultCustomerAddress,
   updateCustomerAddress,
+  updateCustomerProfile,
 } from "@/lib/shopify/customer-account/mutations";
 
 const address = {
@@ -56,5 +57,16 @@ describe("Customer Account address mutations", () => {
       customerAddressCreate: { customerAddress: null, userErrors: [{ field: ["address", "zip"], message: "Invalid postal code" }] },
     });
     await expect(createCustomerAddress(address, false)).resolves.toEqual({ ok: false, error: "Invalid postal code" });
+  });
+
+  it("updates only fields supported by Customer Account CustomerUpdateInput", async () => {
+    customerAccountFetch.mockResolvedValue({
+      customerUpdate: { customer: { id: "gid://shopify/Customer/1" }, userErrors: [] },
+    });
+    await expect(updateCustomerProfile({ firstName: "Jan", lastName: "Nowak" })).resolves.toEqual({ ok: true });
+    expect(customerAccountFetch).toHaveBeenCalledWith(
+      expect.stringContaining("customerUpdate(input: $input)"),
+      { input: { firstName: "Jan", lastName: "Nowak" } }
+    );
   });
 });

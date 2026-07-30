@@ -1,6 +1,11 @@
 "use client";
 
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+
+import { updateCustomerProfileAction } from "@/app/actions/account-profile";
 import { AcctIcon } from "@/components/account/AccountIcons";
+import { showToast } from "@/lib/toast/toast";
 import { cn } from "@/lib/utils";
 import type { AccountCustomer } from "@/types/account";
 
@@ -19,12 +24,30 @@ interface AccountDetailsProps {
  * lastName, phone, acceptsMarketing).
  */
 export function AccountDetails({ customer }: AccountDetailsProps) {
+  const router = useRouter();
+  const [editing, setEditing] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const fields = [
-    { eb: "Imię",     v: customer.firstName },
-    { eb: "Nazwisko", v: customer.lastName },
-    { eb: "Email",    v: customer.email,    verified: true },
-    { eb: "Telefon",  v: customer.phone ?? "—" },
+    { eb: "Imię", v: customer.firstName, editable: true },
+    { eb: "Nazwisko", v: customer.lastName, editable: true },
+    { eb: "Email", v: customer.email, verified: true, editable: false },
+    { eb: "Telefon", v: customer.phone ?? "—", editable: false },
   ];
+
+  function submit(form: HTMLFormElement) {
+    const data = new FormData(form);
+    startTransition(async () => {
+      const result = await updateCustomerProfileAction({
+        firstName: String(data.get("firstName") ?? ""),
+        lastName: String(data.get("lastName") ?? ""),
+      });
+      if (result.ok) {
+        showToast("Dane klienta zostały zaktualizowane.");
+        setEditing(false);
+        router.refresh();
+      } else showToast(result.error ?? "Nie udało się zaktualizować danych.");
+    });
+  }
 
   return (
     <div>
@@ -45,8 +68,32 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
             dane.
           </h1>
         </div>
-        <span className="text-[13px] text-muted">Dane zsynchronizowane z Shopify</span>
+        <button
+          type="button"
+          onClick={() => setEditing((value) => !value)}
+          disabled={isPending}
+          className="inline-flex min-h-11 items-center rounded-pill border border-ink bg-ink px-5 text-[13px] font-semibold text-white hover:bg-ink-2 disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+        >
+          {editing ? "Zamknij edycję" : "Edytuj imię i nazwisko"}
+        </button>
       </header>
+
+      {editing && (
+        <section className="mb-5 rounded-md border border-ink bg-paper-2 p-5 lg:p-7" aria-labelledby="profile-form-title">
+          <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-brand">Shopify Customer Account</p>
+          <h2 id="profile-form-title" className="mb-5 font-display text-[28px] font-extrabold tracking-[-0.025em]">Edytuj dane</h2>
+          <form onSubmit={(event) => { event.preventDefault(); submit(event.currentTarget); }} className="grid gap-4 sm:grid-cols-2">
+            <ProfileField label="Imię" name="firstName" defaultValue={customer.firstName} autoComplete="given-name" />
+            <ProfileField label="Nazwisko" name="lastName" defaultValue={customer.lastName} autoComplete="family-name" />
+            <div className="flex justify-end gap-2 sm:col-span-2">
+              <button type="button" onClick={() => setEditing(false)} disabled={isPending} className="min-h-11 rounded-pill border border-line bg-paper px-5 text-[13px] font-semibold hover:border-ink disabled:opacity-60">Anuluj</button>
+              <button type="submit" disabled={isPending} className="min-h-11 rounded-pill border border-brand bg-brand px-6 text-[13px] font-semibold text-white hover:bg-brand-deep disabled:cursor-wait disabled:opacity-60">
+                {isPending ? "Zapisywanie…" : "Zapisz dane"}
+              </button>
+            </div>
+          </form>
+        </section>
+      )}
 
       <div className="grid lg:grid-cols-[1.4fr_1fr] gap-5">
         {/* Profile card */}
@@ -94,7 +141,7 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
                     )}
                   </div>
                 </div>
-                <span className="text-[11px] uppercase text-muted">Tylko do odczytu</span>
+                <span className="text-[11px] uppercase text-muted">{row.editable ? "Edytowalne" : "Tylko do odczytu"}</span>
               </div>
             ))}
           </div>
@@ -176,5 +223,15 @@ export function AccountDetails({ customer }: AccountDetailsProps) {
         </a>
       </div>
     </div>
+  );
+}
+
+function ProfileField(props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
+  const { label, ...input } = props;
+  return (
+    <label className="grid gap-1.5">
+      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted">{label}</span>
+      <input {...input} required maxLength={60} className="min-h-12 rounded-md border border-line bg-paper px-4 text-[16px] text-ink outline-none transition-colors focus:border-ink focus:ring-2 focus:ring-brand/20" />
+    </label>
   );
 }
