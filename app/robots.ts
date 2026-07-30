@@ -1,0 +1,17 @@
+import type { MetadataRoute } from "next";
+
+/**
+ * `/robots.txt`
+ *
+ * Crawling is allowed even while the site is not indexable — see the
+ * explanation in `lib/seo/indexing.ts`. A crawler must be able to fetch a
+ * page to read its `noindex`; blocking it here would leave URLs eligible
+ * for indexing with no content and no way to opt out.
+ */
+export default function robots(): MetadataRoute.Robots {
+  // No sitemap yet — one gets added with the launch checklist, together
+  // with AURA_ALLOW_INDEXING=true.
+  return {
+    rules: [{ userAgent: "*", allow: "/" }],
+  };
+}
