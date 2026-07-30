@@ -28,7 +28,7 @@ export default async function KontoLayout({ children }: { children: React.ReactN
   if (!(await readSession())) redirect("/api/auth/shopify/login?returnTo=/konto");
   const { customer, orders } = await loadAccountShellData();
   return (
-    <AccountShell customer={customer} ordersCount={orders.length} mobileTitle="Konto">
+    <AccountShell customer={customer} ordersCount={orders.length}>
       {children}
     </AccountShell>
   );
