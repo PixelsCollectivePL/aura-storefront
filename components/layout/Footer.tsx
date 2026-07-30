@@ -20,7 +20,6 @@ const NAV_COLS = [
     links: [
       { label: "O marce",  href: "/o-marce" },
       { label: "Palarnia", href: "/o-marce#palarnia" },
-      { label: "Journal",  href: "/journal" },
     ],
   },
   {
