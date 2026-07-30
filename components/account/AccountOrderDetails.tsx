@@ -5,7 +5,7 @@ import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AccountReceiptRow } from "@/components/account/AccountReceiptRow";
 import { AcctIcon } from "@/components/account/AccountIcons";
-import { notifyReorderAction } from "@/lib/account/feedback";
+import { useCart } from "@/lib/cart/cart-context";
 import { cn, formatPrice } from "@/lib/utils";
 import { formatDateLong, formatDateShort } from "@/lib/account/format";
 import type { AccountOrder } from "@/types/account";
@@ -16,6 +16,7 @@ interface AccountOrderDetailsProps {
 
 export function AccountOrderDetails({ order }: AccountOrderDetailsProps) {
   const router = useRouter();
+  const { reorder, isPending } = useCart();
   return (
     <div>
       {/* Back row (desktop only — mobile uses MobileBar back arrow) */}
@@ -60,7 +61,8 @@ export function AccountOrderDetails({ order }: AccountOrderDetailsProps) {
           )}
           <button
             type="button"
-            onClick={notifyReorderAction}
+            onClick={() => void reorder(order.id)}
+            disabled={isPending}
             /* [shopify-ready]: cartLinesAdd with order.items.map(it =>
                  ({ merchandiseId: it.variantId, quantity: it.quantity })),
                then openCart(). */

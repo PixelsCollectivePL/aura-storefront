@@ -7,7 +7,7 @@ import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AcctIcon } from "@/components/account/AccountIcons";
 import { cn, formatPrice } from "@/lib/utils";
 import { formatDateLong, formatDateShort } from "@/lib/account/format";
-import { notifyReorderAction } from "@/lib/account/feedback";
+import { useCart } from "@/lib/cart/cart-context";
 import type {
   AccountCustomer,
   AccountOrder,
@@ -32,6 +32,7 @@ export function AccountDashboard({
   subscription,
 }: AccountDashboardProps) {
   const router = useRouter();
+  const { reorder, isPending } = useCart();
   const navigate = (section: string, orderId?: string) => {
     const paths: Record<string, string> = {
       dashboard: "/konto", orders: "/konto/zamowienia",
@@ -79,7 +80,8 @@ export function AccountDashboard({
             </button>
             <button
               type="button"
-              onClick={notifyReorderAction}
+              onClick={() => void reorder(lastOrder.id)}
+              disabled={isPending}
               className="inline-flex items-center justify-center h-10 px-5 rounded-pill bg-brand text-white border border-brand text-[13px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               /* [shopify-ready]: replace onClick with cartLinesAdd mutation:
                    lastOrder.items.map(it => ({
@@ -190,7 +192,8 @@ export function AccountDashboard({
             <div className="flex gap-2.5 flex-wrap">
               <button
                 type="button"
-                onClick={notifyReorderAction}
+                onClick={() => void reorder(lastOrder.id)}
+                disabled={isPending}
                 className="inline-flex items-center justify-center h-10 px-5 rounded-pill bg-brand text-white border border-brand text-[13px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
                 /* [shopify-ready]: cartLinesAdd from order.items (variantId + quantity), openCart() */
               >

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AccountEmptyState } from "@/components/account/AccountEmptyState";
-import { notifyReorderAction } from "@/lib/account/feedback";
+import { useCart } from "@/lib/cart/cart-context";
 import { cn, formatPrice } from "@/lib/utils";
 import { formatDateLong } from "@/lib/account/format";
 import type { AccountOrder, FulfillmentStatus } from "@/types/account";
@@ -24,6 +24,7 @@ const FILTERS: { value: Filter; label: string }[] = [
 
 export function AccountOrders({ orders }: AccountOrdersProps) {
   const router = useRouter();
+  const { reorder, isPending } = useCart();
   const selectOrder = (id: string) => router.push(`/konto/zamowienia/${id.split("/").pop()}`);
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -158,7 +159,8 @@ export function AccountOrders({ orders }: AccountOrdersProps) {
               </button>
               <button
                 type="button"
-                onClick={notifyReorderAction}
+                onClick={() => void reorder(o.id)}
+                disabled={isPending}
                 /* [shopify-ready]: cartLinesAdd from o.items (variantId, quantity) */
                 className="inline-flex items-center justify-center h-9 px-3.5 rounded-pill bg-brand text-white border border-brand text-[12.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
               >
@@ -213,7 +215,8 @@ export function AccountOrders({ orders }: AccountOrdersProps) {
             <div className="flex gap-2 px-4 pb-4">
               <button
                 type="button"
-                onClick={notifyReorderAction}
+                onClick={() => void reorder(o.id)}
+                disabled={isPending}
                 /* [shopify-ready]: cartLinesAdd from o.items */
                 className="flex-1 h-10 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13px] font-semibold cursor-pointer"
               >

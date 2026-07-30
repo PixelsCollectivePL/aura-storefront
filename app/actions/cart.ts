@@ -31,6 +31,9 @@ import {
 import type { CartResult } from "@/types/cart";
 import { getValidCustomerSession } from "@/lib/shopify/customer-account/client";
 import { readSession } from "@/lib/shopify/customer-account/session";
+import { getCustomerOrder } from "@/lib/shopify/customer-account/account-data";
+import { getVariantsByIds } from "@/lib/shopify/variants";
+import { planReorderLines } from "@/lib/account/reorder";
 
 const CART_COOKIE = "aura_cart_id";
 
@@ -148,6 +151,59 @@ export async function addToCartAction(
   }
 
   return syncCookie(result);
+}
+
+export interface ReorderResult extends CartResult {
+  addedCount: number;
+  skipped: string[];
+}
+
+/** Rebuild an old order from current variants and current Shopify prices. */
+export async function reorderAction(orderId: string): Promise<ReorderResult> {
+  const empty = { cart: null, addedCount: 0, skipped: [] };
+  if (!/^gid:\/\/shopify\/Order\/\d+$/.test(orderId)) {
+    return { ...empty, error: "Nie rozpoznano zamówienia." };
+  }
+
+  try {
+    // Refreshing here is safe: Server Actions are allowed to update cookies.
+    await getValidCustomerSession();
+    const order = await getCustomerOrder(orderId);
+    if (!order) return { ...empty, error: "Nie znaleziono zamówienia." };
+
+    const ctx = await cartContext();
+    const historical = order.items.filter((item) => item.variantId);
+    const current = await getVariantsByIds(
+      historical.map((item) => item.variantId),
+      ctx.buyerIp
+    );
+    const { lines, skipped } = planReorderLines(historical, current);
+
+    if (lines.length === 0) {
+      return {
+        ...empty,
+        skipped,
+        error: "Żaden wariant z tego zamówienia nie jest obecnie dostępny.",
+      };
+    }
+
+    const cartId = await readCartId();
+    let result = cartId
+      ? await addCartLines(cartId, lines, ctx)
+      : await createCart(lines, ctx);
+    if (cartId && !result.cart && !result.error) result = await createCart(lines, ctx);
+    result = await syncCookie(result);
+    return {
+      ...result,
+      addedCount: result.error ? 0 : lines.reduce((sum, line) => sum + line.quantity, 0),
+      skipped,
+    };
+  } catch (error) {
+    console.error(
+      `[aura/cart] reorderAction nie powiodło się: ${error instanceof Error ? error.message : "nieznany błąd"}`
+    );
+    return { ...empty, error: "Nie udało się ponowić zamówienia. Spróbuj ponownie." };
+  }
 }
 
 /** Set a line's quantity. `0` removes it, matching the UI's stepper. */

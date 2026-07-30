@@ -16,15 +16,6 @@ export function notifyShopifyAction(action: string): void {
 }
 
 /**
- * Variant for the cart re-order flow.
- * On Shopify wire-up, this becomes a `cartLinesAdd` call with
- * `merchandiseId: lineItem.variantId` for each line + openCart().
- */
-export function notifyReorderAction(): void {
-  showToast("Ponawianie zamówienia — w kolejnym etapie przez koszyk Shopify");
-}
-
-/**
  * Variant for subscription management actions.
  * On Shopify wire-up, this becomes a `subscriptionContractUpdate` /
  * `subscriptionContractSkip` / `subscriptionContractCancel` etc.

@@ -16,6 +16,7 @@ import {
   removeCartLineAction,
   applyDiscountCodeAction,
   checkoutAction,
+  reorderAction,
 } from "@/app/actions/cart";
 import { showToast } from "@/lib/toast/toast";
 import type { Product, ProductVariant } from "@/types/product";
@@ -73,6 +74,7 @@ interface CartContextValue {
     variant: ProductVariant,
     qty?: number
   ) => Promise<boolean>;
+  reorder: (orderId: string) => Promise<boolean>;
   updateCartLine: (lineId: string, quantity: number) => Promise<void>;
   removeCartLine: (lineId: string) => Promise<void>;
   applyDiscountCode: (code: string) => Promise<void>;
@@ -157,6 +159,30 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     },
     [run]
   );
+
+  const reorder = useCallback(async (orderId: string) => {
+    setIsPending(true);
+    try {
+      const result = await reorderAction(orderId);
+      applyResult(result);
+      if (result.cart) setIsOpen(true);
+      if (result.addedCount > 0) {
+        showToast(
+          result.skipped.length
+            ? `Dodano ${result.addedCount} szt. Część pozycji pominięto: ${result.skipped.join(", ")}.`
+            : `Dodano ${result.addedCount} szt. do koszyka po aktualnych cenach.`
+        );
+      }
+      return !result.error;
+    } catch {
+      const message = "Nie udało się ponowić zamówienia. Spróbuj ponownie.";
+      setError(message);
+      showToast(message);
+      return false;
+    } finally {
+      setIsPending(false);
+    }
+  }, [applyResult]);
 
   const updateCartLine = useCallback(
     async (lineId: string, quantity: number) => {
@@ -268,6 +294,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       isHydrated,
       error,
       addToCart,
+      reorder,
       updateCartLine,
       removeCartLine,
       applyDiscountCode,
@@ -286,6 +313,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       isHydrated,
       error,
       addToCart,
+      reorder,
       updateCartLine,
       removeCartLine,
       applyDiscountCode,
