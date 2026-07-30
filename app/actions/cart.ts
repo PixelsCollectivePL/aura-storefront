@@ -252,15 +252,17 @@ export async function applyDiscountCodeAction(
     await cartContext()
   );
 
-  if (result.cart && !result.error && trimmed) {
-    const applied = result.cart.discountCodes.find(
-      (d) => d.code.toLowerCase() === trimmed.toLowerCase()
-    );
-    if (applied && !applied.applicable) {
-      return { cart: result.cart, error: `Kod „${trimmed}" jest nieprawidłowy.` };
-    }
-  }
-
+  // An inapplicable code is deliberately NOT reported as `error`.
+  //
+  // `error` means the operation failed — network, GraphQL, permissions — and
+  // the cart context turns it into a toast. A code Shopify accepted but
+  // marked `applicable: false` is a business outcome, not a failure: the
+  // request worked and the cart is exactly what Shopify says it is. It is
+  // reported once, inline next to the field, from `cart.discountCodes`.
+  //
+  // Returning both produced two different explanations of one event — a
+  // toast saying "nieprawidłowy" and inline text saying "nie jest dostępny
+  // dla tego koszyka" — which is worse than either alone.
   return syncCookie(result);
 }
 

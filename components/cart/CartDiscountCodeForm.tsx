@@ -41,15 +41,33 @@ export function CartDiscountCodeForm({ id }: { id: string }) {
           Zastosuj
         </button>
       </div>
+      {/*
+        Shopify keeps an inapplicable code attached to the cart on purpose —
+        it can start applying once the cart meets the discount's conditions.
+        The side effect is a warning banner in checkout, at the worst
+        possible moment, so the customer needs a way out of it here.
+      */}
       {discountCodes.map((discount) => (
         <p
           key={discount.code}
-          className={`mt-2 text-[11px] ${discount.applicable ? "text-brand" : "text-muted"}`}
+          className={`mt-2 flex items-center gap-2 text-[11px] ${
+            discount.applicable ? "text-brand" : "text-muted"
+          }`}
           role="status"
         >
-          {discount.applicable
-            ? `Kod ${discount.code} został zastosowany.`
-            : `Kod ${discount.code} nie jest dostępny dla tego koszyka.`}
+          <span>
+            {discount.applicable
+              ? `Kod ${discount.code} został zastosowany.`
+              : `Kod ${discount.code} nie jest dostępny dla tego koszyka.`}
+          </span>
+          <button
+            type="button"
+            onClick={() => applyDiscountCode("")}
+            disabled={isPending}
+            className="underline underline-offset-2 hover:text-ink transition-colors duration-[120ms] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 rounded-xs cursor-pointer"
+          >
+            Usuń
+          </button>
         </p>
       ))}
     </form>
