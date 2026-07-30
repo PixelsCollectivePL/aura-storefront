@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 
 import { isCustomerAccountConfigured } from "@/lib/shopify/customer-account/config";
-import {
-  isAccessTokenStale,
-  readSession,
-} from "@/lib/shopify/customer-account/session";
+import { getValidCustomerSession } from "@/lib/shopify/customer-account/client";
+import { CustomerApiError } from "@/lib/shopify/customer-account/errors";
 
 /**
  * GET /api/auth/shopify/session
@@ -27,21 +25,22 @@ export async function GET() {
     return NextResponse.json({ authenticated: false }, { headers });
   }
 
-  const session = await readSession();
-
-  if (!session) {
+  try {
+    // This is a Route Handler, so getValidCustomerSession can safely rotate
+    // the signed HttpOnly cookie when the access token is near expiry.
+    const session = await getValidCustomerSession();
+    return NextResponse.json(
+      { authenticated: true, email: session.email ?? null },
+      { headers }
+    );
+  } catch (error) {
+    if (!(error instanceof CustomerApiError) || error.kind !== "unauthorized") {
+      console.error(
+        `[aura/auth] session status: ${
+          error instanceof Error ? error.message : "nieznany błąd"
+        }`
+      );
+    }
     return NextResponse.json({ authenticated: false }, { headers });
   }
-
-  // A stale access token is not a logged-out customer: the refresh token is
-  // still good and the next API call renews it server-side. Reporting `false`
-  // here would bounce a valid customer to the login screen every few minutes.
-  return NextResponse.json(
-    {
-      authenticated: true,
-      email: session.email ?? null,
-      needsRefresh: isAccessTokenStale(session),
-    },
-    { headers }
-  );
 }

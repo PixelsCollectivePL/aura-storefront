@@ -28,6 +28,43 @@ export class CustomerAuthError extends Error {
   }
 }
 
+export type CustomerApiErrorKind =
+  | "http"
+  | "graphql"
+  | "unauthorized"
+  | "invalid_response";
+
+/**
+ * Customer Account GraphQL failure.
+ *
+ * Kept separate from OAuth errors so callers can distinguish a customer who
+ * needs to sign in again from a broken query, a missing scope, or a Shopify
+ * outage. It never includes request headers or token values.
+ */
+export class CustomerApiError extends Error {
+  readonly kind: CustomerApiErrorKind;
+  readonly status: number;
+  readonly graphQLErrors: ReadonlyArray<{ message: string; path?: unknown }>;
+
+  constructor({
+    kind,
+    message,
+    status = 500,
+    graphQLErrors = [],
+  }: {
+    kind: CustomerApiErrorKind;
+    message: string;
+    status?: number;
+    graphQLErrors?: ReadonlyArray<{ message: string; path?: unknown }>;
+  }) {
+    super(message);
+    this.name = "CustomerApiError";
+    this.kind = kind;
+    this.status = status;
+    this.graphQLErrors = graphQLErrors;
+  }
+}
+
 /**
  * Short, non-technical Polish message for the customer.
  *

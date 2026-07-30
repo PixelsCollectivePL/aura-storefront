@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { cn, formatPrice } from "@/lib/utils";
@@ -34,6 +34,11 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
   const hasQuery = query.trim().length > 0;
   const hasResults = results.length > 0;
 
+  const closeSearch = useCallback(() => {
+    setQuery("");
+    onClose();
+  }, [onClose]);
+
   // Focus input + set up keyboard trap when overlay opens
   useEffect(() => {
     if (!isOpen) return;
@@ -43,7 +48,7 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        closeSearch();
         return;
       }
       if (e.key !== "Tab") return;
@@ -72,18 +77,12 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [isOpen, onClose]);
-
-  // Reset query when overlay closes
-  useEffect(() => {
-    if (!isOpen) setQuery("");
-  }, [isOpen]);
+  }, [isOpen, closeSearch]);
 
   if (!isOpen) return null;
 
   function handleResultClick() {
-    setQuery("");
-    onClose();
+    closeSearch();
   }
 
   return (
@@ -91,7 +90,7 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-30 bg-ink/20 cart-overlay-in"
-        onClick={onClose}
+        onClick={closeSearch}
         aria-hidden="true"
       />
 
@@ -148,7 +147,7 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
             )}
             <button
               type="button"
-              onClick={onClose}
+              onClick={closeSearch}
               aria-label={s.closeLabel}
               className={cn(
                 "flex items-center justify-center w-8 h-8 shrink-0",

@@ -9,7 +9,14 @@
  * credentials go in an `Authorization: Basic` header rather than the body.
  */
 
+import {
+  createPublicKey,
+  verify as verifySignature,
+  type JsonWebKey as NodeJsonWebKey,
+} from "node:crypto";
+
 import { CustomerAuthError } from "./errors";
+import { safeEqual } from "./crypto";
 import {
   CUSTOMER_ACCOUNT_SCOPES,
   getClientId,
@@ -89,32 +96,164 @@ interface IdTokenClaims {
   sub?: string;
   email?: string;
   sid?: string;
+  iss?: string;
+  aud?: string | string[];
+  exp?: number;
+  iat?: number;
+}
+
+interface IdTokenHeader {
+  alg?: string;
+  kid?: string;
+  typ?: string;
+}
+
+type ShopifyJwk = NodeJsonWebKey & {
+  kid?: string;
+  alg?: string;
+  use?: string;
+};
+
+let jwksCache: { uri: string; keys: ShopifyJwk[]; expiresAt: number } | null = null;
+const JWKS_CACHE_MS = 60 * 60 * 1000;
+
+export function clearAuthJwksCache(): void {
+  jwksCache = null;
+}
+
+function decodeJwtPart<T>(value: string): T {
+  try {
+    return JSON.parse(Buffer.from(value, "base64url").toString("utf8")) as T;
+  } catch {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "Shopify zwróciło niepoprawny id_token."
+    );
+  }
+}
+
+async function getJwks(uri: string): Promise<ShopifyJwk[]> {
+  if (!uri) {
+    throw new CustomerAuthError(
+      "discovery_failed",
+      "Discovery OpenID nie zwróciło `jwks_uri`."
+    );
+  }
+  if (jwksCache?.uri === uri && Date.now() < jwksCache.expiresAt) {
+    return jwksCache.keys;
+  }
+  let response: Response;
+  try {
+    response = await fetch(uri, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+  } catch (error) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      `Nie udało się pobrać kluczy podpisu Shopify: ${
+        error instanceof Error ? error.message : "nieznany błąd"
+      }.`
+    );
+  }
+  if (!response.ok) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      `Shopify JWKS zwróciło HTTP ${response.status}.`
+    );
+  }
+  const body = (await response.json()) as { keys?: ShopifyJwk[] };
+  if (!Array.isArray(body.keys) || body.keys.length === 0) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "Shopify JWKS nie zawiera kluczy podpisu."
+    );
+  }
+  jwksCache = { uri, keys: body.keys, expiresAt: Date.now() + JWKS_CACHE_MS };
+  return body.keys;
 }
 
 /**
- * Read the id token's payload **without** verifying its signature.
- *
- * That is safe for what we use it for: the token arrives over TLS directly
- * from Shopify's token endpoint in response to an authenticated request, so
- * it is not attacker-controlled. We only extract display data (email) and
- * the `nonce` we ourselves generated. Nothing here grants access — the
- * access token does that, and Shopify validates it on every API call.
- *
- * If these claims ever become an authorization input, this must be replaced
- * with real RS256 verification against `jwks_uri`.
+ * Verify the OpenID token before reading even display-only claims from it.
+ * Signature keys and issuer come from discovery, never from the token itself.
  */
-function decodeIdTokenClaims(idToken: string): IdTokenClaims {
+export async function verifyIdToken({
+  idToken,
+  endpoints,
+  expectedNonce,
+  now = Date.now(),
+}: {
+  idToken: string;
+  endpoints: CustomerAccountEndpoints;
+  expectedNonce?: string;
+  now?: number;
+}): Promise<IdTokenClaims> {
   const parts = idToken.split(".");
-  if (parts.length < 2) return {};
-  try {
-    const payload = Buffer.from(
-      parts[1].replace(/-/g, "+").replace(/_/g, "/"),
-      "base64"
-    ).toString("utf8");
-    return JSON.parse(payload) as IdTokenClaims;
-  } catch {
-    return {};
+  if (parts.length !== 3) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "Shopify zwróciło id_token w niepoprawnym formacie."
+    );
   }
+  const header = decodeJwtPart<IdTokenHeader>(parts[0]);
+  const claims = decodeJwtPart<IdTokenClaims>(parts[1]);
+  if (header.alg !== "RS256" || !header.kid) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "id_token używa niedozwolonego algorytmu podpisu."
+    );
+  }
+
+  const keys = await getJwks(endpoints.jwksUri);
+  const jwk = keys.find(
+    (candidate) => candidate.kid === header.kid && candidate.kty === "RSA"
+  );
+  if (!jwk) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "Nie znaleziono klucza podpisu id_token."
+    );
+  }
+  const verified = verifySignature(
+    "RSA-SHA256",
+    Buffer.from(`${parts[0]}.${parts[1]}`),
+    createPublicKey({ key: jwk, format: "jwk" }),
+    Buffer.from(parts[2], "base64url")
+  );
+  if (!verified) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "Podpis id_token jest nieprawidłowy."
+    );
+  }
+
+  const nowSeconds = Math.floor(now / 1000);
+  const audience = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
+  if (claims.iss !== endpoints.issuer || !audience.includes(getClientId())) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "Issuer lub audience id_token nie zgadza się z konfiguracją."
+    );
+  }
+  if (!claims.exp || claims.exp <= nowSeconds) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "id_token wygasł."
+    );
+  }
+  if (claims.iat && claims.iat > nowSeconds + 60) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "id_token ma nieprawidłowy czas wystawienia."
+    );
+  }
+  if (expectedNonce && (!claims.nonce || !safeEqual(claims.nonce, expectedNonce))) {
+    throw new CustomerAuthError(
+      "invalid_state",
+      "Nonce w id_token nie zgadza się z żądaniem logowania."
+    );
+  }
+  return claims;
 }
 
 async function postToken(
@@ -171,9 +310,8 @@ async function postToken(
   return parsed;
 }
 
-function toSession(token: TokenResponse): CustomerSession {
+function toSession(token: TokenResponse, claims: IdTokenClaims = {}): CustomerSession {
   const lifetime = typeof token.expires_in === "number" ? token.expires_in : 3600;
-  const claims = token.id_token ? decodeIdTokenClaims(token.id_token) : {};
 
   return {
     accessToken: token.access_token!,
@@ -214,17 +352,18 @@ export async function exchangeCodeForSession({
 
   const token = await postToken(endpoints.tokenEndpoint, body);
 
-  if (token.id_token) {
-    const { nonce } = decodeIdTokenClaims(token.id_token);
-    if (nonce && nonce !== expectedNonce) {
-      throw new CustomerAuthError(
-        "invalid_state",
-        "Nonce w id_token nie zgadza się z żądaniem logowania."
-      );
-    }
+  if (!token.id_token) {
+    throw new CustomerAuthError(
+      "token_exchange_failed",
+      "Shopify nie zwróciło wymaganego id_token."
+    );
   }
-
-  return toSession(token);
+  const claims = await verifyIdToken({
+    idToken: token.id_token,
+    endpoints,
+    expectedNonce,
+  });
+  return toSession(token, claims);
 }
 
 /**
@@ -268,7 +407,10 @@ export async function refreshSession({
     );
   }
 
-  const session = toSession(token);
+  const claims = token.id_token
+    ? await verifyIdToken({ idToken: token.id_token, endpoints })
+    : {};
+  const session = toSession(token, claims);
   if (!session.refreshToken) session.refreshToken = refreshToken;
   return session;
 }

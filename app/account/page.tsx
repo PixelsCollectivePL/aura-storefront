@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -53,10 +53,13 @@ function AccountPageInner() {
   // resolved on the client yet → render the loading state to avoid a
   // flash of dashboard → logged-out on cold loads.
   // [shopify-ready]: replace with Customer Account session check.
-  const [mockAuthed, setMockAuthed] = useState<boolean | null>(null);
-  useEffect(() => {
-    setMockAuthed(isMockAuthenticated());
-  }, []);
+  const mockAuthed = useSyncExternalStore(
+    // The mock auth flag changes through full-page navigation, so there is no
+    // live external event to subscribe to. Faza 3 removes this seam entirely.
+    () => () => {},
+    isMockAuthenticated,
+    () => null
+  );
 
   // Debug `?state=` query param overrides everything (Vercel preview testing).
   const debugOverride: AccountViewState | null =
