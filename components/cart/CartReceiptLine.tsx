@@ -42,6 +42,11 @@ export function CartReceiptLine({
 
   const lineTotal = line.price * line.quantity;
   const numberStr = String(index + 1).padStart(2, "0");
+  // Shopify reports the variant as no longer purchasable — the merchant
+  // took it off sale or it sold out after this line was added. Checkout
+  // would reject it, so the customer has to learn about it here, not
+  // three steps later on Shopify's payment page.
+  const soldOut = line.availableForSale === false;
   const dividerCls = isLast
     ? "border-b-2 border-ink"
     : "border-b border-dashed border-line-strong";
@@ -87,6 +92,8 @@ export function CartReceiptLine({
           >
             {line.variantTitle}
           </div>
+
+          {soldOut && <SoldOutNote size="mobile" />}
 
           <div className="flex items-center gap-3">
             <QuantitySelector
@@ -156,6 +163,8 @@ export function CartReceiptLine({
         >
           {line.variantTitle}
         </div>
+
+        {soldOut && <SoldOutNote size="desktop" />}
         <button
           type="button"
           onClick={() => onRemove(line.id)}
@@ -181,6 +190,30 @@ export function CartReceiptLine({
         {lineTotal}
         <span className="text-[12px] ml-0.5">zł</span>
       </span>
+    </div>
+  );
+}
+
+/**
+ * "No longer available" note.
+ *
+ * Styled as an existing mono meta line rather than a new alert component,
+ * so the receipt keeps its look. Deliberately quiet but unmissable: the
+ * customer needs to remove the line, and Shopify checkout will refuse it
+ * otherwise.
+ */
+function SoldOutNote({ size }: { size: "desktop" | "mobile" }) {
+  return (
+    <div
+      role="status"
+      className={cn(
+        "inline-flex items-center gap-1.5 uppercase text-brand-deep mb-2",
+        size === "mobile" ? "text-[9.5px]" : "text-[10px]"
+      )}
+      style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.14em" }}
+    >
+      <Icon.close size={size === "mobile" ? 10 : 11} />
+      Wyprzedane — usuń, aby przejść do kasy
     </div>
   );
 }

@@ -210,7 +210,8 @@ export function CartReceiptSummary({
           >
             Bezpieczna kasa Shopify
             <br />
-            BLIK · Karta · Apple Pay · Google Pay
+            {/* No method list on purpose — see `koszyk.checkoutNote`. */}
+            Metody płatności wybierzesz w kasie
             <br />
             ─────────────
             <br />

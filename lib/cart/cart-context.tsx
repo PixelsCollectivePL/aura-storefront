@@ -200,6 +200,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const checkout = useCallback(async () => {
+    // Shopify checkout refuses a cart containing an unpurchasable variant.
+    // Stopping here means the customer fixes it on our page instead of
+    // hitting a wall on the payment step.
+    const soldOut = cart?.lines.filter((l) => l.availableForSale === false) ?? [];
+    if (soldOut.length > 0) {
+      const message =
+        soldOut.length === 1
+          ? `„${soldOut[0].title}" jest już wyprzedana. Usuń ją z koszyka, aby przejść do kasy.`
+          : "Część pozycji jest już wyprzedana. Usuń je z koszyka, aby przejść do kasy.";
+      setError(message);
+      showToast(message);
+      return;
+    }
+
     setIsPending(true);
     setError(null);
     try {
@@ -222,7 +236,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsPending(false);
     }
-  }, [applyResult]);
+  }, [applyResult, cart?.lines]);
 
   const openCart = useCallback(() => setIsOpen(true), []);
   const closeCart = useCallback(() => setIsOpen(false), []);

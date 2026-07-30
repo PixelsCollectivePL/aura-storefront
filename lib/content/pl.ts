@@ -373,7 +373,11 @@ export const CONTENT = {
     // Checkout
     checkoutCta: "Przejdź do kasy",
     checkoutCtaWithAmount: (amount: string): string => `Przejdź do kasy · ${amount}`,
-    checkoutNote: "Bezpieczna kasa Shopify · płatność BLIK, kartą, Apple Pay",
+    // Deliberately does NOT list payment methods. The available methods are
+    // configured in Shopify and can change on their own (Shopify activates
+    // local methods automatically), so any list hardcoded here goes stale
+    // and promises the customer something the checkout may not offer.
+    checkoutNote: "Bezpieczna kasa Shopify · metody płatności wybierzesz w kasie",
 
     continueShopping: "Wróć do zakupów",
 
