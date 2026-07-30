@@ -20,7 +20,6 @@ export default async function KontoPage() {
     <AccountDashboard
       customer={customer}
       orders={orders}
-      subscription={null}
       stats={stats}
       tastedBlends={tastedBlends}
     />

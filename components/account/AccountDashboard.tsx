@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Starburst } from "@/components/brand/Starburst";
 import { AccountStatusPill } from "@/components/account/AccountStatusPill";
 import { AccountMiniBag } from "@/components/account/AccountMiniBag";
 import { AcctIcon } from "@/components/account/AccountIcons";
@@ -12,14 +11,21 @@ import type {
   AccountCustomer,
   AccountOrder,
   AccountStats,
-  AccountSubscription,
   AccountTastedBlend,
+  FulfillmentStatus,
 } from "@/types/account";
+
+/** Shopify's fulfillment status in the customer's language. */
+const FULFILLMENT_LABEL: Record<FulfillmentStatus, string> = {
+  unfulfilled: "w przygotowaniu",
+  in_transit: "w drodze",
+  delivered: "dostarczone",
+  cancelled: "anulowane",
+};
 
 interface AccountDashboardProps {
   customer: AccountCustomer;
   orders: AccountOrder[];
-  subscription: AccountSubscription | null;
   stats: AccountStats;
   tastedBlends: AccountTastedBlend[];
 }
@@ -29,7 +35,6 @@ export function AccountDashboard({
   orders,
   stats,
   tastedBlends,
-  subscription,
 }: AccountDashboardProps) {
   const router = useRouter();
   const { reorder, isPending } = useCart();
@@ -43,6 +48,9 @@ export function AccountDashboard({
       : paths[section] ?? "/konto");
   };
   const lastOrder = orders[0];
+  // Derived from real order history, not from a metafield we do not have.
+  // `tastedBlends` arrives sorted by how often each blend was ordered.
+  const favouriteBlend = tastedBlends[0];
   const previous  = orders.slice(1, 4);
 
   return (
@@ -169,10 +177,22 @@ export function AccountDashboard({
                   >
                     Status dostawy
                   </div>
+                  {/* The status comes from Shopify's fulfillmentStatus, not
+                      from a hardcoded "w drodze" — this strip used to claim
+                      the parcel was in transit for every order that had a
+                      tracking number, including delivered and cancelled ones. */}
                   <div className="text-[13px] text-ink leading-tight">
-                    <strong>{lastOrder.tracking.carrier} · w drodze</strong>
-                    {" · dostawa "}
-                    {lastOrder.tracking.eta ? <strong className="tabular-nums">{formatDateShort(lastOrder.tracking.eta)}</strong> : null}
+                    <strong>
+                      {lastOrder.tracking.carrier} · {FULFILLMENT_LABEL[lastOrder.fulfillmentStatus]}
+                    </strong>
+                    {lastOrder.tracking.eta ? (
+                      <>
+                        {" · dostawa "}
+                        <strong className="tabular-nums">
+                          {formatDateShort(lastOrder.tracking.eta)}
+                        </strong>
+                      </>
+                    ) : null}
                   </div>
                 </div>
                 {/* [shopify-ready]: open lastOrder.tracking.url */}
@@ -216,117 +236,26 @@ export function AccountDashboard({
             </span>
           </article>
 
-          {/* Subscription (dark) */}
-          <article className="hidden" aria-hidden="true">
-            <div className="absolute -top-10 -right-10 opacity-50 pointer-events-none" aria-hidden="true">
-              <Starburst color="var(--aura-orange)" size={180} points={12} depth={0.22} />
-            </div>
-            <div className="relative z-10 flex flex-col flex-1">
-              {subscription ? (
-                <>
-                  <p
-                    className="text-brand uppercase mb-2"
-                    style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em" }}
-                  >
-                    Aktywna subskrypcja
-                  </p>
-                  <h2
-                    className="font-extrabold text-[26px] lg:text-[30px] leading-[0.95] tracking-[-0.025em] mb-1"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {subscription.blendName}
-                  </h2>
-                  <div
-                    className="text-white/55 uppercase mb-6"
-                    style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.12em" }}
-                  >
-                    {subscription.variantTitle} · co {subscription.cadenceWeeks} tyg.
-                  </div>
-
-                  <div className="py-4 border-t border-dashed border-white/20 border-b flex justify-between items-end mb-5">
-                    <div>
-                      <div
-                        className="text-white/55 uppercase mb-1"
-                        style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
-                      >
-                        Następna wysyłka
-                      </div>
-                      <div
-                        className="font-extrabold tabular-nums text-[24px] leading-none tracking-[-0.025em]"
-                        style={{ fontFamily: "var(--font-display)" }}
-                      >
-                        {formatDateShort(subscription.nextShipmentAt)}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div
-                        className="text-white/55 uppercase mb-1"
-                        style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.12em" }}
-                      >
-                        Cykl
-                      </div>
-                      <div className="font-semibold tabular-nums text-[16px]">
-                        {formatPrice(subscription.priceCycle)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2 mt-auto">
-                    <button
-                      type="button"
-                      onClick={() => navigate("subscriptions")}
-                      className="w-full h-11 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                    >
-                      Zarządzaj subskrypcją
-                    </button>
-                    <button
-                      type="button"
-                      className="w-full h-10 inline-flex items-center justify-center rounded-pill border border-white/25 bg-transparent text-white text-[13px] font-semibold hover:bg-white/8 transition-colors duration-[120ms] cursor-pointer focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
-                      /* [future-integration]: subscriptionContractSkip */
-                    >
-                      Pomiń najbliższą
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p
-                    className="text-brand uppercase mb-2"
-                    style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em" }}
-                  >
-                    Subskrypcja
-                  </p>
-                  <h2
-                    className="font-extrabold text-[26px] lg:text-[30px] leading-[0.95] tracking-[-0.025em] mb-3"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    Twój rytuał czeka.
-                  </h2>
-                  <p className="text-white/70 text-[14px] leading-[1.5] mb-6">
-                    Regularna dostawa świeżo palonej kawy — taniej, bez kończenia
-                    się ziarna w środku tygodnia.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => navigate("subscriptions")}
-                    className="mt-auto w-full h-11 inline-flex items-center justify-center rounded-pill bg-brand text-white border border-brand text-[13.5px] font-semibold hover:bg-brand-deep hover:border-brand-deep transition-colors duration-[120ms] cursor-pointer"
-                  >
-                    Uruchom subskrypcję
-                  </button>
-                </>
-              )}
-            </div>
-          </article>
         </div>
       )}
 
-      {/* ── Quick-stats strip ── */}
+      {/* ── Quick-stats strip ──
+          Every tile is derived from real Shopify order history. "Punkty
+          Aura" used to render `loyaltyPoints ?? 0` — a loyalty programme
+          that has no backend, showing a confident "0" to a customer who
+          might well have earned something. It is now labelled as what it
+          is: a feature that does not exist yet. */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-md overflow-hidden">
         {[
-          { eb: "Zamówień",      v: String(stats.ordersTotal),                       sub: "łącznie" },
-          { eb: "W tym roku",    v: String(stats.ordersThisYear),                    sub: "paczek" },
-          { eb: "Ulubiony blend", v: stats.favoriteBlend ?? "—",                      sub: stats.favoriteBlendSubtitle ?? "" },
-          { eb: "Punkty Aura",   v: String(stats.loyaltyPoints ?? 0),                sub: `do następnej: ${stats.loyaltyPointsToNext ?? 0}` },
+          { eb: "Zamówień",       v: String(stats.ordersTotal),    sub: "łącznie",  future: false },
+          { eb: "W tym roku",     v: String(stats.ordersThisYear), sub: "paczek",   future: false },
+          {
+            eb: "Ulubiony blend",
+            v: favouriteBlend?.name ?? "—",
+            sub: favouriteBlend ? `zamówiony ${favouriteBlend.timesOrdered}×` : "po pierwszym zamówieniu",
+            future: false,
+          },
+          { eb: "Punkty Aura",    v: "Wkrótce",                    sub: "program lojalnościowy w przygotowaniu", future: true },
         ].map((s) => (
           <div key={s.eb} className="bg-paper p-5">
             <div
@@ -336,7 +265,10 @@ export function AccountDashboard({
               {s.eb}
             </div>
             <div
-              className="font-extrabold leading-none tracking-[-0.025em] text-[24px] lg:text-[28px] mb-1.5"
+              className={cn(
+                "font-extrabold leading-none tracking-[-0.025em] mb-1.5",
+                s.future ? "text-muted text-[18px] lg:text-[20px]" : "text-[24px] lg:text-[28px]"
+              )}
               style={{ fontFamily: "var(--font-display)" }}
             >
               {s.v}

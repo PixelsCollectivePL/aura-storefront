@@ -188,16 +188,23 @@ export function AccountOrderDetails({ order }: AccountOrderDetailsProps) {
                 {order.tracking.eta ? "Szacowana dostawa" : "Status przesyłki"}
               </div>
 
-              {/* Timeline — driven by order.tracking.timeline; falls back to
-                  a 4-step default progression if the carrier hasn't reported
-                  events yet (e.g. on fresh orders). */}
+              {/* Timeline — real fulfillment events only.
+                  This used to fall back to an invented four-step progression
+                  with "W drodze" hardcoded as the current step. Since the
+                  Customer Account API mapping never populates `timeline`,
+                  that fallback fired for *every* order: the panel told
+                  customers their parcel was in transit on the strength of
+                  nothing at all. If Shopify has no events, we say so. */}
               {(() => {
-                const timeline = order.tracking?.timeline ?? [
-                  { status: "placed",     label: "Zamówienie przyjęte" },
-                  { status: "packed",     label: "Paczka spakowana" },
-                  { status: "in_transit", label: "W drodze",          current: true },
-                  { status: "delivered",  label: "Dostarczone" },
-                ];
+                const timeline = order.tracking?.timeline;
+                if (!timeline || timeline.length === 0) {
+                  return (
+                    <p className="text-[13px] text-white/70 leading-[1.5]">
+                      Przewoźnik nie przekazał jeszcze szczegółów przesyłki.
+                      Aktualny status znajdziesz pod numerem poniżej.
+                    </p>
+                  );
+                }
                 return (
                   <ol className="flex flex-col">
                     {timeline.map((s, i, arr) => {
