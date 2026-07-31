@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { AuraMark } from "@/components/brand/AuraMark";
 import { CONTENT } from "@/lib/content/pl";
-import { cn } from "@/lib/utils";
 
 const { footer: f } = CONTENT;
 
@@ -60,8 +59,8 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 export function Footer() {
   return (
     <footer className="bg-ink text-white">
-      {/* ── Desktop: brand + 3 nav cols + newsletter ── */}
-      <div className="hidden lg:grid grid-cols-[1.8fr_1fr_1fr_1fr_1.6fr] gap-14 px-14 py-16 border-b border-white/10">
+      {/* ── Desktop: brand + 3 nav cols ── */}
+      <div className="hidden lg:grid grid-cols-[1.8fr_1fr_1fr_1fr] gap-14 px-14 py-16 border-b border-white/10">
         {/* Brand */}
         <div>
           <Link
@@ -88,40 +87,6 @@ export function Footer() {
           </div>
         ))}
 
-        {/* Newsletter */}
-        <div>
-          <FooterHeading>{f.newsletterHeading}</FooterHeading>
-          <p className="text-[13px] text-white/50 mb-4 leading-[1.65]">
-            {f.newsletterDesc}
-          </p>
-          <form onSubmit={(e) => e.preventDefault()} className="flex gap-0">
-            <input
-              type="email"
-              placeholder={f.emailPlaceholder}
-              aria-label="Adres e-mail"
-              className={cn(
-                "flex-1 min-w-0 px-4 py-3 text-[13px]",
-                "border border-white/20 border-r-0 rounded-l-sm",
-                "bg-white/8 text-white placeholder:text-white/30",
-                "outline-none focus:border-brand",
-                "transition-colors duration-[120ms]"
-              )}
-            />
-            <button
-              type="submit"
-              className={cn(
-                "px-5 py-3 text-[12.5px] font-semibold shrink-0",
-                "bg-brand text-white border border-brand rounded-r-sm",
-                "hover:bg-brand-deep hover:border-brand-deep",
-                "transition-colors duration-[120ms]",
-                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
-                "cursor-pointer whitespace-nowrap"
-              )}
-            >
-              {f.subscribeCta}
-            </button>
-          </form>
-        </div>
       </div>
 
       {/* ── Mobile: stacked ── */}
@@ -147,24 +112,6 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Newsletter mobile */}
-        <div className="border-t border-white/10 pt-8">
-          <FooterHeading>{f.newsletterHeading}</FooterHeading>
-          <form onSubmit={(e) => e.preventDefault()} className="flex gap-0">
-            <input
-              type="email"
-              placeholder={f.emailPlaceholder}
-              aria-label="Adres e-mail"
-              className="flex-1 min-w-0 px-4 py-3 text-[13px] border border-white/20 border-r-0 rounded-l-sm bg-white/8 text-white placeholder:text-white/30 outline-none focus:border-brand transition-colors duration-[120ms]"
-            />
-            <button
-              type="submit"
-              className="px-4 py-3 text-[12.5px] font-semibold bg-brand text-white border border-brand rounded-r-sm hover:bg-brand-deep transition-colors duration-[120ms] cursor-pointer"
-            >
-              {f.subscribeMobileCta}
-            </button>
-          </form>
-        </div>
       </div>
 
       {/* ── Legal bar ── */}
@@ -175,18 +122,6 @@ export function Footer() {
         >
           © {new Date().getFullYear()} Aura Coffee Roasters · Warszawa
         </p>
-        <div className="flex gap-5">
-          {f.legalLinks.map((label) => (
-            <Link
-              key={label}
-              href="#"
-              className="text-[11px] text-white/30 hover:text-white/60 transition-colors duration-[120ms]"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              {label}
-            </Link>
-          ))}
-        </div>
       </div>
     </footer>
   );

@@ -2,14 +2,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { ProductCard } from "@/components/product/ProductCard";
 import { TrustStrip } from "@/components/layout/TrustStrip";
-import { NewsletterForm } from "@/components/marketing/NewsletterForm";
 import { Icon } from "@/components/ui/Icon";
 import { CONTENT } from "@/lib/content/pl";
 import { getFeaturedProducts } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 
 const { homepage: hp } = CONTENT;
-const { hero: h, shelf, quality: q, newsletter: nl } = hp;
+const { hero: h, shelf, quality: q } = hp;
 
 export default async function HomePage() {
   // Prefers a Shopify collection named `featured`, falls back to the
@@ -324,59 +323,6 @@ export default async function HomePage() {
       </section>
 
 
-      {/* ══════════════════════════════════════════
-          NEWSLETTER CTA — orange bg, single strong accent
-      ══════════════════════════════════════════ */}
-      <section
-        className="overflow-hidden border-t border-brand/20"
-        style={{ background: "var(--aura-orange)" }}
-      >
-        <div className="px-5 lg:px-20 py-16 lg:py-[100px] lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
-
-          {/* Left — text content */}
-          <div>
-            <p
-              className="text-[11px] tracking-[0.14em] uppercase text-white/70 mb-5"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              {nl.eyebrow}
-            </p>
-            <h2
-              className="text-white font-extrabold leading-[0.92] tracking-[-0.035em] mb-5"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(40px, 7vw, 88px)",
-              }}
-            >
-              {nl.headingL1}
-              <br />
-              {nl.headingL2}
-            </h2>
-            <p className="text-[15px] lg:text-[16px] text-white/85 leading-[1.55] max-w-[440px] mb-8 lg:mb-10">
-              {nl.body}
-            </p>
-
-            {/* Email form — UI shell, no backend [shopify-ready] */}
-            <NewsletterForm />
-
-            <p className="mt-4 text-[11.5px] text-white/50">{nl.disclaimer}</p>
-          </div>
-
-          {/* Right — illustration, bleeds to edge */}
-          <div className="hidden lg:block" aria-hidden="true" style={{ marginRight: "-80px" }}>
-            <div className="relative w-full" style={{ aspectRatio: "1 / 1" }}>
-              <Image
-                src="/assets/brand/aura-footer-illustration.png"
-                alt=""
-                fill
-                className="object-contain object-right"
-                sizes="(min-width: 1024px) 55vw, 0px"
-              />
-            </div>
-          </div>
-
-        </div>
-      </section>
     </>
   );
 }

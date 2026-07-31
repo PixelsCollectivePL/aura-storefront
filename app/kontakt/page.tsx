@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTENT } from "@/lib/content/pl";
-import { ContactFormShell } from "@/components/contact/ContactFormShell";
 import { cn } from "@/lib/utils";
 
 const { kontakt: c, meta } = CONTENT;
@@ -65,7 +64,7 @@ export default function KontaktPage() {
           </dl>
         </div>
 
-        {/* Form */}
+        {/* Direct contact — no form is shown until a real delivery backend exists. */}
         <div>
           <div className="mb-6">
             <p className="text-eyebrow mb-3">{c.formEyebrow}</p>
@@ -76,7 +75,20 @@ export default function KontaktPage() {
               {c.formHeading}
             </h2>
           </div>
-          <ContactFormShell />
+          <p className="text-[15px] text-muted leading-[1.65] max-w-[540px] mb-7">
+            {c.formNote}
+          </p>
+          <Link
+            href="mailto:hello@aura.coffee"
+            className={cn(
+              "inline-flex h-12 items-center justify-center px-8",
+              "rounded-pill bg-brand text-white text-[14px] font-semibold",
+              "hover:bg-brand-deep transition-colors duration-[120ms]",
+              "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
+            )}
+          >
+            Napisz na hello@aura.coffee
+          </Link>
         </div>
       </section>
 

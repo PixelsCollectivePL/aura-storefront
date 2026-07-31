@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getSiteUrl } from "@/lib/seo/site-url";
 
 /**
  * `/robots.txt`
@@ -9,9 +10,8 @@ import type { MetadataRoute } from "next";
  * for indexing with no content and no way to opt out.
  */
 export default function robots(): MetadataRoute.Robots {
-  // No sitemap yet — one gets added with the launch checklist, together
-  // with AURA_ALLOW_INDEXING=true.
   return {
     rules: [{ userAgent: "*", allow: "/" }],
+    sitemap: new URL("/sitemap.xml", getSiteUrl()).toString(),
   };
 }

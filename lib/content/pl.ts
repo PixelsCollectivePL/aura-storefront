@@ -23,11 +23,6 @@ export const CONTENT = {
     tagline: "Mikropalarnia specialty. Palona w Warszawie, wysyłana w ciągu 72 godzin.",
     shopHeading: "Kawy",
     companyHeading: "Firma",
-    newsletterHeading: "Bądź na bieżąco",
-    newsletterDesc: "Nowe loty, terminy palenia i przewodniki po parzeniu — kiedy to ma znaczenie.",
-    emailPlaceholder: "twój@email.com",
-    subscribeCta: "Zapisz się",
-    subscribeMobileCta: "OK",
     companyLinks: [
       { label: "O nas", href: "/about" },
       { label: "Przewodnik parzenia", href: "/brewing" },
@@ -35,7 +30,6 @@ export const CONTENT = {
       { label: "Stockiści", href: "/stockists" },
       { label: "Kontakt", href: "mailto:hello@aura.coffee" },
     ],
-    legalLinks: ["Polityka prywatności", "Śledzenie przesyłki", "Zwroty"],
   },
 
   homepage: {
@@ -71,16 +65,6 @@ export const CONTENT = {
         { n: "02", title: "Direct trade", desc: "Znamy farmy z imienia." },
         { n: "03", title: "< 14 dni",     desc: "Od bębna do twoich drzwi." },
       ],
-    },
-
-    newsletter: {
-      eyebrow: "Bądź pierwszy",
-      headingL1: "Nowy drop.",
-      headingL2: "Dowiesz się pierwszy.",
-      body: "Świeże info o nowych blendach, terminach palenia i limitowanych lotach — prosto na skrzynkę.",
-      placeholder: "twój@email.com",
-      cta: "Zapisz się",
-      disclaimer: "Bez spamu. Wypisujesz się jednym kliknięciem.",
     },
 
     // legacy keys kept for old sections still referencing them
@@ -225,7 +209,7 @@ export const CONTENT = {
     /** Shown when the catalogue itself is empty — no products published. */
     emptyCatalog: {
       heading: "Wkrótce sypniemy ziarnem.",
-      body: "Pierwsze loty są jeszcze w palarni. Zajrzyj za chwilę — albo zapisz się na newsletter, damy znać.",
+      body: "Pierwsze loty są jeszcze w palarni. Zajrzyj do nas ponownie za chwilę.",
     },
   },
 
@@ -435,7 +419,7 @@ export const CONTENT = {
       { t: "Darmowa od 150 zł", s: "Polska · InPost · 2–3 dni" },
       { t: "Wysyłka w 72 h", s: "Od daty palenia" },
       { t: "30-dniowy zwrot", s: "Nieotwarte paczki · pełny zwrot" },
-      { t: "Klarna · 3 raty", s: "0% prowizji, w koszyku" },
+      { t: "Bezpieczna kasa", s: "Obsługiwana przez Shopify" },
     ],
     topics: [
       { label: "Wysyłka", count: "03", href: "#shipping" },
@@ -701,7 +685,7 @@ export const CONTENT = {
         id: "platnosci",
         label: "Płatności",
         items: [
-          { q: "Jakie metody płatności akceptujecie?", a: "Karta, BLIK, Przelewy24, Apple Pay, Google Pay. W kasie pojawi się też opcja Klarna 3 raty 0% — wkrótce." },
+          { q: "Jakie metody płatności akceptujecie?", a: "Aktualnie dostępne metody płatności zobaczysz w kasie Shopify przed złożeniem zamówienia." },
           { q: "Czy mogę zapłacić przy odbiorze?", a: "Nie — realizujemy tylko płatności z góry. Pomaga nam to utrzymać harmonogram palenia i planować zamówienia u farmerów." },
         ],
       },
@@ -734,19 +718,9 @@ export const CONTENT = {
       { label: "Adres", value: "ul. Targowa 22, 03-734 Warszawa", href: "https://maps.google.com/?q=ul.+Targowa+22+Warszawa" },
       { label: "Godziny", value: "Pon–Pt 10:00–17:00", href: "" },
     ],
-    formEyebrow: "— Formularz",
+    formEyebrow: "— Kontakt",
     formHeading: "Napisz do nas.",
-    formNote: "Formularz UI — podpięcie backendu wkrótce. Teraz najszybciej przez hello@aura.coffee.",
-    formFields: {
-      name: "Imię i nazwisko",
-      email: "Adres e-mail",
-      subject: "Temat",
-      message: "Wiadomość",
-      submit: "Wyślij wiadomość",
-      successHeading: "Dziękujemy!",
-      successBody: "Odpiszemy na podany adres e-mail w ciągu dnia roboczego.",
-      placeholderNote: "Ten formularz jest wersją demonstracyjną — wiadomość nie zostanie wysłana.",
-    },
+    formNote: "Najszybciej skontaktujesz się z nami bezpośrednio przez e-mail. Zwykle odpowiadamy w ciągu jednego dnia roboczego.",
   },
 
   meta: {

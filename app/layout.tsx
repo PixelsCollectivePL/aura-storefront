@@ -8,6 +8,7 @@ import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Toast } from "@/components/ui/Toast";
 import { getProducts } from "@/lib/shopify";
 import { ROBOTS_METADATA } from "@/lib/seo/indexing";
+import { getSiteUrl } from "@/lib/seo/site-url";
 import "./globals.css";
 
 // Fractul is the single type family for the whole shop — it covers every role
@@ -28,6 +29,7 @@ const fractul = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: getSiteUrl(),
   title: "Aura Coffee Roasters",
   description:
     "Kawa speciality palona w małych partiach co środę w Warszawie. Wysyłamy w ciągu 72 godzin od palenia.",
