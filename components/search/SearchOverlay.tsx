@@ -43,6 +43,7 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
   useEffect(() => {
     if (!isOpen) return;
 
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     const timer = setTimeout(() => inputRef.current?.focus(), 50);
     document.body.style.overflow = "hidden";
 
@@ -76,6 +77,7 @@ export function SearchOverlay({ isOpen, onClose, products }: SearchOverlayProps)
       clearTimeout(timer);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
+      previouslyFocused?.focus();
     };
   }, [isOpen, closeSearch]);
 

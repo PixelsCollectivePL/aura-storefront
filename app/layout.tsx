@@ -54,10 +54,15 @@ export default async function RootLayout({
       className={`${fractul.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
+        <a href="#main-content" className="skip-link">
+          Przejdź do treści
+        </a>
         <CartProvider>
           <AnnouncementBar />
           <Header products={products} />
-          <main className="flex-1">{children}</main>
+          <main id="main-content" className="flex-1" tabIndex={-1}>
+            {children}
+          </main>
           <Footer />
           <CartDrawer />
           <Toast />
