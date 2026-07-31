@@ -107,10 +107,37 @@ export async function fetchCartAction(): Promise<CartResult> {
   const cartId = await readCartId();
   if (!cartId) return EMPTY;
 
+  // A cookie that is not a Cart GID cannot be anything but corrupted — a
+  // truncated value, a stale format, someone editing it by hand. Asking
+  // Shopify about it only earns a GraphQL error, so drop it here.
+  if (!cartId.startsWith("gid://shopify/Cart/")) {
+    console.error("[aura/cart] ciasteczko koszyka ma nieprawidłowy format — usuwam.");
+    await clearCartId();
+    return EMPTY;
+  }
+
   const result = await getCart(cartId, await cartContext());
 
   // Expired or already ordered: forget it silently, the shopper starts fresh.
-  if (!result.cart && !result.error) await clearCartId();
+  if (!result.cart && !result.error) {
+    await clearCartId();
+    return EMPTY;
+  }
+
+  // Hydration failures are deliberately NOT reported to the customer.
+  //
+  // This runs on mount, on every page — the shopper asked for nothing and
+  // can do nothing about a Shopify outage, so a toast saying "spróbuj
+  // ponownie" is noise they cannot act on. Worse, before this the failing
+  // cookie also survived, so the error reappeared on every single page
+  // load until they cleared their cookies by hand.
+  //
+  // Mutations still surface their errors: there the customer clicked
+  // something and deserves to know it did not happen.
+  if (result.error) {
+    console.error(`[aura/cart] hydracja koszyka nie powiodła się: ${result.error}`);
+    return EMPTY;
+  }
 
   return result;
 }
