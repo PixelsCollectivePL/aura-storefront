@@ -352,6 +352,57 @@
   transform: translateY(0);
 }
 
+/*
+ * Aura route transition — a restrained editorial cut rather than an app-like
+ * slide. Only the incoming page moves; persistent navigation and cart state do
+ * not remount. Transform + opacity keep it on the compositor.
+ */
+@keyframes aura-route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes aura-route-rule {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  35% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+.route-transition {
+  position: relative;
+  min-height: 100%;
+  animation: aura-route-enter 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.route-transition::before {
+  content: "";
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  pointer-events: none;
+  background: var(--aura-orange);
+  transform-origin: left center;
+  animation: aura-route-rule 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 /* ─── Base layer ─── */
 @layer base {
   *:focus {
@@ -383,6 +434,11 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+    }
+
+    .route-transition,
+    .route-transition::before {
+      animation: none !important;
     }
   }
 }

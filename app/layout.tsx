@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { RouteTransition } from "@/components/layout/RouteTransition";
 import { CartProvider } from "@/lib/cart/cart-context";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Toast } from "@/components/ui/Toast";
@@ -61,7 +62,7 @@ export default async function RootLayout({
           <AnnouncementBar />
           <Header products={products} />
           <main id="main-content" className="flex-1" tabIndex={-1}>
-            {children}
+            <RouteTransition>{children}</RouteTransition>
           </main>
           <Footer />
           <CartDrawer />
