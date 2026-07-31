@@ -7,6 +7,7 @@ import { FilterDrawer } from "@/components/product/FilterDrawer";
 import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
 import { matchesOrigin, matchesRoast } from "@/lib/product/taxonomy";
+import type { CategoryOption } from "@/lib/product/categories";
 import type { Product } from "@/types/product";
 
 const { listing: l } = CONTENT;
@@ -20,9 +21,16 @@ function applyFilters(
 ): Product[] {
   let result = products;
 
-  // Category (tag-based, single-select)
+  // Category (single-select). A Shopify collection handle matches
+  // `product.collections`; the legacy tag list matches `product.tags`.
+  // Checking both means the switch to collections cannot strand a
+  // storefront whose products are still categorised by tag.
   if (category !== "all") {
-    result = result.filter((p) => p.tags?.includes(category));
+    result = result.filter(
+      (p) =>
+        p.collections?.some((c) => c.handle === category) ||
+        p.tags?.includes(category)
+    );
   }
 
   // Drawer filters
@@ -64,10 +72,20 @@ interface ProductsBrowserProps {
    * private token.
    */
   products: Product[];
+  /**
+   * Category chips, built from Shopify collections by
+   * `app/produkty/page.tsx`. Empty when the merchant has no collections
+   * yet — the chip row then falls back to the hardcoded tag categories in
+   * `lib/content/pl.ts`, so the page never loses its filters.
+   */
+  categories?: CategoryOption[];
 }
 
 // ── Browser (client) ───────────────────────────────────────────────────
-export function ProductsBrowser({ products }: ProductsBrowserProps) {
+export function ProductsBrowser({ products, categories }: ProductsBrowserProps) {
+  // Shopify collections when there are any, the legacy tag list otherwise.
+  const categoryOptions = categories?.length ? categories : l.categories;
+
   const [category, setCategory] = useState("all");
   const [drawerFilters, setDrawerFilters] = useState<Set<string>>(new Set());
   const [sortBy, setSortBy] = useState("featured");
@@ -83,7 +101,7 @@ export function ProductsBrowser({ products }: ProductsBrowserProps) {
   const activeChips = useMemo(() => {
     const chips: Array<{ key: string; label: string }> = [];
     if (category !== "all") {
-      const cat = l.categories.find((c) => c.value === category);
+      const cat = categoryOptions.find((c) => c.value === category);
       if (cat) chips.push({ key: `cat:${category}`, label: cat.label });
     }
     drawerFilters.forEach((v) => {
@@ -94,7 +112,7 @@ export function ProductsBrowser({ products }: ProductsBrowserProps) {
       if (opt) chips.push({ key: v, label: opt.label });
     });
     return chips;
-  }, [category, drawerFilters]);
+  }, [category, drawerFilters, categoryOptions]);
 
   const drawerActiveCount = useMemo(() => drawerFilters.size, [drawerFilters]);
 
@@ -203,7 +221,7 @@ export function ProductsBrowser({ products }: ProductsBrowserProps) {
             )}
             style={{ scrollbarWidth: "none" }}
           >
-            {l.categories.map((cat) => {
+            {categoryOptions.map((cat) => {
               const active = category === cat.value;
               return (
                 <button

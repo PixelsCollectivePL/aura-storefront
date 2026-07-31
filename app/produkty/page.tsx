@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ProductsBrowser } from "@/components/product/ProductsBrowser";
-import { getProducts } from "@/lib/shopify";
+import { getCollections, getProducts } from "@/lib/shopify";
+import { buildCategoryOptions } from "@/lib/product/categories";
 import { CONTENT } from "@/lib/content/pl";
 
 const { listing: l, meta } = CONTENT;
@@ -22,7 +23,19 @@ export const metadata: Metadata = {
  * `revalidateTag("shopify:products")` invalidates this page too.
  */
 export default async function ProduktyPage() {
-  const products = await getProducts({ first: 50 });
+  // Both reads degrade to empty rather than throwing, so a Shopify outage
+  // renders the empty state instead of a 500.
+  const [products, collections] = await Promise.all([
+    getProducts({ first: 50 }),
+    getCollections(),
+  ]);
 
-  return <ProductsBrowser products={products} />;
+  const allLabel = l.categories.find((c) => c.value === "all")?.label ?? "Wszystko";
+
+  return (
+    <ProductsBrowser
+      products={products}
+      categories={buildCategoryOptions(collections, allLabel)}
+    />
+  );
 }
