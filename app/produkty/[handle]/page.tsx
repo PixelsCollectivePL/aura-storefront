@@ -94,6 +94,16 @@ export default async function ProductDetailPage({
   // Gallery leads with featuredImage (the mapper already put it first).
   const mainImage = product.images[0] ?? product.featuredImage;
 
+  // The sensory strip is entirely metafield-driven. Work out up front which
+  // columns actually have content so the section can size itself — and
+  // vanish altogether on a product that has none.
+  const hasNotes = product.notes.length > 0;
+  const hasRoast = Boolean(product.roastLevel.trim());
+  const hasBrewing = Boolean(
+    product.recommendedBrew || (product.brewing && product.brewing.length > 0)
+  );
+  const sensoryColumns = [hasNotes, hasRoast, hasBrewing].filter(Boolean).length;
+
   const related = (await getProducts({ first: 8 }))
     .filter((p) => p.handle !== product.handle)
     .slice(0, 4);
@@ -204,15 +214,19 @@ export default async function ProductDetailPage({
               </div>
             )}
 
-            {/* Lot code — bottom left */}
-            <div className="absolute bottom-4 left-4 z-20">
-              <span
-                className="text-[10px] tracking-[0.12em] uppercase text-muted/70"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
-                {CONTENT.product.lotPrefix} {product.lotCode}
-              </span>
-            </div>
+            {/* Lot code — bottom left. Comes from the `custom.lot_code`
+                metafield, so it is omitted rather than printing a bare
+                "LOT" with nothing after it. */}
+            {product.lotCode && (
+              <div className="absolute bottom-4 left-4 z-20">
+                <span
+                  className="text-[10px] tracking-[0.12em] uppercase text-muted/70"
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  {CONTENT.product.lotPrefix} {product.lotCode}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Thumbnail strip — one slot per real Shopify image.
@@ -268,14 +282,10 @@ export default async function ProductDetailPage({
               {product.shortName}
             </h1>
 
-            {/* Placeholder rating */}
-            <div
-              className="flex items-center gap-1.5 mt-3 text-[12.5px] text-muted"
-              aria-label={t.ratingsAriaLabel}
-            >
-              <StarRow />
-              <span>{t.ratingsPlaceholder}</span>
-            </div>
+            {/* No rating block: Aura has no reviews yet, and inventing an
+                average with a review count is a prohibited commercial
+                practice, not a placeholder. Returns when a real review
+                source is connected. */}
           </div>
 
           {/* Description */}
@@ -295,11 +305,23 @@ export default async function ProductDetailPage({
 
       {/* ══════════════════════════════════════════════════════════
           SENSORY STRIP — notes / roast / brewing
+
+          Every column here is fed by a `custom.*` metafield. A product
+          without them used to render three headings over nothing, plus a
+          lone "." where the roast level should be — the page looked
+          broken rather than sparse. Each column now appears only when it
+          has something to say, and the whole strip disappears when none
+          of them do.
       ══════════════════════════════════════════════════════════ */}
+      {(hasNotes || hasRoast || hasBrewing) && (
       <section className="bg-paper-2 border-t border-line mt-16 lg:mt-20 px-5 lg:px-14 py-14 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-16">
+        <div className={cn(
+          "grid grid-cols-1 gap-10 lg:gap-16",
+          sensoryColumns === 3 ? "lg:grid-cols-3" : sensoryColumns === 2 ? "lg:grid-cols-2" : ""
+        )}>
 
           {/* Nuty smakowe */}
+          {hasNotes && (
           <div>
             <p className="text-[11px] tracking-[0.14em] uppercase text-brand mb-4" style={{ fontFamily: "var(--font-mono)" }}>{t.notesEyebrow}</p>
             <h3
@@ -324,8 +346,10 @@ export default async function ProductDetailPage({
               ))}
             </div>
           </div>
+          )}
 
           {/* Profil palenia */}
+          {hasRoast && (
           <div>
             <p className="text-[11px] tracking-[0.14em] uppercase text-brand mb-4" style={{ fontFamily: "var(--font-mono)" }}>{t.roastEyebrow}</p>
             <h3
@@ -336,8 +360,10 @@ export default async function ProductDetailPage({
             </h3>
             <RoastBar level={roastLevel} />
           </div>
+          )}
 
           {/* Pod jakie parzenie */}
+          {hasBrewing && (
           <div>
             <p className="text-[11px] tracking-[0.14em] uppercase text-brand mb-4" style={{ fontFamily: "var(--font-mono)" }}>{t.brewingEyebrow}</p>
             {product.recommendedBrew && (
@@ -362,8 +388,10 @@ export default async function ProductDetailPage({
               </div>
             )}
           </div>
+          )}
         </div>
       </section>
+      )}
 
       {/* ══════════════════════════════════════════════════════════
           ORIGIN STORY
@@ -576,21 +604,3 @@ function Spec({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** 5 orange star icons — placeholder rating display. */
-function StarRow() {
-  return (
-    <span className="flex gap-0.5" aria-hidden="true">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <svg
-          key={i}
-          width="11"
-          height="11"
-          viewBox="0 0 24 24"
-          fill="var(--aura-orange)"
-        >
-          <path d="M12 2l3 6.5 7 .9-5.2 4.6L18 21l-6-3.4L6 21l1.2-7L2 9.4l7-.9z" />
-        </svg>
-      ))}
-    </span>
-  );
-}

@@ -9,7 +9,7 @@ import { getFeaturedProducts } from "@/lib/shopify";
 import { cn } from "@/lib/utils";
 
 const { homepage: hp } = CONTENT;
-const { hero: h, shelf, quality: q, reviews: rv, newsletter: nl } = hp;
+const { hero: h, shelf, quality: q, newsletter: nl } = hp;
 
 export default async function HomePage() {
   // Prefers a Shopify collection named `featured`, falls back to the
@@ -323,76 +323,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          REVIEWS — paper-2 bg
-      ══════════════════════════════════════════ */}
-      <section className="bg-paper border-t border-line px-5 lg:px-14 py-16 lg:py-[100px]">
-        {/* Head */}
-        <div className="flex items-end justify-between mb-8 lg:mb-12 gap-4">
-          <div>
-            <p
-              className="text-[11px] tracking-[0.14em] uppercase text-brand mb-3"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              {rv.eyebrow}
-            </p>
-            <h2
-              className="font-extrabold tracking-[-0.025em] leading-[0.96] text-ink"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(28px, 4.5vw, 56px)",
-              }}
-            >
-              {rv.heading}
-            </h2>
-          </div>
-        </div>
-
-        {/* Review cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-line">
-          {rv.items.map((review) => (
-            <div
-              key={review.name}
-              className="bg-paper px-6 py-7 lg:px-8 lg:py-9 flex flex-col gap-5"
-            >
-              {/* Stars */}
-              <div className="flex gap-1" aria-label="5 gwiazdek">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg
-                    key={i}
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="var(--aura-orange)"
-                    aria-hidden="true"
-                  >
-                    <path d="M12 2l3 6.5 7 .9-5.2 4.6L18 21l-6-3.4L6 21l1.2-7L2 9.4l7-.9z" />
-                  </svg>
-                ))}
-              </div>
-
-              {/* Quote */}
-              <p className="text-[15px] lg:text-[16px] font-medium text-ink leading-[1.45] tracking-[-0.01em] flex-1">
-                &ldquo;{review.text}&rdquo;
-              </p>
-
-              {/* Author */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-[13px] font-semibold text-ink">{review.name}</p>
-                  <p className="text-[13px] text-muted">{review.location}</p>
-                </div>
-                <span
-                  className="text-[10px] tracking-[0.1em] uppercase text-muted"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  {review.product}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* ══════════════════════════════════════════
           NEWSLETTER CTA — orange bg, single strong accent

@@ -73,31 +73,6 @@ export const CONTENT = {
       ],
     },
 
-    reviews: {
-      eyebrow: "Co mówią",
-      heading: "4.9 ★ z 2 140 ocen.",
-      items: [
-        {
-          text: "Najlepsza kawa do mleka, jaką piłem. THREE robi robotę przy każdym espresso.",
-          name: "Kuba",
-          location: "Warszawa",
-          product: "THREE",
-        },
-        {
-          text: "Zamówiłem w czwartek, dotarło w sobotę — jeszcze ciepłe z palarni. 10/10.",
-          name: "Piotr W.",
-          location: "Kraków",
-          product: "ONE",
-        },
-        {
-          text: "ONE to coś innego. Te nuty jaśminu są naprawdę wyczuwalne. Kupuję od roku.",
-          name: "Marta K.",
-          location: "Gdańsk",
-          product: "TWO",
-        },
-      ],
-    },
-
     newsletter: {
       eyebrow: "Bądź pierwszy",
       headingL1: "Nowy drop.",
@@ -262,8 +237,6 @@ export const CONTENT = {
     addToCart: "Wrzuć do koszyka",
     addToCartWithPrice: (): string => "Wrzuć do koszyka",
     outOfStock: "Niedostępne",
-    ratingsPlaceholder: "4.9 · 312 ocen",
-    ratingsAriaLabel: "Ocena 4.9 na 5",
     notesEyebrow: "Nuty smakowe",
     roastEyebrow: "Profil palenia",
     roastMin: "Jasne",
