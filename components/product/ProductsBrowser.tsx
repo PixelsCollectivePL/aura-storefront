@@ -6,24 +6,10 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { FilterDrawer } from "@/components/product/FilterDrawer";
 import { CONTENT } from "@/lib/content/pl";
 import { cn } from "@/lib/utils";
+import { matchesOrigin, matchesRoast } from "@/lib/product/taxonomy";
 import type { Product } from "@/types/product";
 
 const { listing: l } = CONTENT;
-
-// ── Roast matching helpers ─────────────────────────────────────────────
-const ROAST_MATCH: Record<string, string[]> = {
-  light:       ["light"],
-  medium:      ["medium ·", "medium-light"],
-  "medium-dark": ["medium-dark"],
-  dark:        ["dark ·", "dark"],
-};
-
-function matchesRoast(product: Product, roastValue: string): boolean {
-  const level = product.roastLevel.toLowerCase();
-  return (ROAST_MATCH[roastValue] ?? [roastValue]).some((kw) =>
-    level.startsWith(kw)
-  );
-}
 
 // ── Filtering & sorting ────────────────────────────────────────────────
 function applyFilters(
@@ -54,7 +40,7 @@ function applyFilters(
         roastActive.some((r) => matchesRoast(p, r));
       const originOk =
         originActive.length === 0 ||
-        originActive.some((o) => p.origin.includes(o));
+        originActive.some((o) => matchesOrigin(p, o));
       return roastOk && originOk;
     });
   }

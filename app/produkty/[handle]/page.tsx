@@ -13,22 +13,12 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { ProductBuyBox } from "@/components/product/ProductBuyBox";
 import { Icon } from "@/components/ui/Icon";
 import { CONTENT, getCategoryLabel } from "@/lib/content/pl";
+import { roastScale } from "@/lib/product/taxonomy";
 import { cn } from "@/lib/utils";
 
 const { pdp: t } = CONTENT;
 
 // ── Helpers ────────────────────────────────────────────────────────────
-
-/** Map roastLevel string → 1–5 scale for the RoastBar. */
-function getRoastLevel(roastLevel: string): number {
-  const l = roastLevel.toLowerCase();
-  if (l.startsWith("light-medium") || l.startsWith("light ·")) return 1;
-  if (l.startsWith("light")) return 1;
-  if (l.startsWith("medium-dark")) return 4;
-  if (l.startsWith("medium")) return 3;
-  if (l.startsWith("dark")) return 5;
-  return 3;
-}
 
 // getCategoryLabel imported directly from @/lib/content/pl (named export)
 
@@ -88,7 +78,7 @@ export default async function ProductDetailPage({
   const product = await getProductByHandle(handle);
   if (!product) notFound();
 
-  const roastLevel = getRoastLevel(product.roastLevel);
+  const roastLevel = roastScale(product.roastLevel);
   const categoryLabel = getCategoryLabel(product.tags);
   const accent = getAccent(product.handle);
   // Gallery leads with featuredImage (the mapper already put it first).
