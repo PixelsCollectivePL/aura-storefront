@@ -352,11 +352,7 @@
   transform: translateY(0);
 }
 
-/*
- * Aura route transition — a restrained editorial cut rather than an app-like
- * slide. Only the incoming page moves; persistent navigation and cart state do
- * not remount. Transform + opacity keep it on the compositor.
- */
+/* Aura route transition: a full-screen brand curtain plus a quiet page reveal. */
 @keyframes aura-route-enter {
   from {
     opacity: 0;
@@ -368,39 +364,76 @@
   }
 }
 
-@keyframes aura-route-rule {
-  0% {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-  35% {
-    opacity: 0.8;
-    transform: scaleX(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scaleX(1);
-  }
+@keyframes aura-curtain-cover {
+  from { transform: translate3d(-101%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes aura-curtain-reveal {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(101%, 0, 0); }
+}
+
+@keyframes aura-curtain-mark-in {
+  from { opacity: 0; transform: translate3d(-18px, 0, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 .route-transition {
   position: relative;
   min-height: 100%;
-  animation: aura-route-enter 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: aura-route-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.route-transition::before {
-  content: "";
-  position: absolute;
-  z-index: 20;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 2px;
+.route-curtain {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
   pointer-events: none;
   background: var(--aura-orange);
-  transform-origin: left center;
-  animation: aura-route-rule 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  visibility: hidden;
+  transform: translate3d(-101%, 0, 0);
+  will-change: transform;
+}
+
+.route-curtain::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  right: 0;
+  width: 8px;
+  background: var(--aura-ink);
+}
+
+.route-curtain[data-phase="covering"] {
+  visibility: visible;
+  animation: aura-curtain-cover 240ms cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+.route-curtain[data-phase="covered"] {
+  visibility: visible;
+  transform: translate3d(0, 0, 0);
+}
+
+.route-curtain[data-phase="revealing"] {
+  visibility: visible;
+  animation: aura-curtain-reveal 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.route-curtain__mark {
+  opacity: 0;
+}
+
+.route-curtain[data-phase="covering"] .route-curtain__mark,
+.route-curtain[data-phase="covered"] .route-curtain__mark {
+  animation: aura-curtain-mark-in 180ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.route-curtain[data-phase="revealing"] .route-curtain__mark {
+  opacity: 1;
 }
 
 /* ─── Base layer ─── */
@@ -437,8 +470,13 @@
     }
 
     .route-transition,
-    .route-transition::before {
+    .route-curtain,
+    .route-curtain__mark {
       animation: none !important;
+    }
+
+    .route-curtain {
+      display: none;
     }
   }
 }

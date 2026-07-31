@@ -3,6 +3,18 @@ import { expect, test } from "@playwright/test";
 test("route content gets the Aura transition on navigation", async ({ page }) => {
   await page.goto("/produkty");
 
+  await page.locator(".route-curtain").evaluate((curtain) => {
+    const observedWindow = window as typeof window & {
+      __auraCurtainPhases?: string[];
+    };
+    observedWindow.__auraCurtainPhases = [];
+    new MutationObserver(() => {
+      observedWindow.__auraCurtainPhases?.push(
+        curtain.getAttribute("data-phase") ?? ""
+      );
+    }).observe(curtain, { attributes: true, attributeFilter: ["data-phase"] });
+  });
+
   const aboutLink = page
     .getByRole("link", { name: "O marce", exact: true })
     .filter({ visible: true })
@@ -12,6 +24,15 @@ test("route content gets the Aura transition on navigation", async ({ page }) =>
 
   const route = page.locator('[data-route="/o-marce"]');
   await expect(route).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as typeof window & { __auraCurtainPhases?: string[] })
+            .__auraCurtainPhases ?? []
+      )
+    )
+    .toEqual(expect.arrayContaining(["covering", "covered", "revealing"]));
   await expect
     .poll(() =>
       route.evaluate((element) =>
