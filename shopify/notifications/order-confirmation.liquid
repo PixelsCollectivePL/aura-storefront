@@ -1,0 +1,4261 @@
+{% assign delivery_method_types = delivery_agreements | map: 'delivery_method_type' | uniq %}
+{% assign has_split_cart = false %}
+{% assign non_none_count = 0 %}
+{% for type in delivery_method_types %}
+  {% unless type == 'none' %}
+    {% assign non_none_count = non_none_count | plus: 1 %}
+  {% endunless %}
+{% endfor %}
+{% if non_none_count > 1 %}
+  {% assign has_split_cart = true %}
+{% endif %}
+
+{% assign non_none_agreements_count = 0 %}
+{% for agreement in delivery_agreements %}
+  {% unless agreement.delivery_method_type == 'none' %}
+    {% assign non_none_agreements_count = non_none_agreements_count | plus: 1 %}
+  {% endunless %}
+{% endfor %}
+
+{% capture email_title %}
+  Dziękujemy za zamówienie!
+{% endcapture %}
+{% capture email_body %}
+  {% if has_pending_payment %}
+    {% if buyer_action_required %}
+      Po dokonaniu płatności otrzymasz e-mail z potwierdzeniem.
+    {% else %}
+      Twoja płatność jest przetwarzana. Poinformujemy Cię e-mailem, kiedy Twoje zamówienie zostanie potwierdzone.
+    {% endif %}
+  {% elsif payment_charged_on_fulfillment %}
+    Cześć {{ customer.first_name }}, otrzymaliśmy zamówienie. Wybrana metoda płatności zostanie obciążona, gdy zamówienie będzie gotowe do realizacji. Powiadomimy Cię, gdy będzie w drodze.
+  {% else %}
+    {% if requires_shipping %}
+      {% if has_split_cart %}
+        {% case split_cart_delivery_method %}
+          {% when 'pick-up' %}
+            Gdy Twoje zamówienie będzie gotowe do odbioru, otrzymasz wiadomość e-mail.
+          {% when 'local' %}
+            Dzień dobry {{ customer.first_name }}, przygotowujemy wysyłkę Twojego zamówienia.
+          {% when 'shipping' %}
+            Przygotowujemy wysyłkę Twojego zamówienia. Powiadomimy Cię, gdy zostanie ono wysłane.
+          {% else %}
+            Przygotowujemy wysyłkę Twojego zamówienia. Powiadomimy Cię, gdy zostanie ono wysłane.
+        {% endcase %}
+      {% else %}
+        {% case delivery_method %}
+          {% when 'pick-up' %}
+            Gdy Twoje zamówienie będzie gotowe do odbioru, otrzymasz wiadomość e-mail.
+          {% when 'local' %}
+            Dzień dobry {{ customer.first_name }}, przygotowujemy wysyłkę Twojego zamówienia.
+          {% else %}
+            Przygotowujemy wysyłkę Twojego zamówienia. Powiadomimy Cię, gdy zostanie ono wysłane.
+        {% endcase %}
+      {% endif %}
+        {% if delivery_instructions != blank  %}
+          <p><b>Informacje o dostawie:</b> {{ delivery_instructions }}</p>
+        {% endif %}
+      {% unless delivery_method_types.size > 1 %}
+        {% if consolidated_estimated_delivery_time %}
+          {% if non_none_agreements_count > 1 %}
+            <h3 class="estimated_delivery__title">Przewidywana dostawa</h3>
+            <p>{{ consolidated_estimated_delivery_time }}</p>
+          {% else %}
+            <p>
+              Przewidywana dostawa <b>{{ consolidated_estimated_delivery_time }}</b>
+            </p>
+          {% endif %}
+        {% endif %}
+      {% endunless %}
+    {% endif %}
+  {% endif %}
+  {% assign gift_card_line_items = line_items | where: "gift_card" %}
+  {% assign found_gift_card_with_recipient_email = false %}
+  {% for line_item in gift_card_line_items %}
+    {% if line_item.properties["__shopify_send_gift_card_to_recipient"] and line_item.properties["Recipient email"] %}
+      {% assign found_gift_card_with_recipient_email = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  {% if found_gift_card_with_recipient_email %}
+    <p>Odbiorca karty prezentowej otrzyma wiadomość e-mail z kodem karty prezentowej.</p>
+  {% elsif gift_card_line_items.first %}
+    <p>Otrzymasz osobne e-maile dla każdej karty prezentowej.</p>
+  {% endif %}
+{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+  <title>{{ email_title }}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" type="text/css" href="/assets/notifications/styles.css">
+  <style>
+    /*
+      Aura - warstwa stylow dla powiadomien transakcyjnych.
+
+      Fractul jest progresywnym ulepszeniem: Apple Mail i iOS Mail honoruja
+      @font-face, Gmail / Outlook / Yahoo go usuwaja. Fallback na
+      Helvetica/Arial jest swiadomy, nie przypadkowy.
+
+      Wszystko ma !important, bo notifications/styles.css Shopify laduje sie
+      wczesniej i miejscami ma wyzsza specyficznosc.
+    */
+    @font-face {
+      font-family: "Fractul";
+      src: url("https://aura-storefront-chi.vercel.app/assets/fonts/Fractul-Regular.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: "Fractul";
+      src: url("https://aura-storefront-chi.vercel.app/assets/fonts/Fractul-SemiBold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 600;
+    }
+    @font-face {
+      font-family: "Fractul";
+      src: url("https://aura-storefront-chi.vercel.app/assets/fonts/Fractul-ExtraBold.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    body, table, td, p, a, span, h1, h2, h3, h4 {
+      font-family: "Fractul", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    }
+
+    body,
+    .body {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background-color: #faf8f4 !important;
+      color: #0e0e0c !important;
+    }
+
+    .container {
+      width: 620px !important;
+      max-width: 620px !important;
+    }
+
+    .header {
+      background-color: #faf8f4 !important;
+      border-top: 8px solid #ff4d17 !important;
+    }
+
+    .header__cell {
+      padding: 32px 0 24px !important;
+      border-bottom: 1px solid #e6e2d8 !important;
+    }
+
+    .shop-name__cell img {
+      display: block !important;
+      width: 168px !important;
+      max-width: 168px !important;
+      height: auto !important;
+    }
+
+    .aura-logo-link {
+      display: inline-block !important;
+      text-decoration: none !important;
+    }
+
+    .order-po-number__container {
+      margin-left: auto !important;
+    }
+
+    .order-number__text,
+    .po-number__text {
+      color: #6e6a60 !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+    }
+
+    .content__cell {
+      padding: 52px 0 44px !important;
+    }
+
+    .content h2 {
+      margin: 0 0 18px !important;
+      color: #0e0e0c !important;
+      font-size: 46px !important;
+      font-weight: 800 !important;
+      line-height: 0.98 !important;
+      letter-spacing: -0.045em !important;
+    }
+
+    /*
+      email_body niesie wlasne elementy blokowe, dlatego markup opakowuje go
+      w div, a nie w akapit - akapit w akapicie jest automatycznie zamykany
+      przez klienta pocztowego, co dawalo nierowne odstepy.
+    */
+    .content__body,
+    .content__body p,
+    .content p {
+      max-width: 540px !important;
+      margin: 0 0 12px !important;
+      color: #6e6a60 !important;
+      font-size: 16px !important;
+      line-height: 1.55 !important;
+    }
+
+    .content__body h3 {
+      margin: 20px 0 6px !important;
+      color: #0e0e0c !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.02em !important;
+    }
+
+    .actions {
+      margin-top: 26px !important;
+    }
+
+    .actions-buttons .button__cell,
+    .button.main-action-cell .button__cell,
+    .button__cell {
+      background-color: #ff4d17 !important;
+      border-radius: 999px !important;
+    }
+
+    .button__text,
+    .button__text:hover,
+    .button__text:active,
+    .button__text:visited {
+      display: block !important;
+      padding: 16px 24px !important;
+      color: #ffffff !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      text-align: center !important;
+      text-decoration: none !important;
+    }
+
+    .button__cell--shop-app {
+      background-color: #0e0e0c !important;
+    }
+
+    .secondary-action-cell,
+    .link__cell {
+      padding-top: 16px !important;
+      color: #6e6a60 !important;
+      font-size: 13px !important;
+    }
+
+    a,
+    a:hover,
+    a:active,
+    a:visited,
+    .link__cell a,
+    .disclaimer__subtext a {
+      color: #e03a04 !important;
+    }
+
+    .section {
+      background-color: #faf8f4 !important;
+    }
+
+    .section__cell {
+      padding: 38px 0 !important;
+      border-top: 1px solid #e6e2d8 !important;
+    }
+
+    .section h3 {
+      margin: 0 0 24px !important;
+      color: #0e0e0c !important;
+      font-size: 25px !important;
+      font-weight: 800 !important;
+      line-height: 1.08 !important;
+      letter-spacing: -0.03em !important;
+    }
+
+    .section h4,
+    .customer-info__item h4 {
+      margin: 0 0 8px !important;
+      color: #0e0e0c !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+
+    .receipt-section .section__cell {
+      padding: 0 0 54px !important;
+      border-top: 0 !important;
+    }
+
+    .receipt-head,
+    .receipt-body {
+      background-color: #ffffff !important;
+    }
+
+    .receipt-heading-cell {
+      padding: 34px 34px 8px !important;
+    }
+
+    .receipt-body > tbody > tr > td {
+      padding: 0 34px 42px !important;
+    }
+
+    .receipt-kicker {
+      margin: 0 0 8px !important;
+      color: #6e6a60 !important;
+      font-size: 10px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.16em !important;
+      line-height: 1.2 !important;
+      text-transform: uppercase !important;
+    }
+
+    .receipt-heading-cell h3 {
+      margin-bottom: 16px !important;
+      font-size: 27px !important;
+    }
+
+    .receipt-burst-cell {
+      padding-left: 6px !important;
+      text-align: right !important;
+      vertical-align: middle !important;
+    }
+
+    .receipt-burst {
+      display: inline-block !important;
+      width: 58px !important;
+      height: 58px !important;
+    }
+
+    /*
+      Zabkowana krawedz. Arial jest wskazany jawnie, bo znak U+25BC musi
+      pochodzic z kroju, ktory go na pewno ma; letter-spacing zostaje na
+      zerze, zeby zaden klient nie nalozyl trojkatow na siebie ani ich nie
+      rozstrzelil, a wysokosc wiersza rowna sie rozmiarowi czcionki, wiec
+      nic nie moze sie przyciac.
+    */
+    .receipt-tear {
+      width: 100% !important;
+      table-layout: fixed !important;
+    }
+
+    .receipt-tear td {
+      height: 16px !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      background-color: #faf8f4 !important;
+      color: #ffffff !important;
+      font-family: Arial, Helvetica, sans-serif !important;
+      font-size: 16px !important;
+      letter-spacing: 0 !important;
+      line-height: 16px !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+    }
+
+    .order-list__item__cell {
+      padding: 18px 0 !important;
+      border-bottom: 1px solid #e6e2d8 !important;
+    }
+
+    .order-list__product-image,
+    .order-list__image {
+      border: 1px solid #e6e2d8 !important;
+      border-radius: 14px !important;
+      background-color: #f3f0e9 !important;
+    }
+
+    .order-list__item-title,
+    .order-list__item-title span {
+      color: #0e0e0c !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+      line-height: 1.35 !important;
+    }
+
+    .order-list__item-variant,
+    .order-list__item-property,
+    .order-list__item-discount-allocation {
+      color: #6e6a60 !important;
+      font-size: 13px !important;
+      line-height: 1.45 !important;
+    }
+
+    .order-list__price-cell,
+    .order-list__item-price {
+      color: #0e0e0c !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+    }
+
+    .subtotal-table {
+      margin-top: 24px !important;
+    }
+
+    .subtotal-line__title,
+    .subtotal-line__value {
+      padding: 7px 0 !important;
+      color: #6e6a60 !important;
+      font-size: 14px !important;
+    }
+
+    .subtotal-line__value {
+      color: #0e0e0c !important;
+      font-weight: 600 !important;
+    }
+
+    /*
+      Jedna kreska, jedna wyeksponowana kwota.
+
+      Style sa celowo ograniczone do --total. Regula :last-child bez tego
+      ograniczenia trafiala takze w ostatni wiersz pierwszej tabeli, przez co
+      linia podatku renderowala sie jak kwota koncowa zamowienia.
+
+      Wielka liczba lada na wlasnym pierwszym wierszu sumy Shopify, a nie na
+      drugiej, recznie dopisanej. Dzieki temu wszystkie warianty Shopify
+      zostaja nietkniete - B2B, terminy platnosci, zaokraglenia gotowkowe,
+      platnosci czesciowe - a kwota pojawia sie dokladnie raz.
+    */
+    .subtotal-table--total {
+      margin-top: 30px !important;
+      padding-top: 26px !important;
+      border-top: 2px dashed #0e0e0c !important;
+    }
+
+    .subtotal-table--total .subtotal-line:first-child .subtotal-line__title,
+    .subtotal-table--total .subtotal-line:first-child .subtotal-line__title span {
+      color: #6e6a60 !important;
+      font-size: 10px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.18em !important;
+      text-transform: uppercase !important;
+      vertical-align: middle !important;
+    }
+
+    .subtotal-table--total .subtotal-line:first-child .subtotal-line__value,
+    .subtotal-table--total .subtotal-line:first-child .subtotal-line__value strong {
+      color: #ff4d17 !important;
+      font-size: 40px !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.045em !important;
+      line-height: 1 !important;
+      vertical-align: middle !important;
+      white-space: nowrap !important;
+    }
+
+    .total-discount,
+    .total-discount--amount {
+      color: #6e6a60 !important;
+      font-size: 13px !important;
+    }
+
+    .aura-receipt-thanks {
+      margin: 22px 0 0 !important;
+      color: #6e6a60 !important;
+      font-size: 10px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.18em !important;
+      line-height: 1.5 !important;
+      text-align: center !important;
+      text-transform: uppercase !important;
+    }
+
+    .customer-info__item {
+      width: 50% !important;
+      padding: 0 24px 24px 0 !important;
+      vertical-align: top !important;
+    }
+
+    .customer-info__item,
+    .customer-info__item p,
+    .customer-info__item-content {
+      color: #6e6a60 !important;
+      font-size: 14px !important;
+      line-height: 1.55 !important;
+    }
+
+    .footer {
+      background-color: #0e0e0c !important;
+    }
+
+    .footer__cell {
+      padding: 32px 0 !important;
+    }
+
+    .disclaimer__subtext {
+      margin: 0 !important;
+      color: #ccc8bf !important;
+      font-size: 12px !important;
+      line-height: 1.55 !important;
+    }
+
+    .disclaimer__subtext a,
+    .disclaimer__subtext a:visited {
+      color: #ffffff !important;
+    }
+
+    @media only screen and (max-width: 640px) {
+      .container {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .header__cell,
+      .content__cell,
+      .section__cell,
+      .footer__cell {
+        padding-right: 22px !important;
+        padding-left: 22px !important;
+      }
+
+      .header__cell {
+        padding-top: 24px !important;
+        padding-bottom: 20px !important;
+      }
+
+      .shop-name__cell img {
+        width: 132px !important;
+      }
+
+      .order-number__text,
+      .po-number__text {
+        font-size: 10px !important;
+      }
+
+      .content__cell {
+        padding-top: 38px !important;
+        padding-bottom: 34px !important;
+      }
+
+      .content h2 {
+        font-size: 36px !important;
+      }
+
+      .content__body,
+      .content__body p,
+      .content p {
+        font-size: 15px !important;
+      }
+
+      .receipt-heading-cell {
+        padding: 26px 20px 6px !important;
+      }
+
+      .receipt-body > tbody > tr > td {
+        padding: 0 20px 34px !important;
+      }
+
+      .receipt-burst,
+      .receipt-burst-cell {
+        width: 48px !important;
+        height: 48px !important;
+      }
+
+      .subtotal-table--total .subtotal-line:first-child .subtotal-line__value,
+      .subtotal-table--total .subtotal-line:first-child .subtotal-line__value strong {
+        font-size: 30px !important;
+      }
+
+      .actions-buttons .button__cell,
+      .actions-buttons .button__cell--primary,
+      .actions-buttons .button__cell--shop-app,
+      .actions-buttons .button__cell--separator {
+        display: block !important;
+        width: 100% !important;
+      }
+
+      .actions-buttons .button__cell--separator {
+        height: 10px !important;
+      }
+
+      .customer-info__item {
+        display: block !important;
+        width: 100% !important;
+        padding-right: 0 !important;
+      }
+    }
+  </style>
+</head>
+
+  <body>
+    <table class="body">
+      <tr>
+        <td>
+          <table class="header row">
+  <tr>
+    <td class="header__cell">
+      <center>
+
+        <table class="container">
+          <tr>
+            <td>
+
+              <table class="row">
+                <tr>
+                  <td class="shop-name__cell">
+                    <a href="{{ shop.url }}" class="aura-logo-link">
+                      <img
+                        src="https://aura-storefront-chi.vercel.app/assets/email/aura-logo.png"
+                        alt="Aura"
+                        width="168"
+                        class="aura-email-logo"
+                      >
+                    </a>
+                  </td>
+
+                    <td>
+                      <table class="order-po-number__container">
+                        <tr>
+                          <td class="order-number__cell">
+                            <span class="order-number__text">
+                              Zamówienie {{ order_name }}
+                            </span>
+                          </td>
+                        </tr>
+                        {%- if po_number %}
+                            <tr>
+                              <td class="po-number__cell">
+                                <span class="po-number__text">
+                                  Numer zamówienia {{ po_number }}
+                                </span>
+                              </td>
+                            </tr>
+                        {%- endif %}
+                      </table>
+                    </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+      </center>
+    </td>
+  </tr>
+</table>
+
+          <table class="row content">
+  <tr>
+    <td class="content__cell">
+      <center>
+        <table class="container">
+          <tr>
+            <td>
+
+            <h2>{{ email_title }}</h2>
+            <div class="content__body">{{ email_body }}</div>
+            {% assign transaction_count = transactions | size %}
+  {% if transaction_count > 0 %}
+    {% for transaction in transactions %}
+      {% if transaction.show_buyer_pending_payment_instructions? %}
+        <p> {{transaction.buyer_pending_payment_notice}} </p>
+        <p>
+        <table class="row">
+          <tr>
+            {% for instruction in transaction.buyer_pending_payment_instructions %}
+              <td>{{ instruction.header }}</td>
+            {% endfor %}
+            <td>Kwota</td>
+          </tr>
+          <tr>
+            {% for instruction in transaction.buyer_pending_payment_instructions %}
+              <td>{{ instruction.value }}</td>
+            {% endfor %}
+            <td>{{transaction.amount | money}}</td>
+          </tr>
+        </table>
+        </p>
+      {% endif %}
+    {% endfor%}
+  {% endif %}
+
+            {% if order_status_url %}
+              {% if shop_app_tracking_url and shop_app_tracking_button_variant_key %}
+                {% if shop_app_tracking_button_variant_key == "track_with_shop" %}
+                <table class="row actions">
+  <tr>
+    <td class="empty-line">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="actions__cell">
+      {% capture shop_logo_img %}<img src="{{ 'mailer/shop_logo.png' | cdn_asset_url }}" alt="Shop" width="42" height="17" class="button__shop-logo">{% endcapture %}
+      <table class="actions-buttons" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="button__cell button__cell--primary" width="50%">
+            <a href="{{ order_status_url }}" class="button__text">Wyświetl swoje zamówienie</a>
+          </td>
+          <td class="button__cell--separator"></td>
+          <td class="button__cell button__cell--shop-app" width="50%">
+            <a href="{{ shop_app_tracking_url }}" class="button__text button__text--shop-app">Śledź zamówienie za pomocą {{ shop_logo_img }}</a>
+          </td>
+        </tr>
+      </table>
+        <div class="actions__group">
+        {% if shop.url %}
+    <table class="link secondary-action-cell">
+      <tr>
+        <td class="link__cell">lub <a href="{{ shop.url }}">Odwiedź nasz sklep</a></td>
+      </tr>
+    </table>
+{% endif %}
+
+        </div>
+    </td>
+  </tr>
+</table>
+
+                {% else %}
+                <table class="row actions">
+  <tr>
+    <td class="empty-line">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="actions__cell">
+      {% capture shop_logo_img %}<img src="{{ 'mailer/shop_logo.png' | cdn_asset_url }}" alt="Shop" width="42" height="17" class="button__shop-logo">{% endcapture %}
+      <table class="actions-buttons" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="button__cell button__cell--primary" width="50%">
+            <a href="{{ order_status_url }}" class="button__text">Wyświetl swoje zamówienie</a>
+          </td>
+          <td class="button__cell--separator"></td>
+          <td class="button__cell button__cell--shop-app" width="50%">
+            <a href="{{ shop_app_tracking_url }}" class="button__text button__text--shop-app">Pobierz, aby śledzić z {{ shop_logo_img }}</a>
+          </td>
+        </tr>
+      </table>
+        <div class="actions__group">
+        {% if shop.url %}
+    <table class="link secondary-action-cell">
+      <tr>
+        <td class="link__cell">lub <a href="{{ shop.url }}">Odwiedź nasz sklep</a></td>
+      </tr>
+    </table>
+{% endif %}
+
+        </div>
+    </td>
+  </tr>
+</table>
+
+                {% endif %}
+              {% else %}
+                <table class="row actions">
+  <tr>
+    <td class="empty-line">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="actions__cell">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td valign="middle">
+            <table class="button main-action-cell">
+              <tr>
+                <td class="button__cell"><a href="{{ order_status_url }}" class="button__text">Wyświetl swoje zamówienie</a></td>
+              </tr>
+            </table>
+          </td>
+          <td valign="middle" style="padding-left: 15px; vertical-align: middle;">
+            {% if shop.url %}
+    <table class="link secondary-action-cell" style="margin-top: 0; vertical-align: middle;">
+      <tr>
+        <td class="link__cell">lub <a href="{{ shop.url }}">Odwiedź nasz sklep</a></td>
+      </tr>
+    </table>
+{% endif %}
+
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+              {% endif %}
+            {% else %}
+              {% if shop.url %}
+    <table class="row actions">
+      <tr>
+        <td class="actions__cell">
+          <table class="button main-action-cell">
+            <tr>
+              <td class="button__cell"><a href="{{ shop.url }}" class="button__text">Odwiedź nasz sklep</a></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+{% endif %}
+
+            {% endif %}
+
+            </td>
+          </tr>
+        </table>
+      </center>
+    </td>
+  </tr>
+</table>
+
+          <table class="row section receipt-section">
+  <tr>
+    <td class="section__cell">
+      <center>
+        <table class="container receipt-head">
+          <tr>
+            <td class="receipt-heading-cell">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td>
+                    <p class="receipt-kicker">Rachunek · {{ order_name }}</p>
+                    <h3>Podsumowanie zamówienia</h3>
+                  </td>
+                  <td class="receipt-burst-cell" width="64">
+                    <img
+                      src="https://aura-storefront-chi.vercel.app/assets/email/aura-star.png"
+                      width="58"
+                      height="58"
+                      alt=""
+                      class="receipt-burst"
+                    >
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table class="container receipt-body">
+          <tr>
+            <td>
+
+            {% if delivery_method_types.size > 1 %}
+
+<table class="row">
+  {% for line in subtotal_line_items %}
+    {% unless line.delivery_agreement %}
+        {% if line.groups.size == 0 %}
+          {% assign legacy_separator = true %}
+
+{% comment %} Skip child add-ons since they will be rendered under the parent line item {% endcomment %}
+{% unless line.nested_line_child? %}
+
+  {% assign is_parent = false %}
+  {% assign is_nested_line_parent = line.nested_line_parent? %}
+  {% if line.bundle_parent? or line.nested_line_parent? %}
+    {% assign is_parent = true %}
+  {% endif %}
+  {% if is_nested_line_parent %}
+    {% assign css_order_list_cell_nested_line_parent_class = 'order-list__parent-cell' %}
+    {% assign css_order_list_parent_image_cell_nested_line_parent_class = 'order-list__nested-parent-image-cell' %}
+  {% endif %}
+
+  <tr class="order-list__item">
+    <td class="order-list__item__cell {{ css_order_list_cell_nested_line_parent_class }}">
+      <table height="100%">
+        <td style="padding-bottom: 0px;">
+          <table height="100%">
+            <tr valign="top">
+              {% if false and is_parent %}
+                <td class="order-list__parent-image-cell {{ css_order_list_parent_image_cell_nested_line_parent_class }}">
+                  {% if line.image %}
+                    <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% else %}
+                <td class="order-list__image-cell">
+                  {% if line.image %}
+                    <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="60" height="60" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+            {% if is_nested_line_parent %}
+              <tr height="100%">
+                <td style="padding: 0px;" height="100%">
+                  <table height="100%">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div class="nested-line-item-spacer"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          {% if line.presentment_title %}
+            {% assign line_title = line.presentment_title %}
+          {% elsif line.title %}
+            {% assign line_title = line.title %}
+          {% else %}
+            {% assign line_title = line.product.title %}
+          {% endif %}
+          {% if line.quantity < line.quantity %}
+            {% capture line_display %}
+              {{ line.quantity }} z {{ line.quantity }}
+            {% endcapture %}
+          {% else %}
+            {% assign line_display = line.quantity %}
+          {% endif %}
+
+          <span class="order-list__item-title">{{ line_title }}&nbsp;&times;&nbsp;{{ line_display }}</span><br/>
+
+          {% if line.variant.title != 'Default Title' and is_parent == false %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% elsif line.variant.title != 'Default Title' and line.nested_line_parent? %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% elsif line.variant.title != 'Default Title' and line.bundle_parent? and false == false %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% endif %}
+
+          {% if false %}
+            {% for child_line in line.bundle_components %}
+
+{% if true %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_display }}&nbsp;&times;&nbsp;{{ item_title }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+            {% endfor %}
+          {% else %}
+            {% for group in line.groups %}
+              {% if group.deliverable? %}
+                <span class="order-list__item-variant">Do: {{ group.display_title }}</span><br/>
+              {% else %}
+                <span class="order-list__item-variant">Część: {{ group.display_title }}</span><br/>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+            {% if line.gift_card and line.properties["__shopify_send_gift_card_to_recipient"] %}
+              {% for property in line.properties %}
+  {% assign property_first_char = property.first | slice: 0 %}
+  {% if property.last != blank and property_first_char != '_' %}
+    <div class="order-list__item-property">
+      <dt>{{ property.first }}:</dt>
+      <dd>
+      {% if property.last contains '/uploads/' %}
+        <a href="{{ property.last }}" class="link" target="_blank">
+        {{ property.last | split: '/' | last }}
+        </a>
+      {% else %}
+        {{ property.last }}
+      {% endif %}
+      </dd>
+    </div>
+  {% endif %}
+{% endfor %}
+
+            {% endif %}
+
+          {% if line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ line.selling_plan_allocation.selling_plan.name }}</span><br/>
+          {% endif %}
+
+          {% if line.refunded_quantity > 0 %}
+            <span class="order-list__item-refunded">Zwrócono koszty</span>
+          {% endif %}
+
+          {% if line.discount_allocations %}
+            {% for discount_allocation in line.discount_allocations %}
+              {% if discount_allocation.discount_application.target_selection != 'all' %}
+              <p>
+                <span class="order-list__item-discount-allocation">
+                  <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                  <span>
+                    {{ discount_allocation.discount_application.title | upcase }}
+                    (-{{ discount_allocation.amount | money }})
+                  </span>
+                </span>
+              </p>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </td>
+          {% if false and is_parent %}
+            <td class="order-list__parent-price-cell">
+          {% else %}
+            <td class="order-list__price-cell">
+          {% endif %}
+          {% if line.original_line_price != line.final_line_price %}
+            <del class="order-list__item-original-price">{{ line.original_line_price | money }}</del>
+          {% endif %}
+            <p class="order-list__item-price">
+              {% if line.final_line_price > 0 %}
+                {{ line.final_line_price | money }}
+                {% if line.unit_price_measurement %}
+  <div class="order-list__unit-price">
+    {{- line.unit_price | unit_price_with_measurement: line.unit_price_measurement -}}
+  </div>
+{% endif %}
+              {% else %}
+                Gratis
+              {% endif %}
+            </p>
+          </td>
+        {% if line.nested_line_parent? %}
+          {% for child_line in line.nested_lines %}
+
+{% if false %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+          <td class="nested-line-item-spacer-cell"style="padding: 1px;">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+          <td class="curved-line-cell-container" valign="top">
+            <div style="width: 0px;">
+              <table>
+                <tr>
+                  <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                    <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="curved-line-cell-container__curvedLine-cell">
+                    <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td class="vertical-line" height="100%">
+            <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+          </td>
+          <td class="nested-line-item-spacer-cell--right">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_title }}&nbsp;&times;&nbsp;{{ item_display }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+          {% endfor %}
+        {% endif %}
+      </table>
+    </td>
+  </tr>
+
+{% endunless %}
+
+        {% endif %}
+    {% endunless %}
+  {% endfor %}
+
+    {% for line_item_group in line_item_groups %}
+      {% unless line_item_group.components.first.delivery_agreement %}
+        {% assign legacy_separator = true %}
+
+{% assign final_line_price = 0 %}
+{% assign original_line_price = 0 %}
+{% assign discount_keys_str = "" %}
+{% assign parent_line_item = nil %}
+
+{% if line_item_group.deliverable? == false %}
+  {% assign line_item_group_class = "order-list__item__cell" %}
+  {% for component in line_item_group.components %}
+    {% assign final_line_price = final_line_price | plus: component.final_line_price %}
+    {% assign original_line_price = original_line_price | plus: component.original_line_price %}
+
+    {% for da in component.discount_allocations %}
+      {% if da.discount_application.target_selection != 'all' %}
+        {% assign discount_key = da.discount_application.title | append: da.discount_application.type %}
+        {% assign discount_keys_str = discount_keys_str | append: discount_key | append: "," %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
+
+{% if line_item_group.deliverable? %}
+  {% assign parent_line_item = line_item_group.parent_sales_line_item %}
+  {% assign final_line_price = parent_line_item.final_line_price %}
+  {% assign original_line_price = parent_line_item.original_line_price %}
+  {% assign line_item_group_class = "order-list__parent_item__cell" %}
+  {% assign padding_bottom_none_class = "padding-bottom-none" %}
+{% endif %}
+
+{% assign discount_keys = discount_keys_str | split: "," | uniq %}
+
+<tr class="order-list__item">
+  <td class="{{ line_item_group_class }}" style="padding: 15px 0 0px 1px;">
+    <table height="100%">
+        <td class="order-list__parent-image-cell">
+          <table height="100%">
+            <tr>
+              <td class="{{ padding_bottom_none_class }}" valign="top">
+                {% if parent_line_item and parent_line_item.image %}
+                  <img src="{{ parent_line_item | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% elsif line_item_group.image %}
+                  <img src="{{ line_item_group | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% else %}
+                  <div class="order-list__no-image-cell">
+                    <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="30" height="30" class="order-list__no-product-image"/>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+            {% if line_item_group.deliverable? == true %}
+              <tr height="100%">
+                <td height="100%" class="parent-vertical-line__cell">
+                  <table height="100%" style="width: auto;">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div style="width: 6px;"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          <table>
+            <tr>
+              <td class="order-list__product-description-cell" colspan="2">
+                <span class="order-list__item-title">{{ line_item_group.display_title }}&nbsp;&times;&nbsp;{{ line_item_group.quantity }}</span><br/>
+                {% if line_item_group.variant and line_item_group.variant.title != 'Default Title' %}
+                  <span class="order-list__item-variant">{{ line_item_group.variant.title }}</span>
+                {% endif %}
+
+                {% if line_item_group.deliverable? %}
+                  {% if parent_line_item.discount_allocations %}
+                    {% for discount_allocation in parent_line_item.discount_allocations %}
+                      {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                          <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                              {{ discount_allocation.discount_application.title | upcase }}
+                              (-{{ discount_allocation.amount | money }})
+                            </span>
+                          </span>
+                        </p>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% else %}
+                  {% for discount_key in discount_keys %}
+                    {% assign discount_amount = 0 %}
+
+                    {% for component in line_item_group.components %}
+                      {% for da in component.discount_allocations %}
+                        {% assign key = da.discount_application.title | append: da.discount_application.type %}
+                        {% if da.discount_application.target_selection != 'all' and key == discount_key %}
+                          {% assign discount_amount = discount_amount | plus: da.amount %}
+                          {% assign discount_title = da.discount_application.title %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
+
+                    <p>
+                      <span class="order-list__item-discount-allocation">
+                        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                        <span>
+                          {{ discount_title | upcase }}
+                          (-{{ discount_amount | money }})
+                        </span>
+                      </span>
+                    </p>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+                <td class="order-list__parent_price-cell">
+                  {% if original_line_price != final_line_price %}
+                    <del class="order-list__item-original-price">{{ original_line_price | money }}</del>
+                  {% endif %}
+                  <p class="order-list__item-price">
+                    {% if final_line_price > 0 %}
+                      {{ final_line_price | money }}
+                    {% else %}
+                      Gratis
+                    {% endif %}
+                  </p>
+                </td>
+            </tr>
+
+            {% if line_item_group.deliverable? == false %}
+              {% for component in line_item_group.components %}
+
+{% if true %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              {% endfor %}
+            {% endif %}
+          </table>
+        </td>
+    </table>
+    {% if line_item_group.deliverable? %}
+      <td height="100%">
+        {% for component in line_item_group.components %}
+
+          <tr>
+            <td class="order-list__deliverable-item" height="100%" style="padding: 0;">
+              <table height="100%">
+
+{% if false %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="nested-line-item-spacer-cell" style="padding: 1px;">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="curved-line-cell-container" valign="top">
+        <div style="width: 0px;">
+            <table>
+                <tr>
+                    <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                        <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="curved-line-cell-container__curvedLine-cell">
+                        <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </td>
+    <td class="vertical-line" height="100%">
+        <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+    </td>
+    <td class="nested-line-item-spacer-cell--right">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              </table>
+            </td>
+          </tr>
+        {% endfor %}
+      </td>
+    {% endif %}
+  </td>
+</tr>
+
+      {% endunless %}
+    {% endfor %}
+</table>
+
+{% if legacy_separator %}
+  <hr class="order-list__delivery-method-type-separator">
+{% endif %}
+
+{% for delivery_agreement in delivery_agreements %}
+  {% if delivery_agreement.line_items != blank %}
+    {% if delivery_agreements.size > 1 %}
+      <h4 class="order-list__delivery-method-type">
+        {{ delivery_agreement.delivery_method_name }} Pozycje
+      </h4>
+      {% if delivery_agreement.delivery_method_type == 'pick-up' %}
+        {% if delivery_agreement.estimated_delivery_date %}
+          <p class="order-list__estimated-delivery">
+            Przewidywana dostawa &middot; <strong>{{ delivery_agreement.estimated_delivery_date }}</strong>
+          </p>
+        {% endif %}
+        <p class="order-list__estimated-delivery">
+          Gdy Twoje zamówienie będzie gotowe do odbioru, otrzymasz wiadomość e-mail.
+        </p>
+      {% elsif delivery_agreement.delivery_method_type == 'shipping'
+        or delivery_agreement.delivery_method_type == 'local'
+        or delivery_agreement.delivery_method_type == 'pickup-point' %}
+        {% if delivery_agreement.presentment_title %}
+          {% if delivery_agreement.estimated_delivery_date %}
+            <p class="order-list__estimated-delivery">
+              Przewidywana dostawa
+            </p>
+          {% endif %}
+          <p class="order-list__estimated-delivery">
+            {{ delivery_agreement.presentment_title }}{% if delivery_agreement.estimated_delivery_date %} &middot; {{ delivery_agreement.estimated_delivery_date }}{% endif %}
+          </p>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+
+    <table class="row">
+      {% for line in delivery_agreement.non_parent_line_items %}
+          {% if line.groups.size == 0 %}
+
+{% comment %} Skip child add-ons since they will be rendered under the parent line item {% endcomment %}
+{% unless line.nested_line_child? %}
+
+  {% assign is_parent = false %}
+  {% assign is_nested_line_parent = line.nested_line_parent? %}
+  {% if line.bundle_parent? or line.nested_line_parent? %}
+    {% assign is_parent = true %}
+  {% endif %}
+  {% if is_nested_line_parent %}
+    {% assign css_order_list_cell_nested_line_parent_class = 'order-list__parent-cell' %}
+    {% assign css_order_list_parent_image_cell_nested_line_parent_class = 'order-list__nested-parent-image-cell' %}
+  {% endif %}
+
+  <tr class="order-list__item">
+    <td class="order-list__item__cell {{ css_order_list_cell_nested_line_parent_class }}">
+      <table height="100%">
+        <td style="padding-bottom: 0px;">
+          <table height="100%">
+            <tr valign="top">
+              {% if false and is_parent %}
+                <td class="order-list__parent-image-cell {{ css_order_list_parent_image_cell_nested_line_parent_class }}">
+                  {% if line.image %}
+                    <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% else %}
+                <td class="order-list__image-cell">
+                  {% if line.image %}
+                    <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="60" height="60" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+            {% if is_nested_line_parent %}
+              <tr height="100%">
+                <td style="padding: 0px;" height="100%">
+                  <table height="100%">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div class="nested-line-item-spacer"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          {% if line.presentment_title %}
+            {% assign line_title = line.presentment_title %}
+          {% elsif line.title %}
+            {% assign line_title = line.title %}
+          {% else %}
+            {% assign line_title = line.product.title %}
+          {% endif %}
+          {% if line.quantity < line.quantity %}
+            {% capture line_display %}
+              {{ line.quantity }} z {{ line.quantity }}
+            {% endcapture %}
+          {% else %}
+            {% assign line_display = line.quantity %}
+          {% endif %}
+
+          <span class="order-list__item-title">{{ line_title }}&nbsp;&times;&nbsp;{{ line_display }}</span><br/>
+
+          {% if line.variant.title != 'Default Title' and is_parent == false %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% elsif line.variant.title != 'Default Title' and line.nested_line_parent? %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% elsif line.variant.title != 'Default Title' and line.bundle_parent? and false == false %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% endif %}
+
+          {% if false %}
+            {% for child_line in line.bundle_components %}
+
+{% if true %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_display }}&nbsp;&times;&nbsp;{{ item_title }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+            {% endfor %}
+          {% else %}
+            {% for group in line.groups %}
+              {% if group.deliverable? %}
+                <span class="order-list__item-variant">Do: {{ group.display_title }}</span><br/>
+              {% else %}
+                <span class="order-list__item-variant">Część: {{ group.display_title }}</span><br/>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+            {% if line.gift_card and line.properties["__shopify_send_gift_card_to_recipient"] %}
+              {% for property in line.properties %}
+  {% assign property_first_char = property.first | slice: 0 %}
+  {% if property.last != blank and property_first_char != '_' %}
+    <div class="order-list__item-property">
+      <dt>{{ property.first }}:</dt>
+      <dd>
+      {% if property.last contains '/uploads/' %}
+        <a href="{{ property.last }}" class="link" target="_blank">
+        {{ property.last | split: '/' | last }}
+        </a>
+      {% else %}
+        {{ property.last }}
+      {% endif %}
+      </dd>
+    </div>
+  {% endif %}
+{% endfor %}
+
+            {% endif %}
+
+          {% if line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ line.selling_plan_allocation.selling_plan.name }}</span><br/>
+          {% endif %}
+
+          {% if line.refunded_quantity > 0 %}
+            <span class="order-list__item-refunded">Zwrócono koszty</span>
+          {% endif %}
+
+          {% if line.discount_allocations %}
+            {% for discount_allocation in line.discount_allocations %}
+              {% if discount_allocation.discount_application.target_selection != 'all' %}
+              <p>
+                <span class="order-list__item-discount-allocation">
+                  <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                  <span>
+                    {{ discount_allocation.discount_application.title | upcase }}
+                    (-{{ discount_allocation.amount | money }})
+                  </span>
+                </span>
+              </p>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </td>
+          {% if false and is_parent %}
+            <td class="order-list__parent-price-cell">
+          {% else %}
+            <td class="order-list__price-cell">
+          {% endif %}
+          {% if line.original_line_price != line.final_line_price %}
+            <del class="order-list__item-original-price">{{ line.original_line_price | money }}</del>
+          {% endif %}
+            <p class="order-list__item-price">
+              {% if line.final_line_price > 0 %}
+                {{ line.final_line_price | money }}
+                {% if line.unit_price_measurement %}
+  <div class="order-list__unit-price">
+    {{- line.unit_price | unit_price_with_measurement: line.unit_price_measurement -}}
+  </div>
+{% endif %}
+              {% else %}
+                Gratis
+              {% endif %}
+            </p>
+          </td>
+        {% if line.nested_line_parent? %}
+          {% for child_line in line.nested_lines %}
+
+{% if false %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+          <td class="nested-line-item-spacer-cell"style="padding: 1px;">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+          <td class="curved-line-cell-container" valign="top">
+            <div style="width: 0px;">
+              <table>
+                <tr>
+                  <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                    <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="curved-line-cell-container__curvedLine-cell">
+                    <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td class="vertical-line" height="100%">
+            <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+          </td>
+          <td class="nested-line-item-spacer-cell--right">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_title }}&nbsp;&times;&nbsp;{{ item_display }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+          {% endfor %}
+        {% endif %}
+      </table>
+    </td>
+  </tr>
+
+{% endunless %}
+
+          {% endif %}
+      {% endfor %}
+
+        {% for line_item_group in delivery_agreement.line_item_groups %}
+          {% if line_item_group.deliverable? == false %}
+
+{% assign final_line_price = 0 %}
+{% assign original_line_price = 0 %}
+{% assign discount_keys_str = "" %}
+{% assign parent_line_item = nil %}
+
+{% if line_item_group.deliverable? == false %}
+  {% assign line_item_group_class = "order-list__item__cell" %}
+  {% for component in line_item_group.components %}
+    {% assign final_line_price = final_line_price | plus: component.final_line_price %}
+    {% assign original_line_price = original_line_price | plus: component.original_line_price %}
+
+    {% for da in component.discount_allocations %}
+      {% if da.discount_application.target_selection != 'all' %}
+        {% assign discount_key = da.discount_application.title | append: da.discount_application.type %}
+        {% assign discount_keys_str = discount_keys_str | append: discount_key | append: "," %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
+
+{% if line_item_group.deliverable? %}
+  {% assign parent_line_item = line_item_group.parent_sales_line_item %}
+  {% assign final_line_price = parent_line_item.final_line_price %}
+  {% assign original_line_price = parent_line_item.original_line_price %}
+  {% assign line_item_group_class = "order-list__parent_item__cell" %}
+  {% assign padding_bottom_none_class = "padding-bottom-none" %}
+{% endif %}
+
+{% assign discount_keys = discount_keys_str | split: "," | uniq %}
+
+<tr class="order-list__item">
+  <td class="{{ line_item_group_class }}" style="padding: 15px 0 0px 1px;">
+    <table height="100%">
+        <td class="order-list__parent-image-cell">
+          <table height="100%">
+            <tr>
+              <td class="{{ padding_bottom_none_class }}" valign="top">
+                {% if parent_line_item and parent_line_item.image %}
+                  <img src="{{ parent_line_item | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% elsif line_item_group.image %}
+                  <img src="{{ line_item_group | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% else %}
+                  <div class="order-list__no-image-cell">
+                    <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="30" height="30" class="order-list__no-product-image"/>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+            {% if line_item_group.deliverable? == true %}
+              <tr height="100%">
+                <td height="100%" class="parent-vertical-line__cell">
+                  <table height="100%" style="width: auto;">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div style="width: 6px;"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          <table>
+            <tr>
+              <td class="order-list__product-description-cell" colspan="2">
+                <span class="order-list__item-title">{{ line_item_group.display_title }}&nbsp;&times;&nbsp;{{ line_item_group.quantity }}</span><br/>
+                {% if line_item_group.variant and line_item_group.variant.title != 'Default Title' %}
+                  <span class="order-list__item-variant">{{ line_item_group.variant.title }}</span>
+                {% endif %}
+
+                {% if line_item_group.deliverable? %}
+                  {% if parent_line_item.discount_allocations %}
+                    {% for discount_allocation in parent_line_item.discount_allocations %}
+                      {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                          <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                              {{ discount_allocation.discount_application.title | upcase }}
+                              (-{{ discount_allocation.amount | money }})
+                            </span>
+                          </span>
+                        </p>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% else %}
+                  {% for discount_key in discount_keys %}
+                    {% assign discount_amount = 0 %}
+
+                    {% for component in line_item_group.components %}
+                      {% for da in component.discount_allocations %}
+                        {% assign key = da.discount_application.title | append: da.discount_application.type %}
+                        {% if da.discount_application.target_selection != 'all' and key == discount_key %}
+                          {% assign discount_amount = discount_amount | plus: da.amount %}
+                          {% assign discount_title = da.discount_application.title %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
+
+                    <p>
+                      <span class="order-list__item-discount-allocation">
+                        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                        <span>
+                          {{ discount_title | upcase }}
+                          (-{{ discount_amount | money }})
+                        </span>
+                      </span>
+                    </p>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+                <td class="order-list__parent_price-cell">
+                  {% if original_line_price != final_line_price %}
+                    <del class="order-list__item-original-price">{{ original_line_price | money }}</del>
+                  {% endif %}
+                  <p class="order-list__item-price">
+                    {% if final_line_price > 0 %}
+                      {{ final_line_price | money }}
+                    {% else %}
+                      Gratis
+                    {% endif %}
+                  </p>
+                </td>
+            </tr>
+
+            {% if line_item_group.deliverable? == false %}
+              {% for component in line_item_group.components %}
+
+{% if true %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              {% endfor %}
+            {% endif %}
+          </table>
+        </td>
+    </table>
+    {% if line_item_group.deliverable? %}
+      <td height="100%">
+        {% for component in line_item_group.components %}
+
+          <tr>
+            <td class="order-list__deliverable-item" height="100%" style="padding: 0;">
+              <table height="100%">
+
+{% if false %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="nested-line-item-spacer-cell" style="padding: 1px;">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="curved-line-cell-container" valign="top">
+        <div style="width: 0px;">
+            <table>
+                <tr>
+                    <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                        <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="curved-line-cell-container__curvedLine-cell">
+                        <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </td>
+    <td class="vertical-line" height="100%">
+        <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+    </td>
+    <td class="nested-line-item-spacer-cell--right">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              </table>
+            </td>
+          </tr>
+        {% endfor %}
+      </td>
+    {% endif %}
+  </td>
+</tr>
+
+          {% else %}
+            {% if delivery_agreement == line_item_group.parent_sales_line_item.delivery_agreement %}
+
+{% assign final_line_price = 0 %}
+{% assign original_line_price = 0 %}
+{% assign discount_keys_str = "" %}
+{% assign parent_line_item = nil %}
+
+{% if line_item_group.deliverable? == false %}
+  {% assign line_item_group_class = "order-list__item__cell" %}
+  {% for component in line_item_group.components %}
+    {% assign final_line_price = final_line_price | plus: component.final_line_price %}
+    {% assign original_line_price = original_line_price | plus: component.original_line_price %}
+
+    {% for da in component.discount_allocations %}
+      {% if da.discount_application.target_selection != 'all' %}
+        {% assign discount_key = da.discount_application.title | append: da.discount_application.type %}
+        {% assign discount_keys_str = discount_keys_str | append: discount_key | append: "," %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
+
+{% if line_item_group.deliverable? %}
+  {% assign parent_line_item = line_item_group.parent_sales_line_item %}
+  {% assign final_line_price = parent_line_item.final_line_price %}
+  {% assign original_line_price = parent_line_item.original_line_price %}
+  {% assign line_item_group_class = "order-list__parent_item__cell" %}
+  {% assign padding_bottom_none_class = "padding-bottom-none" %}
+{% endif %}
+
+{% assign discount_keys = discount_keys_str | split: "," | uniq %}
+
+<tr class="order-list__item">
+  <td class="{{ line_item_group_class }}" style="padding: 15px 0 0px 1px;">
+    <table height="100%">
+        <td class="order-list__parent-image-cell">
+          <table height="100%">
+            <tr>
+              <td class="{{ padding_bottom_none_class }}" valign="top">
+                {% if parent_line_item and parent_line_item.image %}
+                  <img src="{{ parent_line_item | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% elsif line_item_group.image %}
+                  <img src="{{ line_item_group | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% else %}
+                  <div class="order-list__no-image-cell">
+                    <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="30" height="30" class="order-list__no-product-image"/>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+            {% if line_item_group.deliverable? == true %}
+              <tr height="100%">
+                <td height="100%" class="parent-vertical-line__cell">
+                  <table height="100%" style="width: auto;">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div style="width: 6px;"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          <table>
+            <tr>
+              <td class="order-list__product-description-cell" colspan="2">
+                <span class="order-list__item-title">{{ line_item_group.display_title }}&nbsp;&times;&nbsp;{{ line_item_group.quantity }}</span><br/>
+                {% if line_item_group.variant and line_item_group.variant.title != 'Default Title' %}
+                  <span class="order-list__item-variant">{{ line_item_group.variant.title }}</span>
+                {% endif %}
+
+                {% if line_item_group.deliverable? %}
+                  {% if parent_line_item.discount_allocations %}
+                    {% for discount_allocation in parent_line_item.discount_allocations %}
+                      {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                          <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                              {{ discount_allocation.discount_application.title | upcase }}
+                              (-{{ discount_allocation.amount | money }})
+                            </span>
+                          </span>
+                        </p>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% else %}
+                  {% for discount_key in discount_keys %}
+                    {% assign discount_amount = 0 %}
+
+                    {% for component in line_item_group.components %}
+                      {% for da in component.discount_allocations %}
+                        {% assign key = da.discount_application.title | append: da.discount_application.type %}
+                        {% if da.discount_application.target_selection != 'all' and key == discount_key %}
+                          {% assign discount_amount = discount_amount | plus: da.amount %}
+                          {% assign discount_title = da.discount_application.title %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
+
+                    <p>
+                      <span class="order-list__item-discount-allocation">
+                        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                        <span>
+                          {{ discount_title | upcase }}
+                          (-{{ discount_amount | money }})
+                        </span>
+                      </span>
+                    </p>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+                <td class="order-list__parent_price-cell">
+                  {% if original_line_price != final_line_price %}
+                    <del class="order-list__item-original-price">{{ original_line_price | money }}</del>
+                  {% endif %}
+                  <p class="order-list__item-price">
+                    {% if final_line_price > 0 %}
+                      {{ final_line_price | money }}
+                    {% else %}
+                      Gratis
+                    {% endif %}
+                  </p>
+                </td>
+            </tr>
+
+            {% if line_item_group.deliverable? == false %}
+              {% for component in line_item_group.components %}
+
+{% if true %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              {% endfor %}
+            {% endif %}
+          </table>
+        </td>
+    </table>
+    {% if line_item_group.deliverable? %}
+      <td height="100%">
+        {% for component in line_item_group.components %}
+
+          <tr>
+            <td class="order-list__deliverable-item" height="100%" style="padding: 0;">
+              <table height="100%">
+
+{% if false %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="nested-line-item-spacer-cell" style="padding: 1px;">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="curved-line-cell-container" valign="top">
+        <div style="width: 0px;">
+            <table>
+                <tr>
+                    <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                        <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="curved-line-cell-container__curvedLine-cell">
+                        <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </td>
+    <td class="vertical-line" height="100%">
+        <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+    </td>
+    <td class="nested-line-item-spacer-cell--right">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              </table>
+            </td>
+          </tr>
+        {% endfor %}
+      </td>
+    {% endif %}
+  </td>
+</tr>
+
+            {% else %}
+              {% for component in line_item_group.components %}
+
+{% comment %} Skip child add-ons since they will be rendered under the parent line item {% endcomment %}
+{% unless component.nested_line_child? %}
+
+  {% assign is_parent = false %}
+  {% assign is_nested_line_parent = component.nested_line_parent? %}
+  {% if component.bundle_parent? or component.nested_line_parent? %}
+    {% assign is_parent = true %}
+  {% endif %}
+  {% if is_nested_line_parent %}
+    {% assign css_order_list_cell_nested_line_parent_class = 'order-list__parent-cell' %}
+    {% assign css_order_list_parent_image_cell_nested_line_parent_class = 'order-list__nested-parent-image-cell' %}
+  {% endif %}
+
+  <tr class="order-list__item">
+    <td class="order-list__item__cell {{ css_order_list_cell_nested_line_parent_class }}">
+      <table height="100%">
+        <td style="padding-bottom: 0px;">
+          <table height="100%">
+            <tr valign="top">
+              {% if false and is_parent %}
+                <td class="order-list__parent-image-cell {{ css_order_list_parent_image_cell_nested_line_parent_class }}">
+                  {% if component.image %}
+                    <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% else %}
+                <td class="order-list__image-cell">
+                  {% if component.image %}
+                    <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="60" height="60" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+            {% if is_nested_line_parent %}
+              <tr height="100%">
+                <td style="padding: 0px;" height="100%">
+                  <table height="100%">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div class="nested-line-item-spacer"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          {% if component.presentment_title %}
+            {% assign line_title = component.presentment_title %}
+          {% elsif component.title %}
+            {% assign line_title = component.title %}
+          {% else %}
+            {% assign line_title = component.product.title %}
+          {% endif %}
+          {% if line.quantity < component.quantity %}
+            {% capture line_display %}
+              {{ line.quantity }} z {{ component.quantity }}
+            {% endcapture %}
+          {% else %}
+            {% assign line_display = component.quantity %}
+          {% endif %}
+
+          <span class="order-list__item-title">{{ line_title }}&nbsp;&times;&nbsp;{{ line_display }}</span><br/>
+
+          {% if component.variant.title != 'Default Title' and is_parent == false %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span><br/>
+          {% elsif component.variant.title != 'Default Title' and component.nested_line_parent? %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span><br/>
+          {% elsif component.variant.title != 'Default Title' and component.bundle_parent? and false == false %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span><br/>
+          {% endif %}
+
+          {% if false %}
+            {% for child_line in component.bundle_components %}
+
+{% if true %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_display }}&nbsp;&times;&nbsp;{{ item_title }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+            {% endfor %}
+          {% else %}
+            {% for group in component.groups %}
+              {% if group.deliverable? %}
+                <span class="order-list__item-variant">Do: {{ group.display_title }}</span><br/>
+              {% else %}
+                <span class="order-list__item-variant">Część: {{ group.display_title }}</span><br/>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+            {% if component.gift_card and component.properties["__shopify_send_gift_card_to_recipient"] %}
+              {% for property in component.properties %}
+  {% assign property_first_char = property.first | slice: 0 %}
+  {% if property.last != blank and property_first_char != '_' %}
+    <div class="order-list__item-property">
+      <dt>{{ property.first }}:</dt>
+      <dd>
+      {% if property.last contains '/uploads/' %}
+        <a href="{{ property.last }}" class="link" target="_blank">
+        {{ property.last | split: '/' | last }}
+        </a>
+      {% else %}
+        {{ property.last }}
+      {% endif %}
+      </dd>
+    </div>
+  {% endif %}
+{% endfor %}
+
+            {% endif %}
+
+          {% if component.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ component.selling_plan_allocation.selling_plan.name }}</span><br/>
+          {% endif %}
+
+          {% if component.refunded_quantity > 0 %}
+            <span class="order-list__item-refunded">Zwrócono koszty</span>
+          {% endif %}
+
+          {% if component.discount_allocations %}
+            {% for discount_allocation in component.discount_allocations %}
+              {% if discount_allocation.discount_application.target_selection != 'all' %}
+              <p>
+                <span class="order-list__item-discount-allocation">
+                  <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                  <span>
+                    {{ discount_allocation.discount_application.title | upcase }}
+                    (-{{ discount_allocation.amount | money }})
+                  </span>
+                </span>
+              </p>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </td>
+          {% if false and is_parent %}
+            <td class="order-list__parent-price-cell">
+          {% else %}
+            <td class="order-list__price-cell">
+          {% endif %}
+          {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+          {% endif %}
+            <p class="order-list__item-price">
+              {% if component.final_line_price > 0 %}
+                {{ component.final_line_price | money }}
+                {% if component.unit_price_measurement %}
+  <div class="order-list__unit-price">
+    {{- component.unit_price | unit_price_with_measurement: component.unit_price_measurement -}}
+  </div>
+{% endif %}
+              {% else %}
+                Gratis
+              {% endif %}
+            </p>
+          </td>
+        {% if component.nested_line_parent? %}
+          {% for child_line in component.nested_lines %}
+
+{% if false %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+          <td class="nested-line-item-spacer-cell"style="padding: 1px;">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+          <td class="curved-line-cell-container" valign="top">
+            <div style="width: 0px;">
+              <table>
+                <tr>
+                  <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                    <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="curved-line-cell-container__curvedLine-cell">
+                    <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td class="vertical-line" height="100%">
+            <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+          </td>
+          <td class="nested-line-item-spacer-cell--right">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_title }}&nbsp;&times;&nbsp;{{ item_display }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+          {% endfor %}
+        {% endif %}
+      </table>
+    </td>
+  </tr>
+
+{% endunless %}
+
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+    </table>
+
+    {% unless forloop.last %}
+      <hr class="order-list__delivery-method-type-separator">
+    {% endunless %}
+  {% endif %}
+{% endfor %}
+
+            {% else %}
+
+<table class="row">
+  {% for line in subtotal_line_items %}
+    {% if line.groups.size == 0 %}
+
+{% comment %} Skip child add-ons since they will be rendered under the parent line item {% endcomment %}
+{% unless line.nested_line_child? %}
+
+  {% assign is_parent = false %}
+  {% assign is_nested_line_parent = line.nested_line_parent? %}
+  {% if line.bundle_parent? or line.nested_line_parent? %}
+    {% assign is_parent = true %}
+  {% endif %}
+  {% if is_nested_line_parent %}
+    {% assign css_order_list_cell_nested_line_parent_class = 'order-list__parent-cell' %}
+    {% assign css_order_list_parent_image_cell_nested_line_parent_class = 'order-list__nested-parent-image-cell' %}
+  {% endif %}
+
+  <tr class="order-list__item">
+    <td class="order-list__item__cell {{ css_order_list_cell_nested_line_parent_class }}">
+      <table height="100%">
+        <td style="padding-bottom: 0px;">
+          <table height="100%">
+            <tr valign="top">
+              {% if false and is_parent %}
+                <td class="order-list__parent-image-cell {{ css_order_list_parent_image_cell_nested_line_parent_class }}">
+                  {% if line.image %}
+                    <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% else %}
+                <td class="order-list__image-cell">
+                  {% if line.image %}
+                    <img src="{{ line | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                  {% else %}
+                    <div class="order-list__no-image-cell">
+                      <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="60" height="60" class="order-list__no-product-image"/>
+                    </div>
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+            {% if is_nested_line_parent %}
+              <tr height="100%">
+                <td style="padding: 0px;" height="100%">
+                  <table height="100%">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div class="nested-line-item-spacer"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          {% if line.presentment_title %}
+            {% assign line_title = line.presentment_title %}
+          {% elsif line.title %}
+            {% assign line_title = line.title %}
+          {% else %}
+            {% assign line_title = line.product.title %}
+          {% endif %}
+          {% if line.quantity < line.quantity %}
+            {% capture line_display %}
+              {{ line.quantity }} z {{ line.quantity }}
+            {% endcapture %}
+          {% else %}
+            {% assign line_display = line.quantity %}
+          {% endif %}
+
+          <span class="order-list__item-title">{{ line_title }}&nbsp;&times;&nbsp;{{ line_display }}</span><br/>
+
+          {% if line.variant.title != 'Default Title' and is_parent == false %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% elsif line.variant.title != 'Default Title' and line.nested_line_parent? %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% elsif line.variant.title != 'Default Title' and line.bundle_parent? and false == false %}
+            <span class="order-list__item-variant">{{ line.variant.title }}</span><br/>
+          {% endif %}
+
+          {% if false %}
+            {% for child_line in line.bundle_components %}
+
+{% if true %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_display }}&nbsp;&times;&nbsp;{{ item_title }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+            {% endfor %}
+          {% else %}
+            {% for group in line.groups %}
+              {% if group.deliverable? %}
+                <span class="order-list__item-variant">Do: {{ group.display_title }}</span><br/>
+              {% else %}
+                <span class="order-list__item-variant">Część: {{ group.display_title }}</span><br/>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+            {% if line.gift_card and line.properties["__shopify_send_gift_card_to_recipient"] %}
+              {% for property in line.properties %}
+  {% assign property_first_char = property.first | slice: 0 %}
+  {% if property.last != blank and property_first_char != '_' %}
+    <div class="order-list__item-property">
+      <dt>{{ property.first }}:</dt>
+      <dd>
+      {% if property.last contains '/uploads/' %}
+        <a href="{{ property.last }}" class="link" target="_blank">
+        {{ property.last | split: '/' | last }}
+        </a>
+      {% else %}
+        {{ property.last }}
+      {% endif %}
+      </dd>
+    </div>
+  {% endif %}
+{% endfor %}
+
+            {% endif %}
+
+          {% if line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ line.selling_plan_allocation.selling_plan.name }}</span><br/>
+          {% endif %}
+
+          {% if line.refunded_quantity > 0 %}
+            <span class="order-list__item-refunded">Zwrócono koszty</span>
+          {% endif %}
+
+          {% if line.discount_allocations %}
+            {% for discount_allocation in line.discount_allocations %}
+              {% if discount_allocation.discount_application.target_selection != 'all' %}
+              <p>
+                <span class="order-list__item-discount-allocation">
+                  <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                  <span>
+                    {{ discount_allocation.discount_application.title | upcase }}
+                    (-{{ discount_allocation.amount | money }})
+                  </span>
+                </span>
+              </p>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </td>
+          {% if false and is_parent %}
+            <td class="order-list__parent-price-cell">
+          {% else %}
+            <td class="order-list__price-cell">
+          {% endif %}
+          {% if line.original_line_price != line.final_line_price %}
+            <del class="order-list__item-original-price">{{ line.original_line_price | money }}</del>
+          {% endif %}
+            <p class="order-list__item-price">
+              {% if line.final_line_price > 0 %}
+                {{ line.final_line_price | money }}
+                {% if line.unit_price_measurement %}
+  <div class="order-list__unit-price">
+    {{- line.unit_price | unit_price_with_measurement: line.unit_price_measurement -}}
+  </div>
+{% endif %}
+              {% else %}
+                Gratis
+              {% endif %}
+            </p>
+          </td>
+        {% if line.nested_line_parent? %}
+          {% for child_line in line.nested_lines %}
+
+{% if false %}
+  {% assign css_class = 'order-list__bundle-item' %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign css_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign css_class = 'order-list__deliverable-item_abandoned' %}
+  {% assign css_image_class = 'order-list__image-cell--nested-line-item' %}
+  {% assign css_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<table height="100%">
+  <tr class="order-list__item">
+    <td class="{{ css_class }}" height="100%">
+      <table height="100%">
+          <td class="nested-line-item-spacer-cell"style="padding: 1px;">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+          <td class="curved-line-cell-container" valign="top">
+            <div style="width: 0px;">
+              <table>
+                <tr>
+                  <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                    <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="curved-line-cell-container__curvedLine-cell">
+                    <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td class="vertical-line" height="100%">
+            <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+          </td>
+          <td class="nested-line-item-spacer-cell--right">
+            <div class="nested-line-item-spacer"></div>
+          </td>
+        <td class="{{ css_image_class }}">
+          {% if child_line.image %}
+            <img src="{{ child_line | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image small"/>
+          {% else %}
+            <div class="order-list__no-image-cell small">
+              <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+            </div>
+          {% endif %}
+        </td>
+
+        <td class="{{ css_description_class }}">
+          {% if child_line.product.title %}
+            {% assign item_title = child_line.product.title %}
+          {% else %}
+            {% assign item_title = child_line.title %}
+          {% endif %}
+
+          {% assign item_display = child_line.quantity %}
+
+            <span class="order-list__item-title">{{ item_title }}&nbsp;&times;&nbsp;{{ item_display }}</span><br>
+
+          {% if child_line.variant.title != 'Default Title'%}
+            <span class="order-list__item-variant">{{ child_line.variant.title }}</span><br/>
+          {% endif %}
+          {% if child_line.selling_plan_allocation %}
+            <span class="order-list__item-variant">{{ child_line.selling_plan_allocation.selling_plan.name }}</span>
+          {% endif %}
+        </td>
+      </table>
+    </td>
+  </tr>
+</table>
+          {% endfor %}
+        {% endif %}
+      </table>
+    </td>
+  </tr>
+
+{% endunless %}
+
+    {% endif %}
+  {% endfor %}
+  {% for line_item_group in line_item_groups %}
+
+{% assign final_line_price = 0 %}
+{% assign original_line_price = 0 %}
+{% assign discount_keys_str = "" %}
+{% assign parent_line_item = nil %}
+
+{% if line_item_group.deliverable? == false %}
+  {% assign line_item_group_class = "order-list__item__cell" %}
+  {% for component in line_item_group.components %}
+    {% assign final_line_price = final_line_price | plus: component.final_line_price %}
+    {% assign original_line_price = original_line_price | plus: component.original_line_price %}
+
+    {% for da in component.discount_allocations %}
+      {% if da.discount_application.target_selection != 'all' %}
+        {% assign discount_key = da.discount_application.title | append: da.discount_application.type %}
+        {% assign discount_keys_str = discount_keys_str | append: discount_key | append: "," %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endif %}
+
+{% if line_item_group.deliverable? %}
+  {% assign parent_line_item = line_item_group.parent_sales_line_item %}
+  {% assign final_line_price = parent_line_item.final_line_price %}
+  {% assign original_line_price = parent_line_item.original_line_price %}
+  {% assign line_item_group_class = "order-list__parent_item__cell" %}
+  {% assign padding_bottom_none_class = "padding-bottom-none" %}
+{% endif %}
+
+{% assign discount_keys = discount_keys_str | split: "," | uniq %}
+
+<tr class="order-list__item">
+  <td class="{{ line_item_group_class }}" style="padding: 15px 0 0px 1px;">
+    <table height="100%">
+        <td class="order-list__parent-image-cell">
+          <table height="100%">
+            <tr>
+              <td class="{{ padding_bottom_none_class }}" valign="top">
+                {% if parent_line_item and parent_line_item.image %}
+                  <img src="{{ parent_line_item | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% elsif line_item_group.image %}
+                  <img src="{{ line_item_group | img_url: 'compact_cropped' }}" align="left" width="60" height="60" class="order-list__product-image"/>
+                {% else %}
+                  <div class="order-list__no-image-cell">
+                    <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="30" height="30" class="order-list__no-product-image"/>
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+            {% if line_item_group.deliverable? == true %}
+              <tr height="100%">
+                <td height="100%" class="parent-vertical-line__cell">
+                  <table height="100%" style="width: auto;">
+                    <tr>
+                      <td height="100%" class="nested-line-item-spacer-cell">
+                        <div style="width: 6px;"></div>
+                      </td>
+                      <td height="100%" class="parent-vertical-line__cell">
+                        <div class="parent-vertical-line__content"></div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </td>
+
+        <td class="order-list__product-description-cell">
+          <table>
+            <tr>
+              <td class="order-list__product-description-cell" colspan="2">
+                <span class="order-list__item-title">{{ line_item_group.display_title }}&nbsp;&times;&nbsp;{{ line_item_group.quantity }}</span><br/>
+                {% if line_item_group.variant and line_item_group.variant.title != 'Default Title' %}
+                  <span class="order-list__item-variant">{{ line_item_group.variant.title }}</span>
+                {% endif %}
+
+                {% if line_item_group.deliverable? %}
+                  {% if parent_line_item.discount_allocations %}
+                    {% for discount_allocation in parent_line_item.discount_allocations %}
+                      {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                          <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                              {{ discount_allocation.discount_application.title | upcase }}
+                              (-{{ discount_allocation.amount | money }})
+                            </span>
+                          </span>
+                        </p>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% else %}
+                  {% for discount_key in discount_keys %}
+                    {% assign discount_amount = 0 %}
+
+                    {% for component in line_item_group.components %}
+                      {% for da in component.discount_allocations %}
+                        {% assign key = da.discount_application.title | append: da.discount_application.type %}
+                        {% if da.discount_application.target_selection != 'all' and key == discount_key %}
+                          {% assign discount_amount = discount_amount | plus: da.amount %}
+                          {% assign discount_title = da.discount_application.title %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
+
+                    <p>
+                      <span class="order-list__item-discount-allocation">
+                        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                        <span>
+                          {{ discount_title | upcase }}
+                          (-{{ discount_amount | money }})
+                        </span>
+                      </span>
+                    </p>
+                  {% endfor %}
+                {% endif %}
+              </td>
+
+                <td class="order-list__parent_price-cell">
+                  {% if original_line_price != final_line_price %}
+                    <del class="order-list__item-original-price">{{ original_line_price | money }}</del>
+                  {% endif %}
+                  <p class="order-list__item-price">
+                    {% if final_line_price > 0 %}
+                      {{ final_line_price | money }}
+                    {% else %}
+                      Gratis
+                    {% endif %}
+                  </p>
+                </td>
+            </tr>
+
+            {% if line_item_group.deliverable? == false %}
+              {% for component in line_item_group.components %}
+
+{% if true %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if false %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              {% endfor %}
+            {% endif %}
+          </table>
+        </td>
+    </table>
+    {% if line_item_group.deliverable? %}
+      <td height="100%">
+        {% for component in line_item_group.components %}
+
+          <tr>
+            <td class="order-list__deliverable-item" height="100%" style="padding: 0;">
+              <table height="100%">
+
+{% if false %}
+  {% assign order_list_item_class = "order-list__bundle-item" %}
+  {% assign css_image_class = 'order-list__image-cell' %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell' %}
+{% else %}
+  {% assign order_list_product_description_class = 'order-list__product-description-cell--nested-line-item' %}
+  {% if forloop.last %}
+    {% assign css_curved_line_cell_container_class = 'curved-line-cell-container__top-spacer-cell--show-border' %}
+    {% assign css_hide_vertical_line_class = 'vertical-line__content--hide' %}
+    {% assign css_curved_line_cell_container_cell__no_padding_class = 'curved-line-cell-container__cell--no-padding' %}
+  {% endif %}
+{% endif %}
+
+<tr height="100%">
+    <td class="nested-line-item-spacer-cell" style="padding: 1px;">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="curved-line-cell-container" valign="top">
+        <div style="width: 0px;">
+            <table>
+                <tr>
+                    <td class="{{ css_curved_line_cell_container_cell__no_padding_class }}" style="mso-padding-right-alt: 10px;">
+                        <div class="curved-line-cell-container__top-spacer {{ css_curved_line_cell_container_class }}"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="curved-line-cell-container__curvedLine-cell">
+                        <div class="curved-line-cell-container__curvedLine-cell__curvedLine"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </td>
+    <td class="vertical-line" height="100%">
+        <div class="vertical-line__content {{ css_hide_vertical_line_class }}"></div>
+    </td>
+    <td class="nested-line-item-spacer-cell--right">
+        <div class="nested-line-item-spacer"></div>
+    </td>
+    <td class="{{ order_list_item_class }} {{ css_image_class }}" valign="top">
+        {% if component.image %}
+        <img src="{{ component | img_url: 'compact_cropped' }}" align="left" width="40" height="40" class="order-list__product-image"/>
+        {% else %}
+        <div class="order-list__no-image-cell small">
+            <img src="{{ 'notifications/no-image.png' | shopify_asset_url }}" align="left" width="20" height="20" class="order-list__no-product-image small"/>
+        </div>
+        {% endif %}
+    </td>
+
+    <td class="{{ order_list_product_description_class }}" valign="top">
+        {% if component.product.title %}
+            {% assign component_title = component.product.title %}
+        {% else %}
+            {% assign component_title = component.title %}
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            <span class="order-list__item-title">{{ component_title }}&nbsp;&times;&nbsp;{{ component.quantity }}</span>
+        {% else %}
+            <span class="order-list__item-title">{{ component.quantity }}&nbsp;&times;&nbsp;{{ component_title }}</span>
+        {% endif %}
+        <br>
+        {% if component.variant.title != 'Default Title' %}
+            <span class="order-list__item-variant">{{ component.variant.title }}</span>
+        {% endif %}
+
+        {% if line_item_group.deliverable? %}
+            {% if component.discount_allocations %}
+                {% for discount_allocation in component.discount_allocations %}
+                    {% if discount_allocation.discount_application.target_selection != 'all' %}
+                        <p>
+                            <span class="order-list__item-discount-allocation">
+                            <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+                            <span>
+                                {{ discount_allocation.discount_application.title | upcase }}
+                                (-{{ discount_allocation.amount | money }})
+                            </span>
+                            </span>
+                        </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+    </td>
+
+    {% if line_item_group.deliverable? %}
+    <td class="order-list__price-cell">
+        {% if component.original_line_price != component.final_line_price %}
+            <del class="order-list__item-original-price">{{ component.original_line_price | money }}</del>
+        {% endif %}
+        <p class="order-list__item-price">
+        {% if component.final_line_price > 0 %}
+            {{ component.final_line_price | money }}
+        {% else %}
+            Gratis
+        {% endif %}
+        </p>
+    </td>
+    {% endif %}
+</tr>
+
+              </table>
+            </td>
+          </tr>
+        {% endfor %}
+      </td>
+    {% endif %}
+  </td>
+</tr>
+
+  {% endfor %}
+</table>
+
+            {% endif %}
+            <table class="row subtotal-lines">
+  <tr>
+    <td class="subtotal-spacer"></td>
+    <td>
+      <table class="row subtotal-table">
+
+{% assign total_order_discount_amount = 0 %}
+{% assign has_shipping_discount = false %}
+{% assign epsilon = 0.00001 %}
+
+{% for discount_application in discount_applications %}
+  {% if discount_application.target_selection == 'all' and discount_application.target_type == 'line_item' %}
+    {% assign order_discount_count = order_discount_count | plus: 1 %}
+    {% assign total_order_discount_amount = total_order_discount_amount | plus: discount_application.total_allocated_amount %}
+  {% endif %}
+  {% if discount_application.target_type == 'shipping_line' %}
+    {% assign has_shipping_discount = true %}
+    {% assign shipping_discount_title = discount_application.title %}
+    {% assign discount_value_price = discount_application.total_allocated_amount %}
+    {% assign shipping_amount_minus_discount_value_price = shipping_price | minus: discount_value_price %}
+    {% assign shipping_amount_minus_discount_value_price_abs = shipping_amount_minus_discount_value_price | abs %}
+    {% assign discount_application_value_type = discount_application.value_type | strip %}
+    {% if shipping_amount_minus_discount_value_price_abs < epsilon or discount_application_value_type == 'percentage' and discount_application.value == 100 %}
+      {% assign free_shipping = true %}
+    {% else %}
+      {% assign discounted_shipping_price = shipping_amount_minus_discount_value_price %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Suma częściowa</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ subtotal_price | plus: total_order_discount_amount | money }}</strong>
+  </td>
+</tr>
+
+{% if order_discount_count > 0 %}
+  {% if order_discount_count == 1 %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Rabat na zamówienie</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>-{{ total_order_discount_amount | money }}</strong>
+  </td>
+</tr>
+  {% endif %}
+  {% if order_discount_count > 1 %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Rabaty na zamówienia</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>-{{ total_order_discount_amount | money }}</strong>
+  </td>
+</tr>
+  {% endif %}
+  {% for discount_application in discount_applications %}
+    {% if discount_application.target_selection == 'all' and discount_application.target_type != 'shipping_line' %}
+      <tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span class="subtotal-line__discount">
+        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+        <span class="subtotal-line__discount-title">
+            {{ discount_application.title }} (-{{ discount_application.total_allocated_amount | money }})
+        </span>
+      </span>
+    </p>
+  </td>
+</tr>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+        {% unless retail_delivery_only %}
+          {% assign shipping_type_total = 0 %}
+          {% assign shipping_type_original_total = 0 %}
+          {% for method in shipping_methods %}
+            {% assign shipping_type_total = shipping_type_total | plus: method.price_with_discounts %}
+            {% assign shipping_type_original_total = shipping_type_original_total | plus: method.original_price %}
+          {% endfor %}
+          {% assign pickup_type_total = 0 %}
+          {% for method in pickup_methods %}
+            {% assign pickup_type_total = pickup_type_total | plus: method.price_with_discounts %}
+          {% endfor %}
+          {% assign render_fallback_delivery_subtotal = false %}
+          {% if shipping_methods.size == 0 and pickup_methods.size == 0 %}
+            {% assign render_fallback_delivery_subtotal = true %}
+          {% endif %}
+          {% if delivery_method_for_subtotal == 'pick-up' and pickup_methods.size == 0 %}
+            {% assign render_fallback_delivery_subtotal = true %}
+          {% endif %}
+          {% if shipping_methods.size > 0 and render_fallback_delivery_subtotal != true %}
+            {% if has_shipping_discount %}
+              {% if free_shipping == true or shipping_type_total == 0 %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Wysyłka</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+    <del>{% if shipping_type_original_total != 0 %}{{ shipping_type_original_total | money }}{% endif %} </del>
+      <strong>Gratis</strong>
+  </td>
+</tr>
+              {% else %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Wysyłka</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ shipping_type_total | money }}</strong>
+  </td>
+</tr>
+              {% endif %}
+              <tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span class="subtotal-line__discount">
+        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+        <span class="subtotal-line__discount-title">
+            {{ shipping_discount_title }}
+            {% if discount_value_price != 0 %}
+              (-{{ discount_value_price | money }})
+            {% endif %}
+        </span>
+      </span>
+    </p>
+  </td>
+</tr>
+            {% else %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Wysyłka</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ shipping_type_total | money }}</strong>
+  </td>
+</tr>
+            {% endif %}
+          {% endif %}
+          {% if pickup_methods.size > 0 %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Odbierz</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ pickup_type_total | money }}</strong>
+  </td>
+</tr>
+            {% if has_shipping_discount and shipping_methods.size == 0 %}
+              <tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span class="subtotal-line__discount">
+        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+        <span class="subtotal-line__discount-title">
+            {{ shipping_discount_title }}
+            {% if discount_value_price != 0 %}
+              (-{{ discount_value_price | money }})
+            {% endif %}
+        </span>
+      </span>
+    </p>
+  </td>
+</tr>
+            {% endif %}
+          {% endif %}
+          {% if render_fallback_delivery_subtotal %}
+            {%- capture fallback_delivery_title -%}
+              {%- if delivery_method_for_subtotal == 'pick-up' -%}
+                Odbierz
+              {%- else -%}
+                Wysyłka
+              {%- endif -%}
+            {%- endcapture -%}
+            {% if has_shipping_discount %}
+              {% if free_shipping == true or shipping_price == 0 %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>{{ fallback_delivery_title }}</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+    <del>{% if shipping_price != 0 %}{{ shipping_price | money }}{% endif %} </del>
+      <strong>Gratis</strong>
+  </td>
+</tr>
+              {% else %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>{{ fallback_delivery_title }}</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ discounted_shipping_price | money }}</strong>
+  </td>
+</tr>
+              {% endif %}
+              <tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span class="subtotal-line__discount">
+        <img src="{{ 'notifications/discounttag.png' | shopify_asset_url }}" width="18" height="18" class="discount-tag-icon" />
+        <span class="subtotal-line__discount-title">
+            {{ shipping_discount_title }}
+            {% if discount_value_price != 0 %}
+              (-{{ discount_value_price | money }})
+            {% endif %}
+        </span>
+      </span>
+    </p>
+  </td>
+</tr>
+            {% else %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>{{ fallback_delivery_title }}</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ shipping_price | money }}</strong>
+  </td>
+</tr>
+            {% endif %}
+          {% endif %}
+        {% endunless %}
+
+        {% if total_duties %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Cła</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ total_duties | money }}</strong>
+  </td>
+</tr>
+        {% endif %}
+
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Podatki</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ tax_price | money }}</strong>
+  </td>
+</tr>
+
+        {% if total_tip and total_tip > 0 %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Napiwek</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ total_tip | money }}</strong>
+  </td>
+</tr>
+        {% endif %}
+      </table>
+
+      {% assign transaction_size = 0 %}
+      {% assign transaction_amount = 0 %}
+      {% assign net_transaction_amount_rounding = 0 %}
+      {% assign authorized_amount = 0 %}
+      {% assign has_refunds = false %}
+      {% assign shopify_pay_captured = false %}
+      {% assign shop_cash_offers_captured = false %}
+      {% for transaction in transactions %}
+        {% if transaction.kind == "sale" or transaction.kind == "capture" %}
+          {% if transaction.status == "success" %}
+            {% if transaction.payment_details.credit_card_company %}
+              {% assign shopify_pay_captured = true %}
+            {% endif %}
+            {% if transaction.gateway == "shop_cash" or transaction.gateway == "shop_offer" %}
+              {% assign shop_cash_offers_captured = true %}
+            {% endif %}
+            {% assign transaction_size = transaction_size | plus: 1 %}
+            {% assign transaction_amount = transaction_amount | plus: transaction.amount %}
+            {% if transaction.amount_rounding != nil %}
+              {% assign net_transaction_amount_rounding = net_transaction_amount_rounding | plus: transaction.amount_rounding %}
+            {% endif %}
+          {% endif %}
+        {% elsif transaction.kind == "authorization" %}
+          {% if transaction.status == "success" %}
+            {% assign authorized_amount = authorized_amount | plus: transaction.amount %}
+          {% endif %}
+        {% elsif transaction.kind == "refund" or transaction.kind == "change" %}
+          {% if transaction.status == "success" or transaction.status == "pending" %}
+            {% assign transaction_size = transaction_size | plus: 1 %}
+            {% assign transaction_amount = transaction_amount | minus: transaction.amount %}
+            {% assign has_refunds = true %}
+            {% if transaction.amount_rounding != nil %}
+              {% assign net_transaction_amount_rounding = net_transaction_amount_rounding | minus: transaction.amount_rounding %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {% if shopify_pay_captured == true and shop_cash_offers_captured == false %}
+        {% for transaction in transactions %}
+        {% if transaction.status == "success" %}
+          {% if transaction.kind == "authorization" and transaction.gateway == "shop_cash" or transaction.gateway == "shop_offer" %}
+              {% assign transaction_size = transaction_size | plus: 1 %}
+              {% assign transaction_amount = transaction_amount | plus: transaction.amount %}
+              {% if transaction.amount_rounding != nil %}
+                {% assign net_transaction_amount_rounding = net_transaction_amount_rounding | plus: transaction.amount_rounding %}
+              {% endif %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+      {% endif %}
+      <table class="row subtotal-table subtotal-table--total">
+      {% if payment_terms and payment_terms.automatic_capture_at_fulfillment == false or b2b? %}
+        {% assign next_payment = payment_terms.next_payment %}
+        {% assign due_at_date = next_payment.due_at | date: "%b %d, %Y" %}
+        {% if net_transaction_amount_rounding != 0 %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Suma</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ total_price | money }}</strong>
+  </td>
+</tr>
+          {% if total_discounts > 0 %}
+            <tr class="subtotal-line">
+              <td></td>
+              <td class="subtotal-line__value total-discount">
+                  Oszczędzasz <span class="total-discount--amount">{{ total_discounts | money }}</span>
+              </td>
+            </tr>
+          {% endif %}
+          <tr><td colspan="2" class="subtotal-table__line"></td></tr>
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Zaokrąglanie gotówki</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{% if net_transaction_amount_rounding < 0 %}-{% endif %} {{ net_transaction_amount_rounding | abs | money }}</strong>
+  </td>
+</tr>
+          <tr><td colspan="2" class="subtotal-table__line"></td></tr>
+        {% endif %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Łączna kwota zapłacona dzisiaj</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ transaction_amount | plus: net_transaction_amount_rounding | money }}</strong>
+  </td>
+</tr>
+          {% assign next_amount_due = total_price %}
+          {% if next_payment %}
+            {% assign next_amount_due = next_payment.amount_due %}
+          {% elsif total_outstanding > 0 %}
+            {% assign next_amount_due = total_outstanding %}
+          {% endif %}
+
+          {% if payment_terms.type == 'receipt' %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Łączna kwota płatna przy odbiorze</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ next_amount_due | money }}</strong>
+  </td>
+</tr>
+          {% elsif payment_terms.type == 'fulfillment' %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Łączna kwota należna po realizacji</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ next_amount_due | money }}</strong>
+  </td>
+</tr>
+          {% else %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Łączna kwota należna {{ due_at_date }}</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ next_amount_due | money }}</strong>
+  </td>
+</tr>
+          {% endif %}
+        {% if total_discounts > 0 and net_transaction_amount_rounding == 0 %}
+          <tr class="subtotal-line">
+            <td></td>
+            <td class="subtotal-line__value total-discount">
+                Oszczędzasz <span class="total-discount--amount">{{ total_discounts | money }}</span>
+            </td>
+          </tr>
+        {% endif %}
+      {% else %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Suma</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ total_price | money }}</strong>
+  </td>
+</tr>
+        {% if total_discounts > 0 %}
+          <tr class="subtotal-line">
+            <td></td>
+            <td class="subtotal-line__value total-discount">
+                Oszczędzasz <span class="total-discount--amount">{{ total_discounts | money }}</span>
+            </td>
+          </tr>
+        {% endif %}
+        {% if net_transaction_amount_rounding != 0 %}
+          <tr><td colspan="2" class="subtotal-table__line"></td></tr>
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Zaokrąglanie gotówki</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{% if net_transaction_amount_rounding < 0 %}-{% endif %} {{ net_transaction_amount_rounding | abs | money }}</strong>
+  </td>
+</tr>
+          {% if financial_status == 'paid' %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Opłacone</span>
+        <br>
+        <small>{{ order.transactions | map: 'gateway_display_name' | uniq | join: ', ' }}</small>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ transaction_amount | plus: net_transaction_amount_rounding | money }}</strong>
+  </td>
+</tr>
+          {% endif %}
+        {% endif %}
+        {% if transaction_amount != total_price and payment_terms == nil%}
+          {% if transaction_amount == 0 and authorized_amount > 0 and has_refunds == false %}
+          {% else %}
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Łączna kwota zapłacona dzisiaj</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ transaction_amount | plus: net_transaction_amount_rounding | money }}</strong>
+  </td>
+</tr>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+      </table>
+
+      {% unless payment_terms %}
+      {% if transaction_size > 1 or transaction_amount < total_price %}
+        <table class="row subtotal-table">
+          <tr><td colspan="2" class="subtotal-table__line"></td></tr>
+          <tr><td colspan="2" class="subtotal-table__small-space"></td></tr>
+
+          {% for transaction in transactions %}
+            {% assign amount_rounding = 0 %}
+            {% if transaction.amount_rounding != 0 %}
+              {% assign amount_rounding =  transaction.amount_rounding %}
+            {% endif %}
+            {% if transaction.status == "success" and transaction.kind == "capture" or transaction.kind == "sale" %}
+              {% if transaction.payment_details.gift_card_last_four_digits %}
+                {% capture transaction_name %}Karta prezentowa (z końcówką {{ transaction.payment_details.gift_card_last_four_digits }}){% endcapture %}
+              {% elsif transaction.payment_details.credit_card_company %}
+                {% capture transaction_name %}{{ transaction.payment_details.credit_card_company }} (z końcówką {{ transaction.payment_details.credit_card_last_four_digits }}){% endcapture %}
+              {% else %}
+                {% capture transaction_name %}{{ transaction.gateway_display_name }}{% endcapture %}
+              {% endif %}
+
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>{{transaction_name}}</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ transaction.amount | plus: amount_rounding | money }}</strong>
+  </td>
+</tr>
+            {% elsif shopify_pay_captured and shop_cash_offers_captured == false and transaction.kind == "authorization" and transaction.gateway == "shop_cash" or transaction.gateway == "shop_offer" %}
+              {% capture transaction_name %}{{ transaction.gateway_display_name }}{% endcapture %}
+
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>{{transaction_name}}</span>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ transaction.amount | plus: amount_rounding | money }}</strong>
+  </td>
+</tr>
+            {% endif %}
+            {% if transaction.kind == 'refund' and transaction.gateway != "shop_offer" %}
+              {% if transaction.payment_details.gift_card_last_four_digits %}
+                {% assign refund_method_title = transaction.payment_details.type %}
+              {% elsif transaction.payment_details.local_payment %}
+                {% assign refund_method_title = transaction.payment_details.payment_method_name %}
+              {% elsif transaction.payment_details.credit_card_company %}
+                {% assign refund_method_title = transaction.payment_details.credit_card_company %}
+              {% else %}
+                {% assign refund_method_title = transaction.gateway_display_name %}
+              {% endif %}
+
+              {% if transaction.gateway == 'shopify_store_credit' %}
+                {% assign link_url = routes.account_profile_url %}
+                {% capture link_text %}Wyświetl{% endcapture %}
+              {% else %}
+                {% assign link_url = nil %}
+                {% assign link_text = nil %}
+              {% endif %}
+
+<tr class="subtotal-line">
+  <td class="subtotal-line__title">
+    <p>
+      <span>Zwróć koszty</span>
+        <br>
+        <small>{{ refund_method_title | replace: '_', ' ' | capitalize }}</small>
+          &nbsp;&nbsp;<a href="{{ link_url }}" class="small">{{ link_text }}</a>
+    </p>
+  </td>
+  <td class="subtotal-line__value">
+      <strong>{{ transaction.amount | plus: amount_rounding | times: -1 | money }}</strong>
+  </td>
+</tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      {% endif %}
+      {% endunless %}
+    </td>
+  </tr>
+</table>
+
+            <p class="aura-receipt-thanks">Dziękujemy. Zaczynamy przygotowania.</p>
+
+            {% if apc_wallet_name %}
+              {% if apc_currency_converted? %}
+                <p>{{ shop.name }} przetwarza płatności w walucie {{ currency }}. Walutą Twoich zakupów była {{ original_presentment_currency }}, a płatność zrealizowano za pomocą {{ apc_wallet_name }} w CNY. Sprawdź ostateczną kwotę w aplikacji {{ apc_wallet_app_name }}.</p>
+              {% else %}
+                <p>Płatność zrealizowano za pomocą {{ apc_wallet_name }} w CNY. Sprawdź ostateczną kwotę w aplikacji {{ apc_wallet_app_name }}.</p>
+              {% endif %}
+            {% endif %}
+
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" class="container receipt-tear" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td aria-hidden="true">▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼</td>
+          </tr>
+        </table>
+      </center>
+    </td>
+  </tr>
+</table>
+
+          <table class="row section customer-section">
+  <tr>
+    <td class="section__cell">
+      <center>
+        <table class="container">
+          <tr>
+            <td>
+              <h3>Informacje dotyczące klienta</h3>
+            </td>
+          </tr>
+        </table>
+        <table class="container">
+          <tr>
+            <td>
+
+            <table class="row">
+              <tr>
+                {% if requires_shipping and shipping_address %}
+                  <td class="customer-info__item">
+                    <h4>Adres wysyłki</h4>
+                    {{ shipping_address | format_address }}
+                  </td>
+                {% endif %}
+                {% if billing_address %}
+                  <td class="customer-info__item">
+                    <h4>Adres faktury</h4>
+                    {{ billing_address | format_address }}
+                  </td>
+                {% endif %}
+              </tr>
+            </table>
+            <table class="row">
+              <tr>
+                {% if company_location %}
+                  <td class="customer-info__item">
+                    <h4>Lokalizacja</h4>
+                    <p>
+                      {{ company_location.name }}
+                    </p>
+                  </td>
+                {% endif %}
+                {% capture payment_section_body %}
+  {% if payment_terms and payment_terms.automatic_capture_at_fulfillment == false %}
+    {% assign due_date = payment_terms.next_payment.due_at | default: nil %}
+    {% if payment_terms.type == 'receipt' or payment_terms.type == 'fulfillment' and payment_terms.next_payment.due_at == nil %}
+      {{ payment_terms.translated_name }}<br>
+    {% else %}
+      {{ payment_terms.translated_name }}: Termin zapłaty {{ due_date | date: format: 'date' }}<br>
+    {% endif %}
+  {% endif %}
+  {% if transactions.size > 0 %}
+    {% for transaction in transactions %}
+      {% if transaction.status == "success" or transaction.status == "pending" %}
+        {% if transaction.kind == "capture" or transaction.kind == "sale" %}
+          {% if transaction.payment_details.gift_card_last_four_digits %}
+            <img src="{{ transaction.payment_details.payment_icon_source | payment_type_img_url }}" class="customer-info__item-credit" height="24">
+            z końcówką {{ transaction.payment_details.gift_card_last_four_digits }}<br>
+          {% elsif transaction.payment_details.type == "shop_pay_installments" and transaction.payment_details.credit_card_company == "unknown" %}
+            <img src="{{ 'notifications/shop-pay.svg' | shopify_asset_url  }}" class="customer-info__item-shop-pay">
+            <br>
+            <span>Opłacono za pomocą Rat Shop Pay</span><br>
+          {% elsif transaction.payment_details.type == "card" %}
+            <img src="{{ transaction.payment_details.credit_card_company | payment_icon_png_url  }}" class="customer-info__item-credit" height="24" alt="{{ transaction.payment_details.credit_card_company }}">
+            <span>z końcówką {{ transaction.payment_details.credit_card_last_four_digits }}</span><br>
+            {% if transaction.first_installment_amount %}
+              <span>{{ transaction.first_installment_amount | money }}/miesiąc przez {{ transaction.installment_count }} mies.</span><br>
+            {% endif %}
+          {% elsif transaction.gateway_display_name == "Gift card" %}
+            <img src="{{ transaction.gateway_icon_source | payment_type_img_url }}" class="customer-info__item-credit" height="24">
+            z końcówką {{ transaction.payment_details.gift_card.last_four_characters | upcase }}<br>
+              &emsp;&emsp;&emsp;&nbsp;Saldo karty prezentowej - <b>{{ transaction.payment_details.gift_card.balance |  money }}</b>
+          {% elsif transaction.payment_details.local_payment? %}
+            <img src="{{ transaction.payment_details.payment_icon_source | payment_type_img_url }}" class="customer-info__item-credit" height="24">
+            <span>{{ transaction.payment_details.payment_method_display_name }}</span><br>
+          {% elsif transaction.gateway_display_name != "Shop Cash" and transaction.gateway != "shop_offer" %}
+            {{ transaction.gateway_display_name }}<br>
+          {% endif %}
+        {% elsif transaction.kind == "authorization" and transaction.gateway_display_name == "Shop Cash" %}
+          <span>Shop Cash</span><br>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endcapture %}
+
+{% assign show_payment_section = false %}
+{% if b2b? %}{% assign show_payment_section = true %}{% endif %}
+
+{% assign payment_section_body_stripped = payment_section_body | strip %}
+{% if payment_section_body_stripped != "" %}{% assign show_payment_section = true %}{% endif %}
+
+{% if show_payment_section %}
+  <td class="customer-info__item">
+    <h4>Płatność</h4>
+    <p class="customer-info__item-content">
+      {{ payment_section_body }}
+    </p>
+  </td>
+{% endif %}
+
+              </tr>
+              <tr>
+                {% if requires_shipping and shipping_address %}
+                  {% if shipping_methods.size > 0 %}
+                    <td class="customer-info__item">
+                      <h4>Metoda wysyłki</h4>
+                      {%- assign unique_shipping_titles = shipping_methods | map: 'title' | uniq -%}
+                      <p>
+                        {%- if unique_shipping_titles.size == 1 and delivery_promise_branded_shipping_line -%}
+                          {{ delivery_promise_branded_shipping_line }}
+                        {%- else -%}
+                          {%- for shipping_title in unique_shipping_titles -%}
+                            {{ shipping_title }}{% unless forloop.last %}<br>{% endunless %}
+                          {%- endfor -%}
+                        {%- endif -%}
+                      </p>
+                    </td>
+                  {% elsif shipping_method %}
+                    <td class="customer-info__item">
+                      <h4>Metoda wysyłki</h4>
+                      <p>
+                        {% if delivery_promise_branded_shipping_line %}
+                          {{ delivery_promise_branded_shipping_line }}
+                        {% else %}
+                          {{ shipping_method.title }}
+                        {% endif %}
+                      </p>
+                    </td>
+                  {% endif %}
+                {% endif %}
+              </tr>
+            </table>
+
+            </td>
+          </tr>
+        </table>
+      </center>
+    </td>
+  </tr>
+</table>
+
+          <table class="row footer">
+  <tr>
+    <td class="footer__cell">
+      <center>
+        <table class="container">
+          <tr>
+            <td>
+              <p class="disclaimer__subtext">Jeśli masz pytania, odpowiedz na ten e-mail lub skontaktuj się z nami, pisząc na adres <a href="mailto:{{ shop.email }}">{{ shop.email }}</a></p>
+            </td>
+          </tr>
+        </table>
+      </center>
+    </td>
+  </tr>
+</table>
+
+<img src="{{ 'notifications/spacer.png' | shopify_asset_url }}" class="spacer" height="1" />
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+
+{%- if billing_address.country_code == 'DE' or billing_address.country_code == 'DK' -%}
+  {%- if shop.terms_of_service.body != blank -%}
+    {{ shop.terms_of_service | attach_as_pdf: "Warunki świadczenia usług" }}
+  {%- endif -%}
+
+  {%- if shop.refund_policy.body != blank -%}
+    {{ shop.refund_policy | attach_as_pdf: "Polityka zwrotu kosztów" }}
+  {%- endif -%}
+{%- endif -%}
