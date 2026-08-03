@@ -10,7 +10,7 @@ Szablon zachowuje oryginalną logikę Shopify z 3 sierpnia 2026 r. i nakłada na
 
 ### Przed aktywacją
 
-1. W Shopify ustaw logo wiadomości e-mail na wersję Aury z przezroczystym tłem. Szablon korzysta z `shop.email_logo_url`.
+1. Logo Aury jest częścią szablonu i jest pobierane ze stabilnego adresu storefrontu.
 2. Wklej całą zawartość `order-confirmation.liquid` do pola HTML.
 3. Kliknij **Podgląd**.
 4. Wyślij wiadomość testową.

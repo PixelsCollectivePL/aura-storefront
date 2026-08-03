@@ -155,9 +155,14 @@
 
     .shop-name__cell img {
       display: block !important;
-      width: 154px !important;
-      max-width: 154px !important;
+      width: 168px !important;
+      max-width: 168px !important;
       height: auto !important;
+    }
+
+    .aura-logo-link {
+      display: inline-block !important;
+      text-decoration: none !important;
     }
 
     .shop-name__text,
@@ -276,6 +281,69 @@
       text-transform: uppercase !important;
     }
 
+    .receipt-section .section__cell {
+      padding: 0 0 54px !important;
+      border-top: 0 !important;
+    }
+
+    .receipt-head,
+    .receipt-body {
+      background-color: #ffffff !important;
+    }
+
+    .receipt-heading-cell {
+      padding: 34px 34px 8px !important;
+    }
+
+    .receipt-body > tbody > tr > td {
+      padding: 0 34px 42px !important;
+    }
+
+    .receipt-kicker {
+      margin: 0 0 8px !important;
+      color: #6e6a60 !important;
+      font-size: 10px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.16em !important;
+      line-height: 1.2 !important;
+      text-transform: uppercase !important;
+    }
+
+    .receipt-heading-cell h3 {
+      margin-bottom: 16px !important;
+      font-size: 27px !important;
+    }
+
+    .receipt-burst-cell {
+      padding-left: 6px !important;
+      text-align: right !important;
+      vertical-align: top !important;
+    }
+
+    .receipt-burst {
+      display: inline-block !important;
+      width: 58px !important;
+      height: 58px !important;
+    }
+
+    .receipt-tear {
+      height: 14px !important;
+      overflow: hidden !important;
+    }
+
+    .receipt-tear td {
+      height: 14px !important;
+      overflow: hidden !important;
+      background-color: #faf8f4 !important;
+      color: #ffffff !important;
+      font-family: Arial, sans-serif !important;
+      font-size: 19px !important;
+      letter-spacing: -4px !important;
+      line-height: 10px !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+    }
+
     .order-list__item__cell {
       padding: 18px 0 !important;
       border-bottom: 1px solid #e6e2d8 !important;
@@ -315,6 +383,12 @@
       margin-top: 24px !important;
     }
 
+    .subtotal-table--total {
+      margin-top: 28px !important;
+      padding-top: 18px !important;
+      border-top: 2px dashed #0e0e0c !important;
+    }
+
     .subtotal-line__title,
     .subtotal-line__value {
       padding: 7px 0 !important;
@@ -332,6 +406,38 @@
       color: #0e0e0c !important;
       font-size: 20px !important;
       font-weight: 800 !important;
+    }
+
+    .aura-grand-total {
+      margin-top: 30px !important;
+      border-top: 2px dashed #0e0e0c !important;
+    }
+
+    .aura-grand-total td {
+      padding: 28px 0 4px !important;
+      text-align: center !important;
+    }
+
+    .aura-grand-total__label,
+    .aura-grand-total__thanks {
+      display: block !important;
+      color: #6e6a60 !important;
+      font-size: 10px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.18em !important;
+      line-height: 1.5 !important;
+      text-transform: uppercase !important;
+    }
+
+    .aura-grand-total__value {
+      display: block !important;
+      margin: 8px 0 18px !important;
+      color: #ff4d17 !important;
+      font-size: 54px !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.045em !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
     }
 
     .customer-info__item {
@@ -388,7 +494,7 @@
       }
 
       .shop-name__cell img {
-        width: 124px !important;
+        width: 132px !important;
       }
 
       .order-number__text,
@@ -407,6 +513,24 @@
 
       .content p {
         font-size: 15px !important;
+      }
+
+      .receipt-heading-cell {
+        padding: 26px 20px 6px !important;
+      }
+
+      .receipt-body > tbody > tr > td {
+        padding: 0 20px 34px !important;
+      }
+
+      .receipt-burst,
+      .receipt-burst-cell {
+        width: 48px !important;
+        height: 48px !important;
+      }
+
+      .aura-grand-total__value {
+        font-size: 42px !important;
       }
 
       .actions-buttons .button__cell,
@@ -446,13 +570,14 @@
               <table class="row">
                 <tr>
                   <td class="shop-name__cell">
-                    {%- if shop.email_logo_url %}
-                      <img src="{{shop.email_logo_url}}" alt="{{ shop.name }}" width="{{ shop.email_logo_width }}">
-                    {%- else %}
-                      <h1 class="shop-name__text">
-                        <a href="{{shop.url}}">{{ shop.name }}</a>
-                      </h1>
-                    {%- endif %}
+                    <a href="{{ shop.url }}" class="aura-logo-link">
+                      <img
+                        src="https://aura-storefront-chi.vercel.app/assets/brand/aura-logo-email.png"
+                        alt="Aura"
+                        width="168"
+                        class="aura-email-logo"
+                      >
+                    </a>
                   </td>
 
                     <td>
@@ -649,18 +774,34 @@
   </tr>
 </table>
 
-          <table class="row section">
+          <table class="row section receipt-section">
   <tr>
     <td class="section__cell">
       <center>
-        <table class="container">
+        <table class="container receipt-head">
           <tr>
-            <td>
-              <h3>Podsumowanie zamówienia</h3>
+            <td class="receipt-heading-cell">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td>
+                    <p class="receipt-kicker">Rachunek · {{ order_name }}</p>
+                    <h3>Podsumowanie zamówienia</h3>
+                  </td>
+                  <td class="receipt-burst-cell" width="64">
+                    <img
+                      src="https://aura-storefront-chi.vercel.app/assets/brand/aura-star.png"
+                      width="58"
+                      height="58"
+                      alt=""
+                      class="receipt-burst"
+                    >
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
         </table>
-        <table class="container">
+        <table class="container receipt-body">
           <tr>
             <td>
               
@@ -3970,6 +4111,16 @@
   </tr>
 </table>
 
+            <table role="presentation" class="aura-grand-total" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td>
+                  <span class="aura-grand-total__label">Pełna kwota zamówienia</span>
+                  <strong class="aura-grand-total__value">{{ total_price | money_with_currency }}</strong>
+                  <span class="aura-grand-total__thanks">Dziękujemy. Zaczynamy przygotowania.</span>
+                </td>
+              </tr>
+            </table>
+
             {% if apc_wallet_name %}
               {% if apc_currency_converted? %}
                 <p>{{ shop.name }} przetwarza płatności w walucie {{ currency }}. Walutą Twoich zakupów była {{ original_presentment_currency }}, a płatność zrealizowano za pomocą {{ apc_wallet_name }} w CNY. Sprawdź ostateczną kwotę w aplikacji {{ apc_wallet_app_name }}.</p>
@@ -3981,12 +4132,17 @@
             </td>
           </tr>
         </table>
+        <table role="presentation" class="container receipt-tear" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td aria-hidden="true">▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼ ▼</td>
+          </tr>
+        </table>
       </center>
     </td>
   </tr>
 </table>
 
-          <table class="row section">
+          <table class="row section customer-section">
   <tr>
     <td class="section__cell">
       <center>
