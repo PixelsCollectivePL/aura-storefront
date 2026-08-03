@@ -42,21 +42,16 @@ test("product page shows a price and a way to buy", async ({ page }) => {
   ).toBeVisible();
 });
 
-test("product option groups are never rendered empty", async ({ page }) => {
-  await page.goto("/produkty");
-  await page.locator('a[href^="/produkty/"]').first().click();
+test("product page reflects the option names configured in Shopify", async ({ page }) => {
+  await page.goto("/produkty/kawa-testowa");
 
-  const groups = page.locator('[role="group"][aria-labelledby]');
-  const count = await groups.count();
+  await expect(page.locator("#size-selector")).toHaveText("Gramatura");
+  await expect(page.getByRole("button", { name: "250g", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "500g", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "1000g", exact: true })).toBeVisible();
 
-  for (let index = 0; index < count; index += 1) {
-    const group = groups.nth(index);
-    const labelId = await group.getAttribute("aria-labelledby");
-
-    expect(labelId).toBeTruthy();
-    await expect(page.locator(`#${labelId}`)).not.toHaveText("");
-    expect(await group.getByRole("button").count()).toBeGreaterThan(0);
-  }
+  await expect(page.locator("#grind-selector")).toHaveCount(0);
+  await expect(page.getByText("Forma", { exact: true })).toHaveCount(0);
 });
 
 test("product page shows the Shopify image, not the placeholder", async ({ page }) => {
