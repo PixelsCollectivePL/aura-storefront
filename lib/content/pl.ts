@@ -215,8 +215,6 @@ export const CONTENT = {
 
   pdp: {
     breadcrumbShop: "Sklep",
-    sizeLabel: "Gramatura",
-    grindLabel: "Forma",
     qtyLabel: "Ilość",
     addToCart: "Wrzuć do koszyka",
     addToCartWithPrice: (): string => "Wrzuć do koszyka",

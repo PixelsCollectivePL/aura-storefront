@@ -42,6 +42,23 @@ test("product page shows a price and a way to buy", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("product option groups are never rendered empty", async ({ page }) => {
+  await page.goto("/produkty");
+  await page.locator('a[href^="/produkty/"]').first().click();
+
+  const groups = page.locator('[role="group"][aria-labelledby]');
+  const count = await groups.count();
+
+  for (let index = 0; index < count; index += 1) {
+    const group = groups.nth(index);
+    const labelId = await group.getAttribute("aria-labelledby");
+
+    expect(labelId).toBeTruthy();
+    await expect(page.locator(`#${labelId}`)).not.toHaveText("");
+    expect(await group.getByRole("button").count()).toBeGreaterThan(0);
+  }
+});
+
 test("product page shows the Shopify image, not the placeholder", async ({ page }) => {
   await page.goto("/produkty");
   await page.locator('a[href^="/produkty/"]').first().click();

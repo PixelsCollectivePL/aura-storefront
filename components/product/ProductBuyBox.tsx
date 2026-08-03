@@ -97,52 +97,56 @@ export function ProductBuyBox({ product }: ProductBuyBoxProps) {
       </div>
 
       {/* ── Size selector ─────────────────────────────────────────── */}
-      <VariantGroup label={t.sizeLabel} id="size-selector">
-        <div className="flex flex-wrap gap-2">
-          {product.sizeOptions.map((opt) => (
-            <button
-              key={opt.weight}
-              type="button"
-              onClick={() => setSelectedSize(opt)}
-              aria-pressed={selectedSize?.weight === opt.weight}
-              className={cn(
-                "h-10 px-4 rounded-pill border text-[13.5px] font-medium",
-                "transition-colors duration-[120ms] cursor-pointer",
-                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
-                selectedSize?.weight === opt.weight
-                  ? "bg-ink text-white border-ink"
-                  : "bg-white text-ink border-line hover:border-ink"
-              )}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </VariantGroup>
+      {product.sizeOptionName && product.sizeOptions.length > 0 && (
+        <VariantGroup label={product.sizeOptionName} id="size-selector">
+          <div className="flex flex-wrap gap-2">
+            {product.sizeOptions.map((opt) => (
+              <button
+                key={opt.weight}
+                type="button"
+                onClick={() => setSelectedSize(opt)}
+                aria-pressed={selectedSize?.weight === opt.weight}
+                className={cn(
+                  "h-10 px-4 rounded-pill border text-[13.5px] font-medium",
+                  "transition-colors duration-[120ms] cursor-pointer",
+                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+                  selectedSize?.weight === opt.weight
+                    ? "bg-ink text-white border-ink"
+                    : "bg-white text-ink border-line hover:border-ink"
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </VariantGroup>
+      )}
 
       {/* ── Grind selector ────────────────────────────────────────── */}
-      <VariantGroup label={t.grindLabel} id="grind-selector">
-        <div className="flex flex-wrap gap-2">
-          {product.grindOptions.map((opt) => (
-            <button
-              key={opt}
-              type="button"
-              onClick={() => setSelectedGrind(opt)}
-              aria-pressed={selectedGrind === opt}
-              className={cn(
-                "h-10 px-4 rounded-pill border text-[13.5px] font-medium",
-                "transition-colors duration-[120ms] cursor-pointer",
-                "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
-                selectedGrind === opt
-                  ? "bg-ink text-white border-ink"
-                  : "bg-white text-ink border-line hover:border-ink"
-              )}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </VariantGroup>
+      {product.grindOptionName && product.grindOptions.length > 0 && (
+        <VariantGroup label={product.grindOptionName} id="grind-selector">
+          <div className="flex flex-wrap gap-2">
+            {product.grindOptions.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                onClick={() => setSelectedGrind(opt)}
+                aria-pressed={selectedGrind === opt}
+                className={cn(
+                  "h-10 px-4 rounded-pill border text-[13.5px] font-medium",
+                  "transition-colors duration-[120ms] cursor-pointer",
+                  "focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2",
+                  selectedGrind === opt
+                    ? "bg-ink text-white border-ink"
+                    : "bg-white text-ink border-line hover:border-ink"
+                )}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </VariantGroup>
+      )}
 
       {/* ── Qty + ATC (desktop) ───────────────────────────────────── */}
       <div className="hidden lg:flex items-center gap-4 mt-2">
