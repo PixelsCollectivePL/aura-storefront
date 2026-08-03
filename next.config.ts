@@ -22,8 +22,25 @@ const nextConfig: NextConfig = {
    * `lib/seo/indexing.ts` for why blocking the crawl would backfire.
    */
   async headers() {
-    if (allowIndexing) return [];
+    /**
+     * Assets referenced by Shopify's transactional e-mails.
+     *
+     * They are fetched by mail clients and by Gmail's image proxy, not by
+     * this app, so the default `max-age=0, must-revalidate` means every
+     * open re-downloads them. These files are immutable in practice —
+     * a new look means a new filename — so cache them hard.
+     */
+    const emailAssets = {
+      source: "/assets/email/:path*",
+      headers: [
+        { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+      ],
+    };
+
+    if (allowIndexing) return [emailAssets];
+
     return [
+      emailAssets,
       {
         source: "/:path*",
         headers: [
